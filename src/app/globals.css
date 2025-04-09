@@ -1,5 +1,105 @@
 @import "tailwindcss";
 
+:root {
+  --color-lemon: #ffd600;
+  --color-banana: #fff59a;
+  --color-coral: #ff6b57;
+  --color-honey: #fedb9a;
+  --color-dust: #d58f5f;
+  --color-clay: #ffe6c6;
+  --color-hydrangea: #6e8fe9;
+  --color-tide: #e9f1ff;
+  --color-bluebell: #7075da;
+  --color-hibiscus: #f8fdf0;
+  --color-plum: #c177e5;
+  --color-petal: #fbd6f2;
+  --color-sky: #78cff3;
+  --color-frost: #e4f6f0;
+  --color-mango: #ffaa6e;
+  --color-sunbeam: #ffe070;
+  --color-fern: #5cbd72;
+  --color-citrus: #f2e370;
+  --color-mint: #86ff8f;
+  --color-ice: #b2f2ff;
+  --color-peony: #f87bb3;
+  --color-lychee: #ffd9ec;
+  --color-sage: #67c99e;
+  --color-husk: #ffeccb;
+  --color-glacier: #7aa96f;
+  --color-algae: #8cffaa;
+
+  --gradient-pop: linear-gradient(
+    90deg,
+    var(--color-lemon) 0%,
+    var(--color-banana) 100%
+  );
+  --gradient-rock: linear-gradient(
+    90deg,
+    var(--color-coral) 0%,
+    var(--color-honey) 100%
+  );
+  --gradient-country: linear-gradient(
+    90deg,
+    var(--color-dust) 0%,
+    var(--color-clay) 100%
+  );
+  --gradient-jazz: linear-gradient(
+    90deg,
+    var(--color-hydrangea) 0%,
+    var(--color-tide) 100%
+  );
+  --gradient-gospel: linear-gradient(
+    90deg,
+    var(--color-bluebell) 0%,
+    var(--color-hibiscus) 100%
+  );
+  --gradient-funk: linear-gradient(
+    90deg,
+    var(--color-plum) 0%,
+    var(--color-petal) 100%
+  );
+  --gradient-soundtracks: linear-gradient(
+    90deg,
+    var(--color-sky) 0%,
+    var(--color-frost) 100%
+  );
+  --gradient-hiphop: linear-gradient(
+    90deg,
+    var(--color-mango) 0%,
+    var(--color-sunbeam) 100%
+  );
+  --gradient-latin: linear-gradient(
+    90deg,
+    var(--color-fern) 0%,
+    var(--color-citrus) 100%
+  );
+  --gradient-electronic: linear-gradient(
+    90deg,
+    var(--color-mint) 0%,
+    var(--color-ice) 100%
+  );
+  --gradient-reggae: linear-gradient(
+    90deg,
+    var(--color-fern) 0%,
+    var(--color-citrus) 100%
+  );
+  --gradient-classical: linear-gradient(
+    90deg,
+    var(--color-peony) 0%,
+    var(--color-lychee) 100%
+  );
+  --gradient-folk: linear-gradient(
+    90deg,
+    var(--color-sage) 0%,
+    var(--color-husk) 100%
+  );
+  --gradient-world: linear-gradient(
+    90deg,
+    var(--color-glacier) 0%,
+    var(--color-algae) 100%
+  );
+}
+
 .another-heading1 {
   font-family: var(--font-instrument-serif), serif;
   font-weight: normal;
