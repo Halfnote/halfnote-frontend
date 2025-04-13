@@ -1,12 +1,16 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import { Icons } from "../icons/icons";
-import { AnotherButton } from "./Another_Button";
+import { AnotherNavButton } from "./AnotherNavButton";
+import redirect from "next/navigation";
 import Form from "next/form";
+import { useRouter } from "next/navigation";
 
-export const Navbar = () => {
+export const NavBar = () => {
+  const router = useRouter();
   return (
-    <nav className=" rounded-full outline-solid outline-2 outline-black flex justify-between items-center p-4 max-w-7xl mx-auto mb-[50px]">
+    <nav className="rounded-full outline-solid outline-2 outline-black flex justify-between items-center p-4 max-w-7xl mx-auto mb-[50px]">
       <Image
         className="w-[230px] h-[55px] ml-5"
         priority
@@ -15,13 +19,31 @@ export const Navbar = () => {
       />
       <ul className="flex w-full justify-center ml-20 gap-10">
         <li>
-          <AnotherButton label="Discover" />
+          <AnotherNavButton
+            onClick={async () => {
+              router.push("/");
+              return true;
+            }}
+            label="Discover"
+          />
         </li>
         <li>
-          <AnotherButton label="Activity" />
+          <AnotherNavButton
+            label="Activity"
+            onClick={async () => {
+              router.push("/activity");
+              return true;
+            }}
+          />
         </li>
         <li>
-          <AnotherButton label="Profile" />
+          <AnotherNavButton
+            label="Profile"
+            onClick={async () => {
+              router.push("/profile");
+              return true;
+            }}
+          />
         </li>
       </ul>
       <Form

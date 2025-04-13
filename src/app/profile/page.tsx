@@ -1,14 +1,12 @@
 "use client";
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
-export default function DiscoverPage() {
+export default function ProfilePage() {
   return (
     <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen">
-      <h1 className="another-heading1 text-center">
-        This is the discover page.
-      </h1>
+      <h1 className="another-heading1 text-center">This is the profile page</h1>
       <p className="text-center another-heading2 mb-12">
-        This is the discover page.
+        This is the profile page.
       </p>
       <div className="grid grid-cols-3 gap-4 justify-center content-center">
         <Image

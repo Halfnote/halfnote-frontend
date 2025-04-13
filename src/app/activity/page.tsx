@@ -1,12 +1,14 @@
 "use client";
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
-export default function Dashboard() {
+export default function ActivityPage() {
   return (
     <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen">
-      <h1 className="another-heading1 text-center">Heading 1</h1>
+      <h1 className="another-heading1 text-center">
+        This is the activity page
+      </h1>
       <p className="text-center another-heading2 mb-12">
-        This is the dashboard page.
+        This is the activity page.
       </p>
       <div className="grid grid-cols-3 gap-4 justify-center content-center">
         <Image
