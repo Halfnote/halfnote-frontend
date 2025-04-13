@@ -1,4 +1,9 @@
 @import "tailwindcss";
+body {
+  max-width: 90%;
+  margin: auto;
+  margin-top: 50px;
+}
 
 :root {
   --color-lemon: #ffd600;
@@ -102,48 +107,40 @@
 
 .another-heading1 {
   font-family: var(--font-instrument-serif), serif;
-  font-weight: normal;
-  @apply text-[42px] leading-[63px] tracking-[-1.68px];
+  @apply font-normal text-[42px] leading-[63px] tracking-[-1.68px];
 }
 
 .another-heading2 {
   font-family: var(--font-instrument-serif), serif;
-  font-weight: normal;
-  @apply text-[28px] leading-[44px];
+  @apply font-normal text-[28px] leading-[44px];
 }
 
 .another-heading3 {
   font-family: var(--font-instrument-sans), sans;
-  font-weight: normal;
-  @apply text-[24px] leading-[36px];
+  @apply font-normal text-[24px] leading-[36px];
 }
 
 .another-heading4 {
   font-family: var(--font-instrument-sans), sans;
-  font-weight: normal;
-  @apply text-[20px] leading-[30px];
+  @apply font-normal text-[20px] leading-[30px];
 }
 
 .another-heading5 {
   font-family: var(--font-instrument-sans), sans;
-  font-weight: normal;
-  @apply text-[16px] leading-[26px];
+  @apply font-normal text-[16px] leading-[26px];
 }
 
 .another-heading6 {
   font-family: var(--font-instrument-sans), sans;
-  font-weight: normal;
-  @apply font-bold text-[14px] leading-[21px];
+  @apply font-normal font-bold text-[14px] leading-[21px];
 }
 
 .another-body {
   font-family: var(--font-instrument-sans), sans;
-  font-weight: normal;
-  @apply text-[14px] leading-[21px];
+  @apply font-normal text-[14px] leading-[21px];
 }
 
 .another-label {
   font-family: var(--font-instrument-sans), sans;
-  font-weight: normal;
-  @apply text-[10px] leading-[21px];
+  @apply font-normal text-[10px] leading-[21px];
 }
