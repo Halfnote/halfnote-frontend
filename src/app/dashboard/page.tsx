@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
 export default function Dashboard() {
   return (
-    <div className="flex justify-center items-center flex-col gap-4 min-h-screen p-8 pb-20 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex justify-center items-center flex-col gap-4 min-h-screen p-8 pb-20 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-amber-600">
       <h1 className="another-heading1 text-center">Heading 1</h1>
       <p className="text-center another-heading2 mb-12">
         This is the dashboard page.

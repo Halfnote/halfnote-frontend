@@ -12,6 +12,7 @@ import Soundtrack from "@/app/icons/another_col_icons/SOUNDTRACK-genreTag.svg";
 import World from "@/app/icons/another_col_icons/WORLD-genreTag.svg";
 import Latin from "@/app/icons/another_col_icons/LATIN-genreTag.svg";
 import Folk from "@/app/icons/another_col_icons/FOLK-genreTag.svg";
+import Another from "@/app/icons/another_misc_icons/Another.svg";
 
 export const Icons = {
   classical: Classical,
@@ -28,4 +29,5 @@ export const Icons = {
   world: World,
   latin: Latin,
   folk: Folk,
+  another: Another,
 };
