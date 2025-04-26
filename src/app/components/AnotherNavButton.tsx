@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 interface AnotherNavButtonsProps {
-  onClick?: () => Promise<Boolean> | undefined;
+  onClick?: () => void | undefined;
   label: "Discover" | "Activity" | "Profile";
 }
 
@@ -13,19 +13,24 @@ export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   useEffect(() => {
+    let newIsClicked = false;
     switch (props.label) {
       case "Discover":
-        setIsClicked(pathname === "/");
+        newIsClicked = pathname === "/";
         break;
       case "Activity":
-        setIsClicked(pathname === "/activity");
+        newIsClicked = pathname === "/activity";
         break;
       case "Profile":
-        setIsClicked(pathname === "/profile");
+        newIsClicked = pathname === "/profile";
         break;
       default:
-        setIsClicked(false);
+        newIsClicked = false;
         break;
+    }
+
+    if (newIsClicked !== isClicked) {
+      setIsClicked(newIsClicked);
     }
   }, [pathname]);
 

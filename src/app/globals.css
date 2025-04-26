@@ -2,6 +2,7 @@
 body {
   max-width: 90%;
   margin: auto;
+  background-color: var(--color-bg-gray);
   margin-top: 50px;
 }
 
@@ -32,6 +33,8 @@ body {
   --color-husk: #ffeccb;
   --color-glacier: #7aa96f;
   --color-algae: #8cffaa;
+  --color-bg-gray: #f3f3f3;
+  --color-time-gray: #f2f2f2;
 
   --gradient-pop: linear-gradient(
     90deg,
@@ -132,7 +135,7 @@ body {
 
 .another-heading6 {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal font-bold text-[14px] leading-[21px];
+  @apply font-normal text-[14px] leading-[21px];
 }
 
 .another-body {

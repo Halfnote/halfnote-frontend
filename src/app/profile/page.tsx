@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
 export default function ProfilePage() {
   return (
-    <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen">
+    <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen bg-white">
       <h1 className="another-heading1 text-center">This is the profile page</h1>
       <p className="text-center another-heading2 mb-12">
         This is the profile page.
@@ -16,7 +16,7 @@ export default function ProfilePage() {
           alt="Electronic Icon"
         />
         <Image
-          className="w-[50%] h-[50%]"
+          className="w-80 h-80"
           priority
           src={Icons.jazz}
           alt="Electronic Icon"
