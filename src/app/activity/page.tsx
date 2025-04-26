@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
 export default function ActivityPage() {
   return (
-    <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen">
+    <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen bg-white">
       <h1 className="another-heading1 text-center">
         This is the activity page
       </h1>
