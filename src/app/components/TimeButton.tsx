@@ -1,9 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useMemo } from "react";
 
 type CycleItem = {
   label: string;
   widthClass: string;
+};
+
+type TimeCycleProps = {
+  time: string;
+  setTime: (value: string) => void;
 };
 
 const timeCycle: CycleItem[] = [
@@ -13,24 +18,27 @@ const timeCycle: CycleItem[] = [
   { label: "this year", widthClass: "w-[134px]" },
 ];
 
-export default function TimeButtonCycle() {
-  const [index, setIndex] = useState<number>(0);
+export default function TimeButtonCycle({ time, setTime }: TimeCycleProps) {
+  const index = useMemo(() => {
+    return timeCycle.findIndex((item) => item.label === time);
+  }, [time]);
 
   const handleClick = () => {
-    setIndex((prev) => (prev + 1) % timeCycle.length);
+    const nextIndex = (index + 1) % timeCycle.length;
+    setTime(timeCycle[nextIndex].label);
   };
 
   return (
     <button
       onClick={handleClick}
       className={`h-[44px] ${timeCycle[index].widthClass} max-w-[166px] min-w-[118px]
-        bg-var(--color-time-gray) text-black border-[1.5px] border-black 
+        bg-[#f2f2f2] text-black border-[1.5px] border-black 
         rounded-full another-heading3 
         flex flex-row items-center justify-center
         px-[19px] py-[6px] cursor-pointer
         `}
     >
-      {timeCycle[index].label}
+      {time}
     </button>
   );
 }

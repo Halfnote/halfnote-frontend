@@ -14,7 +14,7 @@ export default function YearButtonCycle() {
     <button
       onClick={handleClick}
       className={`h-[44px] w-[101px]
-        bg-var(--color-time-gray) text-black border-[1.5px] border-black 
+        bg-[#f2f2f2] text-black border-[1.5px] border-black 
         rounded-full another-heading3 
         flex flex-row items-center justify-center
         px-[19px] py-[6px] cursor-pointer

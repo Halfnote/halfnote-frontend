@@ -3,7 +3,7 @@ body {
   max-width: 90%;
   margin: auto;
   background-color: var(--color-bg-gray);
-  margin-top: 50px;
+  margin-top: 45px;
 }
 
 :root {

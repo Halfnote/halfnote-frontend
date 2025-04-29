@@ -1,0 +1,67 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": "8d1d2c3e-4f2a-46c3-91d3-62f01e7b4b24",
+            "user": {
+                "id": 1,
+                "username": "musiclover42"
+            },
+            "album": {
+                "id": "f1a2c9d8-b7b3-4d0e-9437-3a6b5f6d8fa4",
+                "title": "Midnight Memories",
+                "artist": {
+                    "id": 10,
+                    "name": "One Direction"
+                },
+                "cover_art_url": "https://example.com/images/midnight_memories.jpg"
+            },
+            "rating": 8,
+            "text": "A surprisingly mature album. Loved the songwriting!",
+            "created_at": "2025-04-25T14:32:45.123Z",
+            "updated_at": "2025-04-25T14:32:45.123Z"
+        },
+        {
+            "id": "1a5e8b9f-3d4e-4a1b-8a9e-2d97c6d9f03e",
+            "user": {
+                "id": 2,
+                "username": "vinylqueen"
+            },
+            "album": {
+                "id": "c6b7f8d9-1234-4b7d-9a1e-53c2f5d8a2b7",
+                "title": "Random Access Memories",
+                "artist": {
+                    "id": 11,
+                    "name": "Daft Punk"
+                },
+                "cover_art_url": "https://example.com/images/random_access_memories.jpg"
+            },
+            "rating": 10,
+            "text": "Masterpiece. Every track feels like a live performance.",
+            "created_at": "2025-04-26T09:21:11.450Z",
+            "updated_at": "2025-04-26T09:21:11.450Z"
+        },
+        {
+            "id": "f3c9b8d7-e4a2-41f5-932f-3f29e5b7c9e4",
+            "user": {
+                "id": 3,
+                "username": "audiophile99"
+            },
+            "album": {
+                "id": "e3f2c6b5-5678-4f8d-932e-1a7b5f4c2e9b",
+                "title": "Melodrama",
+                "artist": {
+                    "id": 12,
+                    "name": "Lorde"
+                },
+                "cover_art_url": "https://example.com/images/melodrama.jpg"
+            },
+            "rating": 9,
+            "text": "An emotional rollercoaster. Production is absolutely top-tier.",
+            "created_at": "2025-04-26T20:10:34.987Z",
+            "updated_at": "2025-04-26T20:10:34.987Z"
+        }
+    ]
+}
