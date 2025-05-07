@@ -25,3 +25,9 @@ export type ReviewResponse = {
   previous: string | null;
   results: Review[];
 };
+
+export type TopRated = {
+  coverArtUrl: string;
+  artistName: string;
+  albumName: string;
+};

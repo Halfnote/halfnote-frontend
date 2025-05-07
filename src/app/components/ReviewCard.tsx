@@ -27,7 +27,6 @@ export default function ReviewCard({
 }: ReviewCardProps) {
   return (
     <div className="flex gap-4 border border-[#9A9A9A] rounded-xl p-4 bg-white mb-4">
-      {/* Cover Art */}
       <div className="relative w-35 h-35 mt-3">
         <Image
           src={coverArtUrl}
@@ -57,17 +56,17 @@ export default function ReviewCard({
                 className="rounded-full"
               />
             )}
-            <p className="text-sm text-gray-500">
+            <p className="another-body">
               Review by <span className="font-semibold">{reviewerName}</span>
             </p>
           </div>
-          <p className="text-xs text-gray-400">{createdAt}</p>
+          <p className="another-body">{createdAt}</p>
         </div>
 
         {/* Album Title & Artist */}
         <div className="mt-2">
           <h3 className="text-md font-bold">{reviewTitle}</h3>
-          <p className="text-sm text-gray-500">{artistName}</p>
+          <p className="another-body">{artistName}</p>
         </div>
 
         {/* Review Text */}

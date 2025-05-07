@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 body {
   max-width: 90%;
   margin: auto;
@@ -146,4 +147,9 @@ body {
 .another-label {
   font-family: var(--font-instrument-sans), sans;
   @apply font-normal text-[10px] leading-[21px];
+}
+
+.another-top-rated-album {
+  font-family: var(--font-instrument-sans), sans;
+  @apply font-bold text-[28px] leading-[28px] tracking-normal text-center;
 }
