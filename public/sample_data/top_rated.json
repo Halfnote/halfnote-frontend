@@ -1,0 +1,99 @@
+{
+    "count": 4,
+    "next": "https://api.example.com/albums?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "b3b9a5f7-5b2e-4c7a-b5f3-6d19cf62b237",
+            "title": "Waves of Time",
+            "artist": {
+                "id": 101,
+                "name": "Echoes Eternal"
+            },
+            "release_date": "2023-09-15",
+            "cover_art_url": "https://images.example.com/waves_of_time.jpg",
+            "spotify_url": "https://open.spotify.com/album/1xyzexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/1xyzexample",
+            "genres": [
+                {
+                    "id": 5,
+                    "name": "Ambient"
+                },
+                {
+                    "id": 12,
+                    "name": "Electronic"
+                }
+            ],
+            "average_rating": 8.7,
+            "total_ratings": 245,
+            "created_at": "2025-04-28T14:32:00Z"
+        },
+        {
+            "id": "e74d1a6a-9f8e-4ea5-8e94-4a15b7a4d4af",
+            "title": "Midnight Reveries",
+            "artist": {
+                "id": 102,
+                "name": "Lunar Haze"
+            },
+            "release_date": "2024-06-21",
+            "cover_art_url": "https://images.example.com/midnight_reveries.jpg",
+            "spotify_url": "https://open.spotify.com/album/2abcexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/2abcexample",
+            "genres": [
+                {
+                    "id": 7,
+                    "name": "Indie Rock"
+                }
+            ],
+            "average_rating": 9.2,
+            "total_ratings": 178,
+            "created_at": "2025-04-25T09:10:00Z"
+        },
+        {
+            "id": "7a8f3d21-3f16-4c4d-821e-cff1d71db4e1",
+            "title": "Sunset Boulevard",
+            "artist": {
+                "id": 103,
+                "name": "Neon Echo"
+            },
+            "release_date": "2022-11-05",
+            "cover_art_url": "https://images.example.com/sunset_boulevard.jpg",
+            "spotify_url": "https://open.spotify.com/album/3defexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/3defexample",
+            "genres": [
+                {
+                    "id": 4,
+                    "name": "Synthwave"
+                }
+            ],
+            "average_rating": 7.5,
+            "total_ratings": 320,
+            "created_at": "2025-04-20T17:50:00Z"
+        },
+        {
+            "id": "4bdc1a45-f569-4f95-8a6c-3ecf5d593d2d",
+            "title": "Garden of Sound",
+            "artist": {
+                "id": 104,
+                "name": "Flora Tune"
+            },
+            "release_date": "2025-03-12",
+            "cover_art_url": "https://images.example.com/garden_of_sound.jpg",
+            "spotify_url": "https://open.spotify.com/album/4ghiexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/4ghiexample",
+            "genres": [
+                {
+                    "id": 8,
+                    "name": "Folk"
+                },
+                {
+                    "id": 14,
+                    "name": "Acoustic"
+                }
+            ],
+            "average_rating": 8.1,
+            "total_ratings": 89,
+            "created_at": "2025-04-27T12:15:00Z"
+        }
+    ]
+}
