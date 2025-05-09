@@ -79,8 +79,8 @@ export default function DiscoverPage() {
   });
 
   return (
-    <div className="flex h-screen gap-4 box-border bg-[#f3f3f3] mb-30 ">
-      <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[20%] bg-white h-[916px]">
+    <div className="flex h-screen gap-4 box-border bg-[#f3f3f3] mb-30  ">
+      <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[20%] bg-white h-[916px] ">
         <h3 className="another-heading1">Members</h3>
       </div>
       <div className="flex flex-col flex-grow gap-4">
@@ -93,22 +93,24 @@ export default function DiscoverPage() {
                 <TimeButtonCycle time={reviewTime} setTime={setReviewTime} />
               </div>
             </div>
-            <div className="overflow-y-auto ">
-              {filteredReviews?.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  // coverArtUrl={review.album.cover_art_url}
-                  reviewerName={review.user.username}
-                  rating={review.rating}
-                  reviewTitle={review.album.title}
-                  artistName={review.album.artist.name}
-                  reviewText={review.text}
-                  createdAt={DateTime.fromISO(review.created_at).toFormat(
-                    "dd LLL yyyy"
-                  )}
-                  likes={5}
-                />
-              ))}
+            <div className="overflow-y-auto w-full h-full">
+              <div className="flex flex-col w-full pr-2">
+                {filteredReviews?.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    // coverArtUrl={review.album.cover_art_url}
+                    reviewerName={review.user.username}
+                    rating={review.rating}
+                    reviewTitle={review.album.title}
+                    artistName={review.album.artist.name}
+                    reviewText={review.text}
+                    createdAt={DateTime.fromISO(review.created_at).toFormat(
+                      "dd LLL yyyy"
+                    )}
+                    likes={5}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 

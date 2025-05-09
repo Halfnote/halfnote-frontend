@@ -26,7 +26,7 @@ export default function ReviewCard({
   likes,
 }: ReviewCardProps) {
   return (
-    <div className="flex gap-4 border border-[#9A9A9A] rounded-xl p-4 bg-white mb-4">
+    <div className="flex gap-4 border border-[#9A9A9A] rounded-xl p-4 bg-white mb-4 max-w-full">
       <div className="relative w-35 h-35 mt-3">
         <Image
           src={coverArtUrl}
