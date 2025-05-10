@@ -1,10 +1,7 @@
 @import "tailwindcss";
 
 body {
-  max-width: 90%;
-  margin: auto;
   background-color: var(--color-bg-gray);
-  margin-top: 45px;
 }
 
 :root {

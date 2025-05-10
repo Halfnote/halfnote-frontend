@@ -22,6 +22,11 @@ import nineFiveChip from "@/app/icons/chips/1995.svg";
 import twoThousandFiveChip from "@/app/icons/chips/2005.svg";
 import twoThousandFifteenChip from "@/app/icons/chips/2015.svg";
 import twoThousandTwentyFiveChip from "@/app/icons/chips/2025.svg";
+import firstVinyl from "@/app/icons/vinyls/one.png";
+import secondVinyl from "@/app/icons/vinyls/two.png";
+import thirdVinyl from "@/app/icons/vinyls/three.png";
+import fourthVinyl from "@/app/icons/vinyls/four.png";
+import fifthVinyl from "@/app/icons/vinyls/five.png";
 
 export const Icons = {
   classical: Classical,
@@ -48,4 +53,9 @@ export const Icons = {
   twoThousandFive: twoThousandFiveChip,
   twoThousandFifteen: twoThousandFifteenChip,
   twoThousandTwentyFive: twoThousandTwentyFiveChip,
+  firstVinyl: firstVinyl,
+  secondVinyl: secondVinyl,
+  thirdVinyl: thirdVinyl,
+  fourthVinyl: fourthVinyl,
+  fifthVinyl: fifthVinyl,
 };

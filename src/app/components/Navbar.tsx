@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 export const NavBar = () => {
   const router = useRouter();
   return (
-    <nav className="rounded-full outline-solid outline-2 outline-black flex justify-between items-center p-4 max-w-8xl mx-auto mb-[25px] bg-white">
+    <nav className="mb-[25px] rounded-full outline-solid outline-2 outline-black flex justify-between items-center bg-white p-4">
       <Image
         className="w-[230px] h-[55px] ml-5"
         priority
