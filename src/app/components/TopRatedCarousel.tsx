@@ -47,7 +47,7 @@ export const TopRatedCarousel = ({ items }: ListCarouselProps) => {
                   className="object-cover rounded-md"
                 />
 
-                <div className="w-15 h-15 absolute -top-4 left-[75%] flex items-center justify-center">
+                <div className="w-15 h-15 absolute -top-3 left-[75%] flex items-center justify-center">
                   <RockBadge number={8} />
                 </div>
               </div>
