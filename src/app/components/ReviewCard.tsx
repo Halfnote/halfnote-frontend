@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { JazzBadge, PopBadge, RockBadge } from "../icons/stamps";
 
 type ReviewCardProps = {
-  coverArtUrl?: string;
+  coverArtUrl?: StaticImageData;
   reviewerName: string;
   reviewerAvatarUrl?: string;
   rating: number;
@@ -33,7 +33,6 @@ export default function ReviewCard({
           alt={reviewTitle}
           width={200}
           height={200}
-          fill
           className="object-cover rounded-md"
         />
         {/* Rating badge */}
