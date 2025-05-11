@@ -11,6 +11,10 @@ import { DateTime } from "luxon";
 import { TopRatedCarousel } from "./components/TopRatedCarousel";
 import { MemberCard } from "./components/MemberCard";
 import { div } from "framer-motion/client";
+import Actor from "../../public/sample_images/profilePic.png";
+import Daft from "../../public/sample_images/daft.png";
+import Charlie from "../../public/sample_images/charlie.png";
+import Kid from "../../public/sample_images/kid.png";
 
 export default function DiscoverPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -81,14 +85,40 @@ export default function DiscoverPage() {
   });
 
   return (
-    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3]">
-      <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[275px] bg-white h-[916px]">
+    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen scale-90 items-center justify-center">
+      <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[275px] h-[916px]  bg-white">
         <h3 className="another-heading1">Members</h3>
+        <div className="overflow-y-auto">
+          <MemberCard
+            userName="Odi"
+            numRatings={123}
+            profilePic={Actor}
+            topAlbums={[Daft, Charlie, Kid]}
+          />
+          <MemberCard
+            userName="Anubhav"
+            numRatings={1234}
+            profilePic={Actor}
+            topAlbums={[Daft, Charlie, Kid]}
+          />
+          <MemberCard
+            userName="Connor"
+            numRatings={1502}
+            profilePic={Actor}
+            topAlbums={[Daft, Charlie, Kid]}
+          />
+          <MemberCard
+            userName="Connor"
+            numRatings={1502}
+            profilePic={Actor}
+            topAlbums={[Daft, Daft, Daft]}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex gap-4 ">
           {/*top review*/}
-          <div className="bg-white flex flex-col h-[450px] border-black rounded-xl border-2 p-6 w-[815px]">
+          <div className="bg-white flex flex-col border-black rounded-xl border-2 p-6 w-[815px] h-[450px]">
             <div className="flex flex-row items-center justify-start mb-2">
               <h3 className="another-heading1 mr-2">Top Reviews</h3>
 
@@ -113,7 +143,7 @@ export default function DiscoverPage() {
             </div>
           </div>
 
-          <div className="bg-white flex flex-col rounded-xl p-6 w-[275px] h-[450px] items-center border-black border-2">
+          <div className="bg-white flex flex-col rounded-xl p-6 w-[275px] items-center border-black border-2">
             <div className="flex flex-col items-center mb-2">
               <h3 className="another-heading1">Top Rated</h3>
               <TimeButtonCycle time={topRatedTime} setTime={setTopRatedTime} />
@@ -122,7 +152,7 @@ export default function DiscoverPage() {
           </div>
         </div>
         <div className="flex gap-4 ">
-          <div className="bg-white flex flex-col border-black border-2 rounded-xl p-6 w-[275] h-[450px]">
+          <div className="bg-white flex flex-col border-black border-2 rounded-xl p-6 w-[275px] h-[450px]">
             <div className="flex flex-col b-2 items-center">
               <h3 className="another-heading1">On This Day</h3>
               <span className="flex flex-row ml-10 mr-10 items-center">
@@ -131,13 +161,19 @@ export default function DiscoverPage() {
               </span>
             </div>
           </div>
-          <div className="bg-white flex flex-col border-2 border-black rounded-xl p-6 w-[815px] justify-start h-[450px]">
+          <div className="bg-white flex flex-col border-2 border-black rounded-xl p-6 w-[815px] h-[450px] justify-start ">
             <h3 className="another-heading1">New Releases</h3>
           </div>
         </div>
       </div>
-      <div className="bg-white flex flex-col text-center items-center border-black border-2 rounded-xl p-6 w-[275px] h-[916px]">
+      <div className="bg-white flex flex-col text-center items-center border-black border-2 rounded-xl p-6 h-[916px] w-[275px] ">
         <h3 className="another-heading1">Most Recent Reviews</h3>
+        <MemberCard
+          userName="Connor"
+          numRatings={1502}
+          profilePic={Actor}
+          topAlbums={[Daft, Daft, Daft]}
+        />
       </div>
     </div>
   );
