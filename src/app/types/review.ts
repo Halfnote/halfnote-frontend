@@ -31,3 +31,9 @@ export type TopRated = {
   artistName: string;
   albumName: string;
 };
+
+export type NewReleases = {
+  coverArtUrl: string;
+  artistName: string;
+  albumName: string;
+};

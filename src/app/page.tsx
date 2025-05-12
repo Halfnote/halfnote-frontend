@@ -13,6 +13,7 @@ import Daft from "../../public/sample_images/daft.png";
 import Charlie from "../../public/sample_images/charlie.png";
 import Kid from "../../public/sample_images/kid.png";
 import { RecentReviewCard } from "./components/RecentReviewCard";
+import { NewReleasesCarousel } from "./components/NewReleaseCarousel";
 
 export default function DiscoverPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -159,8 +160,9 @@ export default function DiscoverPage() {
               </span>
             </div>
           </div>
-          <div className="bg-white flex flex-col border-2 border-black rounded-xl p-6 w-[815px] h-[450px] justify-start ">
-            <h3 className="another-heading1">New Releases</h3>
+          <div className="bg-white flex flex-col border-2 border-black rounded-xl p-6 w-[815px] h-auto">
+            <h3 className="another-heading1 mb-4">New Releases</h3>
+            <NewReleasesCarousel items={topRated} />
           </div>
         </div>
       </div>
