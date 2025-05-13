@@ -1,5 +1,5 @@
 {
-    "count": 4,
+    "count": 7,
     "next": "https://api.example.com/albums?page=2",
     "previous": null,
     "results": [
@@ -94,6 +94,73 @@
             "average_rating": 8.1,
             "total_ratings": 89,
             "created_at": "2025-04-27T12:15:00Z"
+        },
+        {
+            "id": "9c51f6e4-7ed8-4c61-bc90-29b9f6e1443e",
+            "title": "Starlight Serenade",
+            "artist": {
+                "id": 105,
+                "name": "Orion Vibes"
+            },
+            "release_date": "2024-12-01",
+            "cover_art_url": "https://images.example.com/starlight_serenade.jpg",
+            "spotify_url": "https://open.spotify.com/album/5starexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/5starexample",
+            "genres": [
+                {
+                    "id": 6,
+                    "name": "Chillout"
+                }
+            ],
+            "average_rating": 8.9,
+            "total_ratings": 112,
+            "created_at": "2025-04-26T16:45:00Z"
+        },
+        {
+            "id": "c1aa2c5f-b88e-49c7-935b-59f38f42a3e9",
+            "title": "Electric Pulse",
+            "artist": {
+                "id": 106,
+                "name": "Voltage Bloom"
+            },
+            "release_date": "2023-01-18",
+            "cover_art_url": "https://images.example.com/electric_pulse.jpg",
+            "spotify_url": "https://open.spotify.com/album/6electroexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/6electroexample",
+            "genres": [
+                {
+                    "id": 2,
+                    "name": "Electronic"
+                },
+                {
+                    "id": 15,
+                    "name": "Dance"
+                }
+            ],
+            "average_rating": 7.8,
+            "total_ratings": 207,
+            "created_at": "2025-04-24T11:30:00Z"
+        },
+        {
+            "id": "f7d842dd-f7e1-4303-9440-e0c305f66e97",
+            "title": "Ocean Echoes",
+            "artist": {
+                "id": 107,
+                "name": "Blue Mirage"
+            },
+            "release_date": "2022-08-09",
+            "cover_art_url": "https://images.example.com/ocean_echoes.jpg",
+            "spotify_url": "https://open.spotify.com/album/7oceanexample",
+            "spotify_embed_url": "https://open.spotify.com/embed/album/7oceanexample",
+            "genres": [
+                {
+                    "id": 10,
+                    "name": "Dream Pop"
+                }
+            ],
+            "average_rating": 9.0,
+            "total_ratings": 134,
+            "created_at": "2025-04-23T13:05:00Z"
         }
     ]
 }
