@@ -150,3 +150,19 @@ body {
   font-family: var(--font-instrument-sans), sans;
   @apply font-bold text-[28px] leading-[28px] tracking-normal text-center;
 }
+
+.custom-bullet {
+  all: unset;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 9999px !important;
+  background-color: rgb(69, 5, 5);
+  border: 2px solid rgb(0, 0, 0) !important;
+  border-radius: 9999px !important;
+  margin: 0 5px;
+  transition: background-color 0.3s ease;
+}
+
+.swiper-pagination-bullet-active.custom-bullet {
+  background-color: black !important;
+}

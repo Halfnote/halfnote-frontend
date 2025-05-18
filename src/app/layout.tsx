@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { NavBar } from "./components/NavBar";
+import { NavBar } from "./components/Navbar";
 import "./globals.css";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 
