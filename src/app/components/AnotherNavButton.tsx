@@ -4,46 +4,38 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 interface AnotherNavButtonsProps {
-  onClick?: () => void | undefined;
-  label: "Discover" | "Activity" | "Profile";
+  label: string;
+  onClick?: () => void;
+  /** new override flag */
+  isSelected?: boolean;
 }
 
 export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
+  const { label, onClick, isSelected: override } = props;
   const pathname = usePathname();
-  const [isClicked, setIsClicked] = useState<boolean>(false);
+  const [byPath, setByPath] = useState(false);
 
   useEffect(() => {
-    let newIsClicked = false;
-    switch (props.label) {
-      case "Discover":
-        newIsClicked = pathname === "/";
-        break;
-      case "Activity":
-        newIsClicked = pathname === "/activity";
-        break;
-      case "Profile":
-        newIsClicked = pathname === "/profile";
-        break;
-      default:
-        newIsClicked = false;
-        break;
-    }
+    let hit = false;
+    if (label === "Discover")  hit = pathname === "/";
+    if (label === "Activity")  hit = pathname === "/activity";
+    if (label === "Profile")   hit = pathname === "/profile";
+    setByPath(hit);
+  }, [pathname, label]);
 
-    if (newIsClicked !== isClicked) {
-      setIsClicked(newIsClicked);
-    }
-  }, [pathname]);
+  // if they've passed in `isSelected`, use that;
+  // otherwise fall back to the path check
+  const active = override ?? byPath;
 
   return (
     <button
-      className={`w-30 another-heading4 font-bold rounded-full border border-black flex items-center justify-center h-10 px-4 hover:cursor-pointer ${
-        isClicked ? "bg-black text-white" : "bg-white text-black"
-      }`}
-      onClick={() => {
-        props.onClick?.();
-      }}
+      onClick={onClick}
+      className={`another-heading4 font-bold rounded-full 
+                 border border-black flex items-center 
+                 justify-center h-10 px-4 hover:cursor-pointer 
+                 ${active ? "bg-black text-white" : "bg-white text-black"}`}
     >
-      {props.label}
+      {label}
     </button>
   );
 };
