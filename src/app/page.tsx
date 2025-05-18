@@ -160,7 +160,7 @@ export default function DiscoverPage() {
               </span>
             </div>
           </div>
-          <div className="bg-white flex flex-col border-2 border-black rounded-xl p-6 w-[815px] h-auto">
+          <div className="bg-white flex flex-col justify-between border-2 border-black rounded-xl p-6 w-[815px] h-[450px]">
             <h3 className="another-heading1 mb-4">New Releases</h3>
             <NewReleasesCarousel items={topRated} />
           </div>
