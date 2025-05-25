@@ -14,6 +14,7 @@ import Charlie from "../../public/sample_images/charlie.png";
 import Kid from "../../public/sample_images/kid.png";
 import { RecentReviewCard } from "./components/RecentReviewCard";
 import { NewReleasesCarousel } from "./components/NewReleaseCarousel";
+import { OnThisDay } from "./components/OnThisDay";
 
 export default function DiscoverPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -23,7 +24,6 @@ export default function DiscoverPage() {
   const getReviews = async (setter: (value: Array<Review>) => void) => {
     try {
       const res = await fetch("/sample_data/reviews.json");
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to fetch concerts");
@@ -34,7 +34,6 @@ export default function DiscoverPage() {
       console.error("Concert fetch error:", err);
     }
   };
-
   const getTopRated = async (setter: (value: Array<TopRated>) => void) => {
     try {
       const res = await fetch("/sample_data/top_rated.json");
@@ -113,7 +112,6 @@ export default function DiscoverPage() {
           />
         </div>
       </div>
-
       <div className="flex flex-col gap-4">
         <div className="flex gap-4 ">
           {/*top review*/}
@@ -127,7 +125,6 @@ export default function DiscoverPage() {
                 <ReviewCard
                   coverArtUrl={Charlie}
                   key={review.id}
-                  // coverArtUrl={review.album.cover_art_url}
                   reviewerName={review.user.username}
                   rating={review.rating}
                   reviewTitle={review.album.title}
@@ -141,7 +138,6 @@ export default function DiscoverPage() {
               ))}
             </div>
           </div>
-
           <div className="bg-white flex flex-col rounded-xl p-6 w-[275px] items-center border-black border-2">
             <div className="flex flex-col items-center mb=2">
               <h3 className="another-heading1">Top Rated</h3>
@@ -150,16 +146,18 @@ export default function DiscoverPage() {
             <TopRatedCarousel items={topRated} />
           </div>
         </div>
-        <div className="flex gap-4 ">
+        <div className="flex gap-4">
           <div className="bg-white flex flex-col border-black border-2 rounded-xl p-6 w-[275px] h-[450px]">
-            <div className="flex flex-col b-2 items-center">
+            <div className="flex flex-col items-center">
               <h3 className="another-heading1">On This Day</h3>
-              <span className="flex flex-row ml-10 mr-10 items-center">
+              <div className="flex flex-row items-center mb-2">
                 <h3 className="another-heading1 mr-2">In</h3>
                 <YearButtonCycle />
-              </span>
+              </div>
+              <OnThisDay artistImage={Actor} artistName="Name" />
             </div>
           </div>
+
           <div className="bg-white flex flex-col justify-between border-2 border-black rounded-xl p-6 w-[815px] h-[450px]">
             <h3 className="another-heading1 mb-4">New Releases</h3>
             <NewReleasesCarousel items={topRated} />
