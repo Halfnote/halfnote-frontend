@@ -11,8 +11,9 @@ import type { Review } from "../types/review";
 import Actor from "../../public/sample_images/profilePic.png";
 import Daft from "../../../public/sample_images/daft.png";
 
-import Charlie from "../../public/sample_images/charlie.png";
-
+//import Charlie from "../../public/sample_images/charlie.png";
+import { RecentReviewCard } from "../components/RecentReviewCard";
+//import Kid from "../../public/sample_images/kid.png";
 
 export default function ActivityPage() {
   // Filter State
@@ -81,16 +82,17 @@ export default function ActivityPage() {
         {/* Scrollable list of cards */}
         <div className="overflow-y-auto max-h-[700px] pr-2">
           {filtered.map((r) => (
-            <ActivityReviewCard
+            <RecentReviewCard
+              key={r.id}
               albumCover={Daft}
-              albumTitle={r.album.title}
-              artistName={r.album.artist.name}
+              albumTitle={"Midnight Memories"}
+              artistName={"One Direction"}
               rating={r.rating}
-              genre="Pop"  // hard‑code for now, replace with r.album.genre later
-              profilePic="/sample_images/profilePic.png" // placeholder
+              genre={"Pop"}
+              hasReview={r.text.length > 0}
+              profilePic={"/sample_images/profilePic.png"}
               displayName={r.user.username}
               userName={`@${r.user.username}`}
-              hasReview={r.text.length > 0}
               time={
                 DateTime.fromISO(r.created_at)
                   .toRelative()!
