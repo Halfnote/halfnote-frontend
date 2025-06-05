@@ -1,6 +1,6 @@
 import React from "react";
 
-export const PopBadge = ({ number }: { number: number }) => {
+export const PopBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -23,7 +23,7 @@ export const PopBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -44,7 +44,7 @@ export const PopBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const ClassicalBadge = ({ number }: { number: number }) => {
+export const ClassicalBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -70,7 +70,7 @@ export const ClassicalBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -83,15 +83,15 @@ export const ClassicalBadge = ({ number }: { number: number }) => {
           y2="48.0538"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFE8F4" />
-          <stop offset="1" stop-color="#FF88CA" />
+          <stop stopColor="#FFE8F4" />
+          <stop offset="1" stopColor="#FF88CA" />
         </linearGradient>
       </defs>
     </svg>
   );
 };
 
-export const CountryBadge = ({ number }: { number: number }) => {
+export const CountryBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -114,7 +114,7 @@ export const CountryBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -127,8 +127,8 @@ export const CountryBadge = ({ number }: { number: number }) => {
           y2="48.5169"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.0361371" stop-color="#FFE6C6" />
-          <stop offset="0.916137" stop-color="#D58F5F" />
+          <stop offset="0.0361371" stopColor="#FFE6C6" />
+          <stop offset="0.916137" stopColor="#D58F5F" />
         </linearGradient>
       </defs>
     </svg>
@@ -158,7 +158,7 @@ export const ElectronicBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -171,8 +171,8 @@ export const ElectronicBadge = ({ number }: { number: number }) => {
           y2="36.4286"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.332359" stop-color="#B2F2FF" />
-          <stop offset="1" stop-color="#86FF8F" />
+          <stop offset="0.332359" stopColor="#B2F2FF" />
+          <stop offset="1" stopColor="#86FF8F" />
         </linearGradient>
       </defs>
     </svg>
@@ -214,7 +214,7 @@ export const FolkBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -227,8 +227,8 @@ export const FolkBadge = ({ number }: { number: number }) => {
           y2="102.934"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.13158" stop-color="#FFECDB" />
-          <stop offset="0.916137" stop-color="#9BDABE" />
+          <stop offset="0.13158" stopColor="#FFECDB" />
+          <stop offset="0.916137" stopColor="#9BDABE" />
         </linearGradient>
       </defs>
     </svg>
@@ -258,7 +258,7 @@ export const FunkBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -271,8 +271,8 @@ export const FunkBadge = ({ number }: { number: number }) => {
           y2="55.7714"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FBD6F2" />
-          <stop offset="1" stop-color="#CC7BF4" />
+          <stop stopColor="#FBD6F2" />
+          <stop offset="1" stopColor="#CC7BF4" />
         </linearGradient>
       </defs>
     </svg>
@@ -302,7 +302,7 @@ export const GospelBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -315,8 +315,8 @@ export const GospelBadge = ({ number }: { number: number }) => {
           y2="56.3348"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#99ECF2" />
-          <stop offset="1" stop-color="#FCFFD0" />
+          <stop stopColor="#99ECF2" />
+          <stop offset="1" stopColor="#FCFFD0" />
         </linearGradient>
       </defs>
     </svg>
@@ -346,7 +346,7 @@ export const HipHopBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -359,8 +359,8 @@ export const HipHopBadge = ({ number }: { number: number }) => {
           y2="55.1175"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.0840252" stop-color="#FFAA6E" />
-          <stop offset="1" stop-color="#FFE070" />
+          <stop offset="0.0840252" stopColor="#FFAA6E" />
+          <stop offset="1" stopColor="#FFE070" />
         </linearGradient>
       </defs>
     </svg>
@@ -390,7 +390,7 @@ export const JazzBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -403,8 +403,8 @@ export const JazzBadge = ({ number }: { number: number }) => {
           y2="54.2388"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#E9F1FF" />
-          <stop offset="1" stop-color="#8EACFF" />
+          <stop stopColor="#E9F1FF" />
+          <stop offset="1" stopColor="#8EACFF" />
         </linearGradient>
       </defs>
     </svg>
@@ -434,7 +434,7 @@ export const LatinBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -447,8 +447,8 @@ export const LatinBadge = ({ number }: { number: number }) => {
           y2="60.9072"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FAAFBE" />
-          <stop offset="1" stop-color="#F3654F" />
+          <stop stopColor="#FAAFBE" />
+          <stop offset="1" stopColor="#F3654F" />
         </linearGradient>
       </defs>
     </svg>
@@ -490,7 +490,7 @@ export const ReggaeBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -503,8 +503,8 @@ export const ReggaeBadge = ({ number }: { number: number }) => {
           y2="74.9802"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FCEE84" />
-          <stop offset="1" stop-color="#92E8A5" />
+          <stop stopColor="#FCEE84" />
+          <stop offset="1" stopColor="#92E8A5" />
         </linearGradient>
       </defs>
     </svg>
@@ -534,7 +534,7 @@ export const RockBadge = ({ number }: { number: number }) => {
         fontSize="24"
         fontWeight="bold"
         fill="black"
-        className="another-heading1"
+        className="another-heading1 text-[42px]"
       >
         {number}
       </text>
@@ -547,8 +547,8 @@ export const RockBadge = ({ number }: { number: number }) => {
           y2="39.5106"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FEDB9A" />
-          <stop offset="1" stop-color="#FF6B57" />
+          <stop stopColor="#FEDB9A" />
+          <stop offset="1" stopColor="#FF6B57" />
         </linearGradient>
       </defs>
     </svg>

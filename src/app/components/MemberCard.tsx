@@ -32,31 +32,31 @@ export const MemberCard = ({
           {numRatings === 0 ? (
             <Image
               src={Icons.firstVinyl}
-              alt="Profile Picture"
+              alt="First vinyl"
               className="aspect-square w-[54px] object-cover rounded-full ring-2"
             />
           ) : numRatings >= 1 && numRatings <= 99 ? (
             <Image
               src={Icons.secondVinyl}
-              alt="Profile Picture"
+              alt="Second vinyl"
               className="aspect-square w-[54px] object-cover rounded-full ring-2"
             />
           ) : numRatings >= 100 && numRatings <= 499 ? (
             <Image
               src={Icons.thirdVinyl}
-              alt="Profile Picture"
+              alt="Third vinyl"
               className="aspect-square w-[54px] object-cover rounded-full ring-2"
             />
           ) : numRatings >= 500 && numRatings <= 1499 ? (
             <Image
               src={Icons.fourthVinyl}
-              alt="Profile Picture"
+              alt="Forth vinyl"
               className="aspect-square w-[54px] object-cover rounded-full ring-2"
             />
           ) : (
             <Image
               src={Icons.fifthVinyl}
-              alt="Profile Picture"
+              alt="Fifth vinyl"
               className="aspect-square w-[54px] object-cover rounded-full ring-2"
             />
           )}

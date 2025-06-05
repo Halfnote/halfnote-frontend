@@ -17,14 +17,14 @@ import { RecentReviewCard } from "../components/RecentReviewCard";
 
 export default function ActivityPage() {
   // Filter State
-  const [filter, setFilter] = useState<"following" | "friends" | "you">("following");
+  const [filter, setFilter] = useState<"following" | "friends" | "you">(
+    "following"
+  );
 
   // Store Fetched Reviews
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  const getActivityReviews = async (
-    setter: (value: Review[]) => void
-  ) => {
+  const getActivityReviews = async (setter: (value: Review[]) => void) => {
     try {
       const res = await fetch("/sample_data/reviews.json");
 
@@ -40,7 +40,7 @@ export default function ActivityPage() {
     }
   };
 
-  // load them on mount 
+  // load them on mount
   useEffect(() => {
     getActivityReviews(setReviews);
   }, []);
@@ -54,12 +54,11 @@ export default function ActivityPage() {
     return true;
   });
   return (
-    <div className="flex justify-center bg-[#f3f3f3] min-h-screen py-10">
-      <div className="bg-white border-2 border-black rounded-[25px] p-6 w-[1770px]">
-
+    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen items-center justify-center mb-10">
+      <div className="bg-white border-2 border-black p-6 rounded-xl w-full">
         {/* Header + Tabs */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="another-heading1">Recent Reviews</h1>
+          <h1 className="another-heading1 text-[42px]">Recent Reviews</h1>
           <div className="flex gap-4">
             <AnotherNavButton
               label="Following"
