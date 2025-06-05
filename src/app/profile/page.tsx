@@ -1,51 +1,24 @@
-"use client";
-import Image from "next/image";
-import { Icons } from "@/app/icons/icons";
-export default function ProfilePage() {
+import { p } from "framer-motion/client";
+import { Suspense } from "react";
+import Banner from "../../../public/sample_images/banner.png";
+import Actor from "../../../public/sample_images/profilePic.png";
+import ProfilePage from "../components/ClientSidePages/ProfilePageClient";
+
+export default function Page() {
   return (
-    <div className="flex justify-center items-center flex-col gap-4 rounded-lg border-black border-2 min-h-screen max-h-screen bg-white">
-      <h1 className="another-heading1 text-center">This is the profile page</h1>
-      <p className="text-center another-heading2 mb-12">
-        This is the profile page.
-      </p>
-      <div className="grid grid-cols-3 gap-4 justify-center content-center">
-        <Image
-          className="w-[50%] h-[50%] justify-center"
-          priority
-          src={Icons.electronic}
-          alt="Electronic Icon"
-        />
-        <Image
-          className="w-80 h-80"
-          priority
-          src={Icons.jazz}
-          alt="Electronic Icon"
-        />
-        <Image
-          className="w-[50%] h-[50%]"
-          priority
-          src={Icons.folk}
-          alt="Electronic Icon"
-        />
-        <Image
-          className="w-[50%] h-[50%]"
-          priority
-          src={Icons.jazz}
-          alt="Electronic Icon"
-        />
-        <Image
-          className="w-[50%] h-[50%]"
-          priority
-          src={Icons.country}
-          alt="Electronic Icon"
-        />
-        <Image
-          className="w-[50%] h-[50%]"
-          priority
-          src={Icons.hiphop}
-          alt="Electronic Icon"
-        />
-      </div>
-    </div>
+    <Suspense fallback={<h1>loading...</h1>}>
+      <ProfilePage
+        pfp={Actor}
+        userName="username"
+        bio="Probably on my way to return some video tapes, listening to killer tunes"
+        name="Patrick Bateman"
+        banner={Banner}
+        location={"New York, NY"}
+        numReviews={2301}
+        numfollowers={526}
+        numfollowing={489}
+        mostReviewedGenres={["Pop", "Classical", "Country"]}
+      />
+    </Suspense>
   );
 }

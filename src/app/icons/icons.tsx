@@ -27,6 +27,10 @@ import secondVinyl from "@/app/icons/vinyls/two.png";
 import thirdVinyl from "@/app/icons/vinyls/three.png";
 import fourthVinyl from "@/app/icons/vinyls/four.png";
 import fifthVinyl from "@/app/icons/vinyls/five.png";
+import Star from "@/app/icons/another_pixel_icons/Star.png";
+import Pin from "@/app/icons/another_pixel_icons/Pin.png";
+import Heart from "@/app/icons/another_pixel_icons/Heart.png";
+import Halfnote from "@/app/icons/another_misc_icons/halfnote.svg";
 
 export const Icons = {
   classical: Classical,
@@ -58,4 +62,8 @@ export const Icons = {
   thirdVinyl: thirdVinyl,
   fourthVinyl: fourthVinyl,
   fifthVinyl: fifthVinyl,
+  pin: Pin,
+  star: Star,
+  heart: Heart,
+  halfnote: Halfnote,
 };

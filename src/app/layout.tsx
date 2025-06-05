@@ -39,7 +39,7 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSans.variable} ${instrumentSerif.variable}`}
     >
-      <body className="w-screen scale-90 absolute position -top-4">
+      <body className="w-screen scale-90 max-h-screen">
         <NavBar />
         <div>{children}</div>
       </body>

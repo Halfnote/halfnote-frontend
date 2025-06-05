@@ -1,11 +1,11 @@
 "use client";
 import Image, { StaticImageData } from "next/image";
-import { JazzBadge, PopBadge, RockBadge } from "../icons/stamps";
-
+import { RockBadge } from "../icons/stamps";
+import { Icons } from "../icons/icons";
 type ReviewCardProps = {
-  coverArtUrl?: StaticImageData;
+  coverArtUrl: StaticImageData;
   reviewerName: string;
-  reviewerAvatarUrl?: string;
+  reviewerAvatarUrl: StaticImageData;
   rating: number;
   reviewTitle: string;
   artistName: string;
@@ -26,60 +26,56 @@ export default function ReviewCard({
   likes,
 }: ReviewCardProps) {
   return (
-    <div className="flex gap-4 border border-[#9A9A9A] rounded-xl p-4 bg-white mb-4">
-      <div className="relative w-35 h-35 mt-3">
+    <div className="relative flex p-4 border border-gray-300 rounded-xl shadow-lg bg-white gap-4 max-w-[900px] h-60 mb-5">
+      {/* Album Cover */}
+      <div className="relative flex-shrink-0 h-full aspect-square border-[1px] border-black">
         <Image
           src={coverArtUrl}
-          alt={reviewTitle}
-          width={200}
-          height={200}
-          className="object-cover rounded-md"
+          alt={`${reviewTitle} cover`}
+          fill
+          className="object-cover"
         />
-        {/* Rating badge */}
-        <div className="w-15 h-15 absolute -top-4 left-[75%] flex items-center justify-center">
-          <RockBadge number={rating} />
-        </div>
       </div>
 
-      {/* Review Content */}
-      <div className="flex flex-col flex-grow justify-between ml-5">
-        {/* Top Row */}
-        <div className="flex justify-between items-center">
+      {/* Right: Content */}
+      <div className="flex flex-col justify-between flex-grow relative mt-2">
+        {/* Rating Badge */}
+        <div className="w-[75px] absolute flex right-0 -top-4">
+          <RockBadge number={rating} />
+        </div>
+
+        {/* Title & Artist */}
+        <div>
+          <h2 style={{ fontWeight: "bold" }} className="another-heading3">
+            {reviewTitle}
+          </h2>
+          <p className="text-md text-gray-800">{artistName}</p>
+          <p className="another-heading5 mt-2 line-clamp-5">{reviewText}</p>
+        </div>
+
+        <div className="flex flex-row gap-2">
           <div className="flex items-center gap-2">
-            {reviewerAvatarUrl && (
-              <Image
-                src={reviewerAvatarUrl}
-                alt={reviewerName}
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-            )}
-            <p className="another-body">
-              Review by <span className="font-semibold">{reviewerName}</span>
+            <Image
+              src={reviewerAvatarUrl}
+              alt="Profile Picture"
+              className="aspect-square w-[40px] object-cover rounded-full ring-2 border-black border-[1px]"
+            />
+            <p style={{ fontWeight: "bold" }} className="another-heading5">
+              {reviewerName}
             </p>
+            <p className="another-heading5 text-gray-600">{createdAt}</p>
           </div>
-          <p className="another-body">{createdAt}</p>
-        </div>
 
-        {/* Album Title & Artist */}
-        <div className="mt-2">
-          <h3 className="text-md font-bold">{reviewTitle}</h3>
-          <p className="another-body">{artistName}</p>
-        </div>
-
-        {/* Review Text */}
-        <p className="text-sm text-gray-700 mt-2 line-clamp-2">{reviewText}</p>
-
-        {/* Bottom Row */}
-        <div className="flex justify-between items-center mt-3">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span>♡ Like review</span>
-            <span className="text-gray-400">{likes} likes</span>
+          <div className="mt-1 flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7">
+            <Image
+              src={Icons.heart}
+              alt="Favorite Icon"
+              width={12}
+              height={12}
+              className="object-contain"
+            />
+            <span className="text-[13px] font-medium">{likes}</span>
           </div>
-          <button className="border rounded-full px-4 py-1 text-sm hover:bg-gray-100 transition">
-            Full review
-          </button>
         </div>
       </div>
     </div>
