@@ -1,12 +1,23 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { AnotherNavButton } from "./AnotherNavButton";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
+import { verifySession } from "../actions/dal";
 
 export const NavBar = () => {
+  const [username, setUsername] = useState<string>("");
+  useEffect(() => {
+    const fetchSession = async () => {
+      const session = await verifySession();
+      if (session) {
+        setUsername(session.username ?? "");
+      }
+    };
+    fetchSession();
+  }, []);
   const router = useRouter();
   return (
     <nav className="rounded-full outline-solid outline-2 outline-black flex justify-between items-center bg-white p-4 mb-[25px]">
@@ -20,7 +31,7 @@ export const NavBar = () => {
         <li>
           <AnotherNavButton
             onClick={() => {
-              router.push("/");
+              router.push("/discovery");
             }}
             label="Discover"
           />
@@ -37,7 +48,9 @@ export const NavBar = () => {
           <AnotherNavButton
             label="Profile"
             onClick={() => {
-              router.push("/profile");
+              if (username) {
+                router.push(`/profile/${username}`);
+              }
             }}
           />
         </li>

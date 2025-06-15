@@ -8,18 +8,20 @@ interface AnotherNavButtonsProps {
   onClick?: () => void;
   /** new override flag */
   isSelected?: boolean;
+  /** disable the button */
+  disabled?: boolean;
 }
 
 export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
-  const { label, onClick, isSelected: override } = props;
+  const { label, onClick, isSelected: override, disabled } = props;
   const pathname = usePathname();
   const [byPath, setByPath] = useState(false);
 
   useEffect(() => {
     let hit = false;
-    if (label === "Discover")  hit = pathname === "/";
-    if (label === "Activity")  hit = pathname === "/activity";
-    if (label === "Profile")   hit = pathname === "/profile";
+    if (label === "Discover") hit = pathname === "/discovery";
+    if (label === "Activity") hit = pathname === "/activity";
+    if (label === "Profile") hit = pathname.startsWith("/profile/");
     setByPath(hit);
   }, [pathname, label]);
 
@@ -29,11 +31,13 @@ export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
 
   return (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={`another-heading4 font-bold rounded-full 
                  border border-black flex items-center 
                  justify-center h-10 px-4 hover:cursor-pointer 
-                 ${active ? "bg-black text-white" : "bg-white text-black"}`}
+                 ${active ? "bg-black text-white" : "bg-white text-black"} 
+                 ${disabled ? "opacity-50 cursor-pointer" : ""}`}
     >
       {label}
     </button>

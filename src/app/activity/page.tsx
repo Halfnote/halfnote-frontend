@@ -7,7 +7,7 @@ import { Icons } from "@/app/icons/icons";
 import ReviewCard from "../components/ReviewCard";
 import { AnotherNavButton } from "../components/AnotherNavButton";
 import { ActivityReviewCard } from "../components/ActivityReviewCard";
-import type { Review } from "../types/review";
+import { Review } from "../types/types";
 import Actor from "../../public/sample_images/profilePic.png";
 import Daft from "../../../public/sample_images/daft.png";
 

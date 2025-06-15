@@ -2,7 +2,6 @@
 import { useState, use } from "react";
 import TimeButtonCycle from "../TimeButton";
 import YearButtonCycle from "../YearButton";
-import { Review, TopRated } from "../../types/review";
 import { useEffect } from "react";
 import ReviewCard from "../ReviewCard";
 import { DateTime } from "luxon";
@@ -15,72 +14,19 @@ import Kid from "../../../../public/sample_images/kid.png";
 import { RecentReview } from "../RecentReview";
 import { NewReleasesCarousel } from "../NewReleaseCarousel";
 import { OnThisDay } from "../OnThisDay";
-export type UserReview = {
-  id: number;
-  username: string;
-  rating: number;
-  content: string;
-  created_at: string;
-};
-
-export type UserReviewResponse = UserReview[];
+import { User, Review } from "@/app/types/types";
 
 interface DiscoverPageProps {
-  userReviews: Promise<UserReviewResponse>;
+  user: Promise<User>;
 }
 
-export default function DiscoverPage({ userReviews }: DiscoverPageProps) {
+export default function DiscoverPage({ user }: DiscoverPageProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [topRated, setTopRated] = useState<TopRated[]>([]);
+  const [topRated, setTopRated] = useState<any[]>([]);
   const [reviewTime, setReviewTime] = useState<string>("today");
   const [topRatedTime, setTopRatedTime] = useState<string>("today");
 
   // FINALLY GETTING DATA streamed from server
-  console.log(use(userReviews));
-
-  const getReviews = async (setter: (value: Array<Review>) => void) => {
-    try {
-      const res = await fetch("/sample_data/reviews.json");
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to fetch concerts");
-      }
-      const data = await res.json();
-      setter(data["results"]);
-    } catch (err) {
-      console.error("Concert fetch error:", err);
-    }
-  };
-  const getTopRated = async (setter: (value: Array<TopRated>) => void) => {
-    try {
-      const res = await fetch("/sample_data/top_rated.json");
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to fetch concerts");
-      }
-
-      const data = await res.json();
-      const result: any[] = data["results"];
-      const topRatedResults = result.map((item) => ({
-        coverArtUrl: item.cover_art_url,
-        artistName: item.artist.name,
-        albumName: item.title,
-      }));
-      setter(topRatedResults);
-    } catch (err) {
-      console.error("Concert fetch error:", err);
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await getReviews(setReviews);
-      await getTopRated(setTopRated);
-    };
-    fetchData();
-  }, []);
-
   const filteredReviews = reviews.filter((review) => {
     const created_at = DateTime.fromISO(review.created_at);
     const now = DateTime.now();
@@ -96,6 +42,8 @@ export default function DiscoverPage({ userReviews }: DiscoverPageProps) {
     }
   });
 
+  const userData = use(user);
+  console.log(userData);
   return (
     <div className="static origin-top flex flex-row gap-4 box-border bg-[#f3f3f3] items-center justify-center w-full scale-90">
       <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[275px] h-[916px] bg-white">

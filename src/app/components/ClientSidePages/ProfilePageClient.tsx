@@ -6,40 +6,54 @@ import { div } from "framer-motion/client";
 import { AlbumCard } from "../AlbumCard";
 import Daft from "../../../../public/sample_images/daft.png";
 import Charlie from "../../../../public/sample_images/charlie.png";
+import Black from "../../../../public/sample_images/black.jpeg";
 import Kid from "../../../../public/sample_images/kid.png";
+import { User, Review } from "@/app/types/types";
+import { use, useEffect, useState } from "react";
+import { getVinylIcon } from "@/app/utils/calculations";
 
 interface ProfilePageProps {
-  userName: string;
-  name: string;
-  bio: string;
-  userMetrics?: any;
-  banner: StaticImageData;
-  location: string;
-  pfp: StaticImageData;
-  numfollowers: number;
-  numfollowing: number;
-  numReviews: number;
-  mostReviewedGenres: string[];
+  user: Promise<User>;
 }
-export default function ProfilePage({
-  userName,
-  name,
-  bio,
-  userMetrics,
-  banner,
-  pfp,
-  location,
-  numfollowers,
-  numfollowing,
-  numReviews,
-  mostReviewedGenres,
-}: ProfilePageProps) {
+export default function ProfilePage({ user }: ProfilePageProps) {
+  const userData = use(user);
+  const [id, setId] = useState<number>(userData.id);
+  const [username, setUsername] = useState<string>(userData.username);
+  const [email, setEmail] = useState<string | undefined>(userData.email);
+  const [name, setName] = useState<string | undefined>(userData.name);
+  const [displayName, setDisplayName] = useState<string>(userData.display_name);
+  const [bio, setBio] = useState<string | undefined>(userData.bio);
+  const [location, setLocation] = useState<string | undefined>(
+    userData.location
+  );
+  const [avatar, setAvatar] = useState<string | undefined>(userData.avatar);
+  const [followerCount, setFollowerCount] = useState<number>(
+    userData.follower_count
+  );
+  const [followingCount, setFollowingCount] = useState<number>(
+    userData.following_count
+  );
+  const [reviewCount, setReviewCount] = useState<number | undefined>(
+    userData.review_count
+  );
+  const [pinnedReviews, setPinnedReviews] = useState<Review[] | undefined>(
+    userData.pinned_reviews
+  );
+  const [isFollowing, setIsFollowing] = useState<boolean | undefined>(
+    userData.is_following
+  );
+  const [favoriteGenres, setFavoriteGenres] = useState<
+    Array<{ id: number; name: string }> | undefined
+  >(userData.favorite_genres);
+
+  useEffect(() => {}, [pinnedReviews]);
+
   return (
     <div className="flex flex-col border-black border-2 bg-white w-full rounded-xl overflow-hidden">
       {/* Banner */}
       <div className="w-full h-60 relative z-0">
         <Image
-          src={banner}
+          src={Black}
           alt="banner-image"
           className="w-full h-full object-fit"
         />
@@ -52,9 +66,12 @@ export default function ProfilePage({
           {/* Profile picture pulled up and layered */}
           <div className="w-45 h-45  rounded-full overflow-hidden -mt-35 z-10">
             <Image
-              src={pfp}
+              src={avatar || "/default-avatar.png"}
               alt="profile"
               width={144}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/default-avatar.png";
+              }}
               height={144}
               className="object-none w-full h-full"
             />
@@ -62,8 +79,8 @@ export default function ProfilePage({
 
           <div className="flex flex-col items-center text-center mt-4 mb-10">
             <h1 className="another-heading1 text-[42px] -mb-2">{name}</h1>
-            <p className="another-heading5 mb-3">@{userName}</p>
-            <p className="another-heading5  text-center mb-5 w-70">{bio}</p>
+            <p className="another-heading5 mb-3">@{displayName}</p>
+            <p className="another-heading5  text-left mb-5 w-70">{bio}</p>
             <p className="another-heading5">📍{location}</p>
           </div>
 
@@ -71,22 +88,22 @@ export default function ProfilePage({
           <div className="flex flex-row gap-3 mb-3">
             <div className="w-30 h-35 rounded-md border-1 border-black flex-col flex justify-center items-center text-center">
               <Image
-                src={Icons.fifthVinyl}
+                src={getVinylIcon(reviewCount)}
                 alt="Fifth vinyl"
                 className="aspect-square w-[54px] object-cover rounded-full ring-2"
               />
               <div>
-                <h1 className="another-heading4">{numReviews}</h1>
+                <h1 className="another-heading4">{reviewCount}</h1>
                 <h3 className="another-heading5">Reviews</h3>
               </div>
             </div>
             <div className="w-30 h-35 rounded-md border-1 border-black flex-col flex justify-center items-center text-center">
               <div>
-                <h1 className="another-heading4">{numfollowers}</h1>
+                <h1 className="another-heading4">{followerCount}</h1>
                 <h3 className="another-heading5">Followers</h3>
               </div>
               <div>
-                <h1 className="another-heading4">{numfollowing}</h1>
+                <h1 className="another-heading4">{followingCount}</h1>
                 <h3 className="another-heading5">Followers</h3>
               </div>
             </div>
@@ -94,9 +111,9 @@ export default function ProfilePage({
           {/* Most reviewed genres */}
           <div className="w-63 h-max rounded-md border-1 border-black flex-col flex items-center text-center">
             <h1 className="another-heading2 mt-3 mb-2">Most Reviewed Genres</h1>
-            {mostReviewedGenres.map((genre) => (
-              <div className="mb-3" key={genre}>
-                <PopBadge number={genre} key={genre} />
+            {favoriteGenres?.map((genre) => (
+              <div className="mb-3" key={id}>
+                <PopBadge number={genre.name} key={genre.id} />
               </div>
             ))}
           </div>
