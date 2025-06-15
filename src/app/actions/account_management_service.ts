@@ -6,33 +6,31 @@ import { NextRequest, NextResponse } from "next/server";
 
 const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
 const secretKey = process.env.SESSION_SECRET!;
-const encodedKey = Buffer.from(secretKey, "base64");
+// export async function decrypt(session: string | undefined = "") {
+//   if (!session) {
+//     throw new Error("No session token provided");
+//   }
 
-export async function decrypt(session: string | undefined = "") {
-  if (!session) {
-    throw new Error("No session token provided");
-  }
+//   try {
+//     // Add more detailed logging for debugging
+//     console.log(
+//       "Attempting to verify token with secret length:",
+//       secretKey.length
+//     );
 
-  try {
-    // Add more detailed logging for debugging
-    console.log(
-      "Attempting to verify token with secret length:",
-      secretKey.length
-    );
-
-    const { payload } = await jwtVerify(
-      session,
-      new TextEncoder().encode(secretKey),
-      {
-        algorithms: ["HS256"],
-      }
-    );
-    return payload;
-  } catch (error) {
-    console.error("Token verification failed:", error);
-    throw error; // Throw the original error for better debugging
-  }
-}
+//     const { payload } = await jwtVerify(
+//       session,
+//       new TextEncoder().encode(secretKey),
+//       {
+//         algorithms: ["HS256"],
+//       }
+//     );
+//     return payload;
+//   } catch (error) {
+//     console.error("Token verification failed:", error);
+//     throw error; // Throw the original error for better debugging
+//   }
+// }
 
 export async function createSession(
   access_token: string,
