@@ -11,12 +11,17 @@ import Kid from "../../../../public/sample_images/kid.png";
 import { User, Review } from "@/app/types/types";
 import { use, useEffect, useState } from "react";
 import { getVinylIcon } from "@/app/utils/calculations";
+import ReviewCard from "../ReviewCard";
 
 interface ProfilePageProps {
   user: Promise<User>;
+  reviews: Promise<Review[]>;
 }
-export default function ProfilePage({ user }: ProfilePageProps) {
+export default function ProfilePage({ user, reviews }: ProfilePageProps) {
   const userData = use(user);
+  const reviewData = use(reviews);
+  console.log(userData);
+  console.log(reviewData);
   const [id, setId] = useState<number>(userData.id);
   const [username, setUsername] = useState<string>(userData.username);
   const [email, setEmail] = useState<string | undefined>(userData.email);
@@ -36,20 +41,17 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   const [reviewCount, setReviewCount] = useState<number | undefined>(
     userData.review_count
   );
-  const [pinnedReviews, setPinnedReviews] = useState<Review[] | undefined>(
-    userData.pinned_reviews
-  );
   const [isFollowing, setIsFollowing] = useState<boolean | undefined>(
     userData.is_following
   );
   const [favoriteGenres, setFavoriteGenres] = useState<
     Array<{ id: number; name: string }> | undefined
   >(userData.favorite_genres);
+  const [userReviews, setReviews] = useState<Review[]>(reviewData);
 
-  useEffect(() => {}, [pinnedReviews]);
-
+  const pinnedReviews = userReviews.filter((filter) => filter.is_pinned);
   return (
-    <div className="flex flex-col border-black border-2 bg-white w-full rounded-xl overflow-hidden">
+    <div className="flex flex-col border-black border-2 bg-white w-full rounded-xl overflow-hidden pb-10">
       {/* Banner */}
       <div className="w-full h-60 relative z-0">
         <Image
@@ -60,9 +62,9 @@ export default function ProfilePage({ user }: ProfilePageProps) {
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-7 flex-grow relative">
+      <div className="grid grid-cols-8 flex-grow relative">
         {/* First col: bio stuff */}
-        <div className="col-span-2 flex flex-col items-center">
+        <div className="col-span-2 flex flex-col items-center px-50">
           {/* Profile picture pulled up and layered */}
           <div className="w-45 h-45  rounded-full overflow-hidden -mt-35 z-10">
             <Image
@@ -80,7 +82,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           <div className="flex flex-col items-center text-center mt-4 mb-10">
             <h1 className="another-heading1 text-[42px] -mb-2">{name}</h1>
             <p className="another-heading5 mb-3">@{displayName}</p>
-            <p className="another-heading5  text-left mb-5 w-70">{bio}</p>
+            <p className="another-heading5 text-left mb-5 w-70">{bio}</p>
             <p className="another-heading5">📍{location}</p>
           </div>
 
@@ -109,7 +111,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
             </div>
           </div>
           {/* Most reviewed genres */}
-          <div className="w-63 h-max rounded-md border-1 border-black flex-col flex items-center text-center">
+          <div className="w-63 h-100 rounded-md border-1 border-black flex-col flex items-center text-center">
             <h1 className="another-heading2 mt-3 mb-2">Most Reviewed Genres</h1>
             {favoriteGenres?.map((genre) => (
               <div className="mb-3" key={id}>
@@ -120,7 +122,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
         </div>
 
         {/* Second col: the rest */}
-        <div className="col-span-5 50 mt-3">
+        <div className="col-span-6 50 mt-3 px-10">
           <div className="mb-5">
             <div className="flex items-center gap-3 mb-2">
               <Image
@@ -162,21 +164,14 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               <h1 className="another-heading1 text-[42px]">Pinned Reviews</h1>
             </div>
             <div className="flex flex-row gap-10">
-              <AlbumCard
-                albumCover={Daft}
-                albumName="Homework"
-                artistName="Daft Punk"
-              />
-              <AlbumCard
-                albumCover={Kid}
-                albumName="Kid A"
-                artistName="Radiohead"
-              />
-              <AlbumCard
-                albumCover={Charlie}
-                albumName="how i'm feeling now"
-                artistName="Charli xcx"
-              />
+              {pinnedReviews?.map((review) => (
+                <ReviewCard
+                  key={review.id}
+                  review={review}
+                  setReviews={setReviews}
+                  avatar={userData.avatar || "/default-avatar.png"}
+                />
+              ))}
             </div>
           </div>
         </div>

@@ -31,6 +31,8 @@ import Star from "@/app/icons/another_pixel_icons/Star.png";
 import Pin from "@/app/icons/another_pixel_icons/Pin.png";
 import Heart from "@/app/icons/another_pixel_icons/Heart.png";
 import Halfnote from "@/app/icons/another_misc_icons/halfnote.svg";
+import likedHeart from "@/app/icons/another_pixel_icons/liked_heart.png";
+import unlikedHeart from "@/app/icons/another_pixel_icons/unliked_heart.png";
 
 export const Icons = {
   classical: Classical,
@@ -66,4 +68,6 @@ export const Icons = {
   star: Star,
   heart: Heart,
   halfnote: Halfnote,
+  likedHeart: likedHeart,
+  unlikedHeart: unlikedHeart,
 };

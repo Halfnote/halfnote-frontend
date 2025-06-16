@@ -1,3 +1,5 @@
+"use server";
+import { verifySession } from "./dal";
 const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
 
 export const CreateReview = async (
@@ -22,20 +24,31 @@ export const CreateReview = async (
     });
 };
 
-export const getUserReview = async (username: string) => {
-  const response = await fetch(
-    `${BASE_URL}/api/accounts/users/${username}/reviews/`,
-    {
-      cache: "force-cache",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch reviews for ${username}`);
+export const likeReview = async (reviewId: number) => {
+  console.log(BASE_URL);
+  const session = await verifySession();
+  if (!session?.access_token) {
+    throw new Error("No valid session");
   }
-  return await response.json();
+  try {
+    const response = await fetch(
+      `${BASE_URL}/music/reviews/${reviewId}/like/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        credentials: "include",
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Could not like review");
+    }
+    return await response.json();
+  } catch (error: any) {
+    throw new Error(error.response?.data?.error || "Failed to like review");
+  }
 };

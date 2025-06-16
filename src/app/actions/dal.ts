@@ -42,13 +42,13 @@ export const getUser = cache(async () => {
   try {
     console.log("access in getUser: ", session.access_token);
     const response = await fetch(`${BASE_URL}/accounts/profile/`, {
-      method: "GET", // Changed to GET since we're fetching data
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${session.access_token}`,
       },
       credentials: "include",
-      cache: "force-cache",
+      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
