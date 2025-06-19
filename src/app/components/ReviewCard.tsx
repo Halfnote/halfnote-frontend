@@ -95,7 +95,7 @@ export default function ReviewCard({
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
             <Image
-              src={avatar}
+              src={avatar || "/default-avatar.png"}
               alt="Profile Picture"
               width={40}
               height={40}

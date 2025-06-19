@@ -32,7 +32,7 @@ export const AlbumDetails = async (discogsID: string) => {
     });
 };
 
-export const getUserReviews = cache(async (username: string) => {
+export const getUserReviews = async (username: string) => {
   console.log("called with, ", username);
   const session = await verifySession();
   try {
@@ -45,7 +45,6 @@ export const getUserReviews = cache(async (username: string) => {
           "Authorization": `Bearer ${session.access_token}`,
         },
         credentials: "include",
-        next: { revalidate: 3600 },
       }
     );
 
@@ -58,4 +57,4 @@ export const getUserReviews = cache(async (username: string) => {
     console.error("Profile fetch failed:", error);
     throw new Error(error.message || "Failed to get profile");
   }
-});
+};

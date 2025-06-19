@@ -33,7 +33,7 @@ export const verifySession = cache(async () => {
   }
 });
 
-export const getUser = cache(async () => {
+export const getUser = async () => {
   const session = await verifySession();
   if (!session?.access_token) {
     throw new Error("No valid session");
@@ -61,4 +61,4 @@ export const getUser = cache(async () => {
     console.error("Profile fetch failed:", error);
     throw new Error(error.message || "Failed to get profile");
   }
-});
+};

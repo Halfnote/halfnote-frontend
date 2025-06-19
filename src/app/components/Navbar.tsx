@@ -1,24 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { AnotherNavButton } from "./AnotherNavButton";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
-import { verifySession } from "../actions/dal";
+import { useUser } from "@/app/hooks";
 
 export const NavBar = () => {
-  const [username, setUsername] = useState<string>("");
-  useEffect(() => {
-    const fetchSession = async () => {
-      const session = await verifySession();
-      if (session) {
-        setUsername(session.username ?? "");
-      }
-    };
-    fetchSession();
-  }, []);
   const router = useRouter();
+  const { data: userData } = useUser();
+
   return (
     <nav className="rounded-full outline-solid outline-2 outline-black flex justify-between items-center bg-white p-4 mb-[25px]">
       <Image
@@ -48,8 +41,8 @@ export const NavBar = () => {
           <AnotherNavButton
             label="Profile"
             onClick={() => {
-              if (username) {
-                router.push(`/profile/${username}`);
+              if (userData?.username) {
+                router.push(`/profile/${userData.username}`);
               }
             }}
           />
@@ -59,13 +52,7 @@ export const NavBar = () => {
         action="search"
         className="flex flex-row justify-between border bg-[var(--color-bg-gray)] border-black rounded-full p-3 mr-5 w-60 focus:outline-none"
       >
-        <Image
-          className=""
-          src={Icons.search}
-          alt="Search Icon"
-          width={24}
-          height={24}
-        />
+        <Image src={Icons.search} alt="Search Icon" width={24} height={24} />
         <input
           type="text"
           placeholder="Search"

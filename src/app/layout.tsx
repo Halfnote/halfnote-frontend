@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { NavBar } from "./components/Navbar";
 import "./globals.css";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import { QueryClient } from "@tanstack/react-query";
+import ReactQueryProvider from "./providers/QueryProvider";
+const queryClient = new QueryClient();
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -39,10 +42,12 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSans.variable} ${instrumentSerif.variable}`}
     >
-      <body className="w-screen scale-90 max-h-screen">
-        <NavBar />
-        <div>{children}</div>
-      </body>
+      <ReactQueryProvider>
+        <body className="w-screen scale-90 max-h-screen">
+          <NavBar />
+          <div>{children}</div>
+        </body>
+      </ReactQueryProvider>
     </html>
   );
 }
