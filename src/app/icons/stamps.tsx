@@ -135,7 +135,7 @@ export const CountryBadge = ({ number }: { number: number | string }) => {
   );
 };
 
-export const ElectronicBadge = ({ number }: { number: number }) => {
+export const ElectronicBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -179,7 +179,7 @@ export const ElectronicBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const FolkBadge = ({ number }: { number: number }) => {
+export const FolkBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -235,7 +235,7 @@ export const FolkBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const FunkBadge = ({ number }: { number: number }) => {
+export const FunkBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -279,7 +279,7 @@ export const FunkBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const GospelBadge = ({ number }: { number: number }) => {
+export const GospelBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="110"
@@ -323,7 +323,7 @@ export const GospelBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const HipHopBadge = ({ number }: { number: number }) => {
+export const HipHopBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -367,7 +367,7 @@ export const HipHopBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const JazzBadge = ({ number }: { number: number }) => {
+export const JazzBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="110"
@@ -411,7 +411,7 @@ export const JazzBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const LatinBadge = ({ number }: { number: number }) => {
+export const LatinBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"
@@ -455,7 +455,7 @@ export const LatinBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const ReggaeBadge = ({ number }: { number: number }) => {
+export const ReggaeBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="110"
@@ -511,7 +511,7 @@ export const ReggaeBadge = ({ number }: { number: number }) => {
   );
 };
 
-export const RockBadge = ({ number }: { number: number }) => {
+export const RockBadge = ({ number }: { number: number | string }) => {
   return (
     <svg
       width="100"

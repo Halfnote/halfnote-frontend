@@ -4,9 +4,10 @@ import { getUserReviews } from "@/app/actions/music_and_reviews_service";
 //   import { getUserPinnedReviews } from "@/app/actions/music_and_reviews_service";
 import { likeReview } from "@/app/actions/reviews_service";
 import { useQueryClient } from "@tanstack/react-query";
+import { User } from "../types/types";
 
 export const useUser = () =>
-  useQuery({
+  useQuery<User, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(),
     staleTime: 1000 * 60 * 5,

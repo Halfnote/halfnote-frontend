@@ -7,12 +7,20 @@ export interface User {
   bio?: string;
   location?: string;
   avatar?: string;
+  favorite_genres?: Genre[];
+  most_reviewed_genres?: Genre[];
   follower_count: number;
   following_count: number;
   review_count?: number;
   pinned_reviews?: Review[];
   is_following?: boolean;
-  favorite_genres?: Array<{ id: number; name: string }>;
+  is_staff?: boolean;
+}
+
+export interface Genre {
+  id: number;
+  name: string;
+  count?: number; // only present in `most_reviewed_genres`
 }
 
 export interface Album {
@@ -29,6 +37,8 @@ export interface Album {
 export interface Review {
   id: number;
   username: string;
+  user_avatar: string;
+  user_is_staff: boolean;
   rating: number;
   content: string;
   created_at: string;

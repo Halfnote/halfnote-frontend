@@ -2,7 +2,12 @@
 import { use, useEffect } from "react";
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
-import { PopBadge } from "@/app/icons/stamps";
+import {
+  ClassicalBadge,
+  CountryBadge,
+  PopBadge,
+  RockBadge,
+} from "@/app/icons/stamps";
 import { AlbumCard } from "@/app/components/AlbumCard";
 import Daft from "../../../../public/sample_images/daft.png";
 import Charlie from "../../../../public/sample_images/charlie.png";
@@ -13,6 +18,7 @@ import ReviewCard from "@/app/components/ReviewCard";
 import { useUser } from "@/app/hooks";
 import { useUserReviews } from "@/app/hooks";
 import { Review } from "@/app/types/types";
+import { GenreBadge } from "@/app/utils/calculations";
 
 export default function ProfilePage({
   params,
@@ -101,9 +107,9 @@ export default function ProfilePage({
           {/* Most reviewed genres */}
           <div className="w-63 h-100 rounded-md border-1 border-black flex-col flex items-center text-center">
             <h1 className="another-heading2 mt-3 mb-2">Most Reviewed Genres</h1>
-            {userData.favorite_genres?.map((genre: any) => (
+            {userData.most_reviewed_genres?.map((genre: any) => (
               <div className="mb-3" key={genre.id}>
-                <PopBadge number={genre.name} />
+                <GenreBadge genre={genre.name} number={genre.name} />
               </div>
             ))}
           </div>
