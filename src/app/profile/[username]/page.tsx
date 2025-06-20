@@ -17,8 +17,8 @@ import { getVinylIcon } from "@/app/utils/calculations";
 import ReviewCard from "@/app/components/ReviewCard";
 import { useUser } from "@/app/hooks";
 import { useUserReviews } from "@/app/hooks";
-import { Review } from "@/app/types/types";
-import { GenreBadge } from "@/app/utils/calculations";
+import { Genre, Review } from "@/app/types/types";
+import { generateBadge } from "@/app/utils/calculations";
 
 export default function ProfilePage({
   params,
@@ -107,9 +107,14 @@ export default function ProfilePage({
           {/* Most reviewed genres */}
           <div className="w-63 h-100 rounded-md border-1 border-black flex-col flex items-center text-center">
             <h1 className="another-heading2 mt-3 mb-2">Most Reviewed Genres</h1>
-            {userData.most_reviewed_genres?.map((genre: any) => (
+            {userData.most_reviewed_genres?.map((genre: Genre) => (
               <div className="mb-3" key={genre.id}>
-                <GenreBadge genre={genre.name} number={genre.name} />
+                <Image
+                  width={100}
+                  height={100}
+                  src={generateBadge(genre.name)}
+                  alt={`${genre.name} badge`}
+                />
               </div>
             ))}
           </div>
