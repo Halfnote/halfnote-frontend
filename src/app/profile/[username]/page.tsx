@@ -137,7 +137,7 @@ export default function ProfilePage() {
               />
               <h1 className="another-heading1 text-[42px]">Favorite Albums</h1>
             </div>
-            <div className="flex flex-row gap-10 overflow-y-auto">
+            <div className="flex flex-row gap-x-10 overflow-x-auto items-start">
               {userData.favorite_albums?.map((fav) => (
                 <AlbumCard
                   key={fav.id}

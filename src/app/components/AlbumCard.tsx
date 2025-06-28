@@ -6,14 +6,13 @@ interface AlbumCardProps {
   albumName: string;
   artistName: string;
 }
-
 export const AlbumCard = ({
   albumCover,
   albumName,
   artistName,
 }: AlbumCardProps) => {
   return (
-    <div className="flex flex-col items-center w-[175px] min-h-[260px] justify-end">
+    <div className="flex flex-col items-center w-[175px]">
       <div className="w-[175px] h-[175px] rounded-[10px] shadow-md overflow-hidden border border-gray-300">
         <Image
           src={albumCover}
