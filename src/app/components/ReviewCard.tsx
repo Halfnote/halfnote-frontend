@@ -84,14 +84,19 @@ export default function ReviewCard({
         {/* Rating Badge */}
         <div className="absolute right-0 -top-4 scale-70">
           {genreBadge({
-            genre: review.user_genres[review.user_genres.length - 1].name,
+            genre: review.user_genres[0].name,
             rating: review.rating,
           })}
         </div>
 
         {/* Title, Artist, Review */}
         <div className="flex flex-col gap-1">
-          <h2 className="another-heading3 font-bold">{review.album_title}</h2>
+          <h2
+            className="another-heading3 font-bold truncate pr-10"
+            title={review.album_title}
+          >
+            {review.album_title}
+          </h2>
           <p className="text-md text-gray-800 font-medium">
             {review.album_artist}
           </p>
@@ -103,13 +108,15 @@ export default function ReviewCard({
         {/* Footer */}
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
-            <Image
-              src={avatar || "/default-avatar.png"}
-              alt="Profile Picture"
-              width={40}
-              height={40}
-              className="object-cover rounded-full ring-2 border-black border-[1px]"
-            />
+            <div className="w-[40px] h-[40px] rounded-full overflow-hidden border border-black shrink-0">
+              <Image
+                src={avatar || "/default-avatar.png"}
+                alt="Profile Picture"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <p className="another-heading5 font-semibold">{review.username}</p>
             <p className="another-heading5 text-gray-500">{formattedDate}</p>
           </div>

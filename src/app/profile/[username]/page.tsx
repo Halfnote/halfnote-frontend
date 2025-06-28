@@ -30,13 +30,15 @@ export default function ProfilePage() {
     refetch,
     isLoading,
   } = useUserReviews(params.username);
-  const [reviews, setReviews] = useState<Review[]>(userReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    setReviews(userReviews);
+    if (userReviews.length > 0) {
+      setReviews(userReviews);
+    }
   }, [userReviews]);
 
-  if (!userData) return <div>Loading...</div>;
+  if (!userData || !userReviews) return <div>Loading...</div>;
 
   const pinnedReviews = reviews.filter((review: Review) => review.is_pinned);
 
@@ -57,14 +59,13 @@ export default function ProfilePage() {
       <div className="grid grid-cols-8 flex-grow relative">
         {/* First col: bio stuff */}
         <div className="col-span-2 flex flex-col items-center px-50">
-          {/* Profile picture pulled up and layered */}
           <div className="w-[200px] h-[200px] rounded-full overflow-hidden -mt-30 border-2 border-black bg-white shrink-0">
             <Image
               src={userData.avatar || "/default-avatar.png"}
               alt="profile"
               width={200}
               height={200}
-              className="object-cover rounded-full"
+              className="w-full h-full object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/default-avatar.png";
               }}

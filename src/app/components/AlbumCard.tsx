@@ -13,20 +13,22 @@ export const AlbumCard = ({
   artistName,
 }: AlbumCardProps) => {
   return (
-    <div className="flex flex-col items-center w-[175px]">
-      <div className="rounded-[10px] shadow-md overflow-hidden border border-gray-300">
+    <div className="flex flex-col items-center w-[175px] min-h-[260px] justify-end">
+      <div className="w-[175px] h-[175px] rounded-[10px] shadow-md overflow-hidden border border-gray-300">
         <Image
           src={albumCover}
           alt={`${albumName} cover`}
-          className="object-cover"
-          width={200}
-          height={200}
+          className="object-cover w-full h-full"
+          width={175}
+          height={175}
         />
       </div>
-      <h2 className="mt-3 text-[18px] font-semibold leading-tight text-black text-center">
+      <h2 className="mt-3 text-[16px] font-semibold leading-tight text-black text-center line-clamp-1">
         {albumName}
       </h2>
-      <p className="text-base text-gray-600 text-center">{artistName}</p>
+      <p className="text-sm text-gray-600 text-center line-clamp-1">
+        {artistName}
+      </p>
     </div>
   );
 };
