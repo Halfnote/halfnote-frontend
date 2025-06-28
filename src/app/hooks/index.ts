@@ -11,8 +11,7 @@ export const useUser = () =>
     queryKey: ["user"],
     queryFn: () => getUser(),
     staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnWindowFocus: true,
   });
 
 export const useUserReviews = (username: string) =>
@@ -25,9 +24,12 @@ export const useUserReviews = (username: string) =>
 
 export const useLikeReview = (username: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
+    mutationKey: ["likeReview"],
     mutationFn: (reviewId: number) => likeReview(reviewId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["reviews", username] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews", username] });
+    },
   });
 };

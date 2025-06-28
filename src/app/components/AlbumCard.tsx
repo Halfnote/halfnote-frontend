@@ -2,7 +2,7 @@
 import Image, { StaticImageData } from "next/image";
 
 interface AlbumCardProps {
-  albumCover: StaticImageData;
+  albumCover: StaticImageData | string;
   albumName: string;
   artistName: string;
 }
@@ -19,6 +19,8 @@ export const AlbumCard = ({
           src={albumCover}
           alt={`${albumName} cover`}
           className="object-cover"
+          width={200}
+          height={200}
         />
       </div>
       <h2 className="mt-3 text-[18px] font-semibold leading-tight text-black text-center">

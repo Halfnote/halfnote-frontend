@@ -15,6 +15,7 @@ export interface User {
   pinned_reviews?: Review[];
   is_following?: boolean;
   is_staff?: boolean;
+  favorite_albums: Album[];
 }
 
 export interface Genre {

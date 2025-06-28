@@ -35,8 +35,12 @@ export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
       disabled={disabled}
       className={`another-heading4 font-bold rounded-full 
                  border border-black flex items-center 
-                 justify-center h-10 px-4 hover:cursor-pointer 
-                 ${active ? "bg-black text-white" : "bg-white text-black"} 
+                 justify-center h-10 px-4 hover:cursor-pointer hover:bg-gray-200
+                 ${
+                   active
+                     ? "bg-black text-white hover:bg-black"
+                     : "bg-white text-black"
+                 } 
                  ${disabled ? "opacity-50 cursor-pointer" : ""}`}
     >
       {label}
