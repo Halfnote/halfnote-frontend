@@ -30,6 +30,7 @@ export const useLikeReview = (username: string) => {
     mutationFn: (reviewId: number) => likeReview(reviewId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", username] });
+      queryClient.invalidateQueries({ queryKey: ["activity", username] });
     },
   });
 };

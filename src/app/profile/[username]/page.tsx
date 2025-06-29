@@ -32,7 +32,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setReviews(userReviews);
-  }, [userReviews, userActivity]);
+  }, [userReviews]);
 
   console.log(userActivity);
   if (!userData) return <div>Loading...</div>;
