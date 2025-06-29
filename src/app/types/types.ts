@@ -72,3 +72,37 @@ export interface SearchResult {
   genre?: string[];
   style?: string[];
 }
+export interface Activity {
+  id: number;
+  activity_type: "review_liked" | "review_created";
+  comment_details: string | null;
+  created_at: string;
+
+  user: {
+    username: string;
+    avatar: string;
+    is_staff?: boolean;
+  };
+
+  target_user: {
+    username: string;
+    avatar: string;
+    is_staff?: boolean;
+  } | null;
+
+  review_details: {
+    id: number;
+    rating: number;
+    content: string;
+    is_liked_by_user: boolean;
+    likes_count: number;
+    comments_count: number;
+    album: {
+      title: string;
+      artist: string;
+      cover_url: string;
+      year: number;
+    };
+    user_genres: Array<{ id: number; name: string }>;
+  };
+}

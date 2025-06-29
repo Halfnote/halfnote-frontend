@@ -17,6 +17,8 @@ export default function ReactQueryProvider({
         queries: {
           gcTime: 1000 * 60 * 60 * 24, //24 hours
           refetchOnWindowFocus: true,
+          refetchOnMount: true,
+          staleTime: 0,
         },
       },
     });
@@ -30,6 +32,7 @@ export default function ReactQueryProvider({
     persistQueryClient({
       queryClient: client,
       persister: localStoragePersister,
+      maxAge: 1000 * 60 * 60 * 24,
     });
   }, [client]);
 

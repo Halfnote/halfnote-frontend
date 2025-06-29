@@ -1,23 +1,10 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
 import writingIconSrc from "../icons/miscellaneous/Writing_Icon.svg";
-import {
-  ClassicalBadge,
-  CountryBadge,
-  ElectronicBadge,
-  FolkBadge,
-  FunkBadge,
-  GospelBadge,
-  HipHopBadge,
-  JazzBadge,
-  LatinBadge,
-  PopBadge,
-  ReggaeBadge,
-  RockBadge,
-} from "../icons/stamps";
+import { genreBadge } from "../utils/calculations";
 
 type RecentReviewCardProps = {
-  albumCover: StaticImageData | string;
+  albumCover: string;
   albumTitle: string;
   artistName: string;
   rating: number;
@@ -41,25 +28,6 @@ export const RecentReviewCard = ({
   userName,
   time,
 }: RecentReviewCardProps) => {
-  const getBadgeComponent = (genre: string, number: number) => {
-    const badges: Record<string, React.FC<{ number: number }>> = {
-      Pop: PopBadge,
-      Classical: ClassicalBadge,
-      Country: CountryBadge,
-      Electronic: ElectronicBadge,
-      Folk: FolkBadge,
-      Funk: FunkBadge,
-      Gospel: GospelBadge,
-      HipHop: HipHopBadge,
-      Jazz: JazzBadge,
-      Latin: LatinBadge,
-      Reggae: ReggaeBadge,
-      Rock: RockBadge,
-    };
-    const BadgeComponent = badges[genre];
-    return BadgeComponent ? <BadgeComponent number={number} /> : null;
-  };
-
   return (
     <div className="flex flex-row w-full border border-black rounded-[24px] bg-white px-6 py-4 mb-4 shadow-sm min-h-[110px]">
       {/* Left half */}
@@ -86,7 +54,7 @@ export const RecentReviewCard = ({
         </div>
         {/* Score badge */}
         <div className="flex flex-row items-center justify-end">
-          {getBadgeComponent(genre, rating)}
+          {genreBadge({ genre, rating })}
         </div>
       </div>
 

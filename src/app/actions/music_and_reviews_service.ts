@@ -58,3 +58,30 @@ export const getUserReviews = async (username: string) => {
     throw new Error(error.message || "Failed to get profile");
   }
 };
+
+export const getUserActivity = async (username: string) => {
+  console.log("called with, ", username);
+  const session = await verifySession();
+  try {
+    const response = await fetch(
+      `${BASE_URL}/accounts/users/${username}/activity/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Could not get profile activity");
+    }
+    return await response.json();
+  } catch (error: any) {
+    console.error("Profile fetch failed:", error);
+    throw new Error(error.message || "Failed to get profile");
+  }
+};

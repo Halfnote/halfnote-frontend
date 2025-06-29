@@ -10,40 +10,45 @@ import {
 } from "@/app/icons/stamps";
 import { AlbumCard } from "@/app/components/AlbumCard";
 import { useParams } from "next/navigation";
-import Daft from "../../../../public/sample_images/daft.png";
-import Charlie from "../../../../public/sample_images/charlie.png";
 import Black from "../../../../public/sample_images/black.jpeg";
-import Kid from "../../../../public/sample_images/kid.png";
 import { getVinylIcon } from "@/app/utils/calculations";
 import ReviewCard from "@/app/components/ReviewCard";
-import { useUser } from "@/app/hooks";
+import { useUser, useUserActivity } from "@/app/hooks";
 import { useUserReviews } from "@/app/hooks";
 import { Genre, Review } from "@/app/types/types";
 import { generateBadge } from "@/app/utils/calculations";
 import { useState } from "react";
+import { AnotherNavButton } from "@/app/components/AnotherNavButton";
+import { RecentReviewCard } from "@/app/components/RecentReviewCard";
 
 export default function ProfilePage() {
   const params = useParams<{ username: string }>();
   const { data: userData } = useUser();
-  const {
-    data: userReviews = [],
-    refetch,
-    isLoading,
-  } = useUserReviews(params.username);
+  const { data: userReviews = [] } = useUserReviews(params.username);
+  const { data: userActivity = [] } = useUserActivity(params.username);
+
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
 
   useEffect(() => {
-    if (userReviews.length > 0) {
-      setReviews(userReviews);
-    }
-  }, [userReviews]);
+    setReviews(userReviews);
+  }, [userReviews, userActivity]);
 
-  if (!userData || !userReviews) return <div>Loading...</div>;
+  console.log(userActivity);
+  if (!userData) return <div>Loading...</div>;
 
   const pinnedReviews = reviews.filter((review: Review) => review.is_pinned);
+  const reviewedActivity = userActivity.filter(
+    (activity) => activity.activity_type === "review_created"
+  );
 
-  console.log(userData);
+  const likedActivity = userActivity.filter(
+    (activity) => activity.activity_type === "review_liked"
+  );
+  console.log(likedActivity[0].review_details.album.cover_url);
 
+  console.log("revL: ", reviewedActivity);
+  console.log("liked: ", likedActivity);
   return (
     <div className="flex flex-col border-black border-2 bg-white w-full rounded-xl overflow-hidden pb-10">
       {/* Banner */}
@@ -59,13 +64,14 @@ export default function ProfilePage() {
       <div className="grid grid-cols-8 flex-grow relative">
         {/* First col: bio stuff */}
         <div className="col-span-2 flex flex-col items-center px-50">
+          {/* Profile picture pulled up and layered */}
           <div className="w-[200px] h-[200px] rounded-full overflow-hidden -mt-30 border-2 border-black bg-white shrink-0">
             <Image
               src={userData.avatar || "/default-avatar.png"}
               alt="profile"
               width={200}
               height={200}
-              className="w-full h-full object-cover"
+              className="object-cover rounded-full"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/default-avatar.png";
               }}
@@ -137,7 +143,7 @@ export default function ProfilePage() {
               />
               <h1 className="another-heading1 text-[42px]">Favorite Albums</h1>
             </div>
-            <div className="flex flex-row gap-x-10 overflow-x-auto items-start">
+            <div className="flex flex-row gap-10 overflow-y-auto">
               {userData.favorite_albums?.map((fav) => (
                 <AlbumCard
                   key={fav.id}
@@ -170,10 +176,82 @@ export default function ProfilePage() {
                 />
               ))}
             </div>
-            <div className="w-full h-[1000px] border-black border rounded-xl px-20 py-10">
-              <h1 className="another-heading1 text-[42px] -mb-2">
-                Halfnote feed
-              </h1>
+            <div className="w-full border-black border rounded-xl px-20 py-10 relative">
+              <h1 className="another-heading1 text-[42px]">Halfnote feed</h1>
+              <div className="absolute top-10 right-10 flex gap-4">
+                <AnotherNavButton
+                  label="Reviewed"
+                  onClick={() => setFilter("reviewed")}
+                  isSelected={filter === "reviewed"}
+                />
+                <AnotherNavButton
+                  label="Liked"
+                  onClick={() => setFilter("liked")}
+                  isSelected={filter === "liked"}
+                />
+              </div>
+
+              <div className="mt-14 flex flex-col gap-4 max-h-[850px] overflow-y-scroll pr-2">
+                {filter === "reviewed" &&
+                  reviewedActivity.map((activity) => (
+                    <RecentReviewCard
+                      key={activity.id}
+                      albumCover={activity.review_details.album.cover_url}
+                      albumTitle={
+                        activity.review_details.content.slice(0, 20) + "..."
+                      }
+                      artistName={activity.user?.username ?? "Unknown"}
+                      rating={activity.review_details.rating}
+                      genre={
+                        activity.review_details.user_genres?.[0]?.name ??
+                        "Electronic"
+                      }
+                      hasReview={true}
+                      profilePic={activity.user.avatar ?? "/default-avatar.png"}
+                      displayName={activity.user?.username ?? "Unknown"}
+                      userName={"@" + (activity.user?.username ?? "unknown")}
+                      time={new Date(activity.created_at).toLocaleString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        }
+                      )}
+                    />
+                  ))}
+
+                {filter === "liked" &&
+                  likedActivity.map((activity) => (
+                    <RecentReviewCard
+                      key={activity.id}
+                      albumCover={activity.review_details.album.cover_url}
+                      albumTitle={
+                        activity.review_details.content.slice(0, 20) + "..."
+                      }
+                      artistName={activity.target_user?.username ?? "Unknown"}
+                      rating={activity.review_details.rating}
+                      genre={
+                        activity.review_details.user_genres?.[0]?.name ??
+                        "Electronic"
+                      }
+                      hasReview={true}
+                      profilePic={activity.user.avatar ?? "/default-avatar.png"}
+                      displayName={activity.user.username ?? "Unknown"}
+                      userName={"@" + (activity.user?.username ?? "unknown")}
+                      time={new Date(activity.created_at).toLocaleString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        }
+                      )}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
         </div>
