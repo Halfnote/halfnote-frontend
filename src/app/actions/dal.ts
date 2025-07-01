@@ -7,30 +7,17 @@ import { redirect } from "next/navigation";
 const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
 
 export const verifySession = cache(async () => {
-  try {
-    const cookieStore = cookies();
-    const access = (await cookieStore).get("access")?.value;
-    const username = (await cookieStore).get("username")?.value;
+  const cookieStore = cookies();
+  const access = (await cookieStore).get("access")?.value;
+  const username = (await cookieStore).get("username")?.value;
 
-    if (!access) {
-      throw new Error("No access token found");
-    }
+  if (!access) throw new Error("No access token found");
 
-    // const decrypted_access = await decrypt(access);
-
-    // if (!decrypted_access) {
-    //   throw new Error("Invalid access token");
-    // }
-
-    return {
-      isAuth: true,
-      access_token: access,
-      username: username,
-    };
-  } catch (error) {
-    console.error("Session verification failed:", error);
-    redirect("/");
-  }
+  return {
+    isAuth: true,
+    access_token: access,
+    username,
+  };
 });
 
 export const getUser = async () => {

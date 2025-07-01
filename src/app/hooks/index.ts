@@ -4,7 +4,7 @@ import {
   getUserActivity,
   getUserReviews,
 } from "@/app/actions/music_and_reviews_service";
-import { likeReview } from "@/app/actions/reviews_service";
+import { toggleLike } from "@/app/actions/reviews_service";
 import { useQueryClient } from "@tanstack/react-query";
 import { User, Activity } from "../types/types";
 
@@ -22,12 +22,12 @@ export const useUserReviews = (username: string) =>
     enabled: !!username,
   });
 
-export const useLikeReview = (username: string) => {
+export const useToggleReview = (username: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ["likeReview"],
-    mutationFn: (reviewId: number) => likeReview(reviewId),
+    mutationKey: ["toggleLike"],
+    mutationFn: (reviewId: number) => toggleLike(reviewId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", username] });
       queryClient.invalidateQueries({ queryKey: ["activity", username] });
