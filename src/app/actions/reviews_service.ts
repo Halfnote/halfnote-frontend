@@ -24,7 +24,7 @@ export const CreateReview = async (
     });
 };
 
-export const likeReview = async (reviewId: number) => {
+export const toggleLike = async (reviewId: number) => {
   console.log(BASE_URL);
   const session = await verifySession();
   if (!session?.access_token) {
@@ -36,11 +36,9 @@ export const likeReview = async (reviewId: number) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${session.access_token}`,
         },
         credentials: "include",
-        next: { revalidate: 3600 },
       }
     );
     if (!response.ok) {
