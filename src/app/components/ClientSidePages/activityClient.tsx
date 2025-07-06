@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { DateTime } from "luxon";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
 import { Review } from "../../types/types";
-import Daft from "../../../public/sample_images/daft.png";
+import Daft from "../../../../public/sample_images/daft.png";
 import { useTranslation } from "react-i18next";
 
 import { RecentReviewCard } from "../../components/RecentReviewCard";
