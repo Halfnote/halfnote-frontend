@@ -23,10 +23,10 @@ export const NavBar = () => {
       <ul className="flex w-full justify-center ml-20 gap-7">
         <li>
           <AnotherNavButton
+            label="Discover"
             onClick={() => {
               router.push("/discovery");
             }}
-            label="Discover"
           />
         </li>
         <li>

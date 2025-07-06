@@ -1,10 +1,11 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { NavBar } from "./components/Navbar";
 import "./globals.css";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import { QueryClient } from "@tanstack/react-query";
 import ReactQueryProvider from "./providers/QueryProvider";
+import TranslationProvider from "./providers/TranslationProvider";
+
 const queryClient = new QueryClient();
 
 export const metadata: Metadata = {
@@ -34,19 +35,21 @@ const instrumentSerif = Instrument_Serif({
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
       className={`${instrumentSans.variable} ${instrumentSerif.variable}`}
     >
       <ReactQueryProvider>
-        <body className="w-screen scale-90 max-h-screen">
-          <NavBar />
-          <div>{children}</div>
-        </body>
+        <TranslationProvider>
+          <body className="w-screen scale-90 max-h-screen">
+            <NavBar />
+            <div>{children}</div>
+          </body>
+        </TranslationProvider>
       </ReactQueryProvider>
     </html>
   );
