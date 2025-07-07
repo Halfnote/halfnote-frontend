@@ -1,8 +1,8 @@
-"use server";
 import { cache } from "react";
 import { verifySession } from "./dal";
 
-const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
+const BASE_URL =
+  process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 
 //need to debounce this in the fe
 export const searchAlbums = async (query: string) => {
@@ -33,7 +33,6 @@ export const AlbumDetails = async (discogsID: string) => {
 };
 
 export const getUserReviews = async (username: string) => {
-  console.log("called with, ", username);
   const session = await verifySession();
   try {
     const response = await fetch(
@@ -60,7 +59,7 @@ export const getUserReviews = async (username: string) => {
 };
 
 export const getUserActivity = async (username: string) => {
-  console.log("called with, ", username);
+  console.log("getting user activity");
   const session = await verifySession();
   try {
     const response = await fetch(
