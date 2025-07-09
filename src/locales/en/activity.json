@@ -1,0 +1,12 @@
+{
+    "reviews": {
+        "none_available": "No reviews available.",
+        "failed_to_fetch": "Failed to fetch activity reviews",
+        "recent": "Recent Reviews"
+    },
+    "filter":{
+        "following": "Following",
+        "friends": "Friends",
+        "you": "You"
+    }
+}

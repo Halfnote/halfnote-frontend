@@ -1,9 +1,10 @@
-// app/layout.tsx
-"use client";
+"use client"
 import type { Metadata } from "next";
 import { NavBar } from "./components/Navbar";
 import "./globals.css";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import ReactQueryProvider from "./providers/QueryProvider";
+import TranslationProvider from "./providers/TranslationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { useState } from "react";
@@ -37,28 +38,22 @@ const instrumentSerif = Instrument_Serif({
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
 }>) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <html
       lang="en"
       className={`${instrumentSans.variable} ${instrumentSerif.variable}`}
     >
-      <QueryClientProvider client={queryClient}>
-        <body className="w-screen scale-90 max-h-screen">
-          <NavBar />
-          <button onClick={() => setIsOpen(!isOpen)}>{`${
-            isOpen ? "Close" : "Open"
-          } the devtools panel`}</button>
-          {isOpen && (
-            <ReactQueryDevtoolsPanel onClose={() => setIsOpen(false)} />
-          )}
-          <div>{children}</div>
-        </body>
-      </QueryClientProvider>
+      <ReactQueryProvider>
+        <TranslationProvider>
+          <body className="w-screen scale-90 max-h-screen">
+            <NavBar />
+            <div>{children}</div>
+          </body>
+        </TranslationProvider>
+      </ReactQueryProvider>
     </html>
   );
 }
