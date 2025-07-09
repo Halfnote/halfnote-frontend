@@ -1,10 +1,10 @@
 "use server";
-
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 // import { decrypt } from "./account_management_service";
-const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
+const BASE_URL =
+  process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 
 export const verifySession = cache(async () => {
   const cookieStore = cookies();

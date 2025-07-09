@@ -1,8 +1,6 @@
 "use client";
 import Image from "next/image";
 import { Icons } from "../icons/icons";
-import { useState } from "react";
-import { toggleLike } from "../actions/reviews_service";
 import { Review } from "../types/types";
 import { useToggleReview } from "../hooks";
 import { genreBadge } from "../utils/calculations";
@@ -18,11 +16,9 @@ export default function ReviewCard({
   avatar,
   username,
 }: ReviewCardProps) {
-  const queryClient = useQueryClient();
-  const { mutate: toggleReviewMutate } = useToggleReview(username);
-  const [likingReviews, setLikingReviews] = useState<Set<number>>(new Set());
-  const [liked, setLiked] = useState(review.is_liked_by_user);
-  const [likeCount, setLikeCount] = useState(review.likes_count);
+  const mutation = useToggleReview(username);
+  const toggleReviewMutate = mutation.mutate;
+  const isLoading = mutation.isPending;
   const formattedDate = new Date(review.created_at).toLocaleDateString(
     "en-US",
     {
@@ -31,46 +27,6 @@ export default function ReviewCard({
       day: "numeric",
     }
   );
-  const handletoggleReview = (reviewId: number, currentlyLiked: boolean) => {
-    if (likingReviews.has(reviewId)) return;
-    setLikingReviews((prev) => new Set(prev).add(reviewId));
-    setLiked(!currentlyLiked);
-    setLikeCount((prev) => (currentlyLiked ? prev - 1 : prev + 1));
-
-    toggleReviewMutate(reviewId, {
-      onSuccess: () => {
-        queryClient.setQueryData(
-          ["reviews", username],
-          (prev: Review[] | undefined) =>
-            prev?.map((r) =>
-              r.id === reviewId
-                ? {
-                    ...r,
-                    is_liked_by_user: !currentlyLiked,
-                    likes_count: currentlyLiked
-                      ? r.likes_count - 1
-                      : r.likes_count + 1,
-                  }
-                : r
-            )
-        );
-      },
-      onError: (error) => {
-        //do something else
-        console.error(error);
-        setLiked(currentlyLiked);
-        setLikeCount((prev) => (currentlyLiked ? prev + 1 : prev - 1));
-        alert("Error updating like status");
-      },
-      onSettled: () => {
-        setLikingReviews((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(reviewId);
-          return newSet;
-        });
-      },
-    });
-  };
 
   return (
     <div className="flex p-4 border border-black rounded-xl shadow-md bg-white gap-4 w-full max-w-[600px] min-h-[250px]">
@@ -127,22 +83,26 @@ export default function ReviewCard({
           </div>
 
           <button
-            disabled={likingReviews.has(review.id)}
-            onClick={() => handletoggleReview(review.id, liked)}
+            disabled={isLoading}
+            onClick={() => toggleReviewMutate(review.id)}
             className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 transition-opacity duration-200 ${
-              likingReviews.has(review.id)
+              isLoading
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:cursor-pointer"
             }`}
           >
             <Image
-              src={liked ? Icons.likedHeart : Icons.unlikedHeart}
+              src={
+                review.is_liked_by_user ? Icons.likedHeart : Icons.unlikedHeart
+              }
               alt="Favorite Icon"
               width={12}
               height={12}
               className="object-contain"
             />
-            <span className="text-[13px] font-medium">{likeCount}</span>
+            <span className="text-[13px] font-medium">
+              {review.likes_count}
+            </span>
           </button>
         </div>
       </div>

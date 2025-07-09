@@ -95,7 +95,6 @@ export async function deleteSession() {
 }
 
 export const logoutUser = async () => {
-  console.log("called");
   try {
     await deleteSession();
   } catch (error: any) {

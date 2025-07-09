@@ -33,6 +33,8 @@ import Heart from "@/app/icons/another_pixel_icons/Heart.png";
 import Halfnote from "@/app/icons/another_misc_icons/halfnote.svg";
 import likedHeart from "@/app/icons/another_pixel_icons/liked_heart.png";
 import unlikedHeart from "@/app/icons/another_pixel_icons/unliked_heart.png";
+import hourGlass from "@/app/icons/another_pixel_icons/hour_glass.png";
+import lines from "@/app/icons/another_misc_icons/lines.png";
 
 export const Icons = {
   classical: Classical,
@@ -70,4 +72,6 @@ export const Icons = {
   halfnote: Halfnote,
   likedHeart: likedHeart,
   unlikedHeart: unlikedHeart,
+  hourGlass: hourGlass,
+  lines: lines,
 };
