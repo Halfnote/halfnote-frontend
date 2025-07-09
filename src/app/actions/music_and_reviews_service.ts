@@ -49,7 +49,7 @@ export const getUserReviews = async (username: string) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Could not get profile data");
+      throw new Error(error.message || `Could not get reviews for ${username}`);
     }
     return await response.json();
   } catch (error: any) {
@@ -76,7 +76,34 @@ export const getUserActivity = async (username: string) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Could not get profile activity");
+      throw new Error(
+        error.message || `Could not get activity for ${username}`
+      );
+    }
+    return await response.json();
+  } catch (error: any) {
+    console.error("Profile fetch failed:", error);
+    throw new Error(error.message || "Failed to get activity");
+  }
+};
+
+export const getOthersActivity = async (username: string, type: string) => {
+  console.log("getting OTHERS");
+  console.log("type: ", type);
+  const session = await verifySession();
+  try {
+    const response = await fetch(`${BASE_URL}/music/activity/?type=${type}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `Could not get ${type} activity`);
     }
     return await response.json();
   } catch (error: any) {

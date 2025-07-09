@@ -1,55 +1,50 @@
 "use client";
 import { useMemo, useState } from "react";
-import { useEffect } from "react";
 import { DateTime } from "luxon";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
-import { Review } from "../../types/types";
+import { Activity } from "../../types/types";
 import Daft from "../../../../public/sample_images/daft.png";
 import { useTranslation } from "react-i18next";
 
 import { RecentReviewCard } from "../../components/RecentReviewCard";
+import { userOthersActivity } from "@/app/hooks";
 
-// Constants
-// TODO: replace FRIENDS_LIST with real data
-const FRIENDS_LIST = ["vinylqueen", "audiophile99"];
+type ActivityPageProps = {
+  user: {
+    username: string;
+    access_token: string;
+  };
+};
 
 type ActivityFilterState = "following" | "friends" | "you";
 
-export default function ActivityPage() {
+export default function ActivityPage({ user }: ActivityPageProps) {
   const { t } = useTranslation("activity");
 
   const [filter, setFilter] = useState<ActivityFilterState>("following");
-  const [reviews, setReviews] = useState<Review[]>([]);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const res = await fetch("/sample_data/reviews.json");
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || t("reviews.failed_to_fetch"));
-        }
-        const data = await res.json();
-        setReviews(data.results);
-      } catch (e) {
-        console.error(t("reviews.failed_to_fetch"), e);
-      }
-    };
+  const { data: youActivity = [] } = userOthersActivity(user.username, "you");
+  const { data: friendActivity = [] } = userOthersActivity(
+    user.username,
+    "friends"
+  );
 
-    fetchReviews();
-  }, []);
+  const { data: followingActivity = [] } = userOthersActivity(
+    user.username,
+    "incoming"
+  );
 
-  // Derive filtered reviews dynamically using useMemo
-  const filteredReviews = useMemo(() => {
+  // Derive filtered activities dynamically using useMemo
+  const filteredActivities = useMemo(() => {
     switch (filter) {
       case "you":
-        return reviews.filter((r) => r.user.username === "yourUsername");
+        return youActivity;
       case "friends":
-        return reviews.filter((r) => FRIENDS_LIST.includes(r.user.username));
-      default: // "following"
-        return reviews;
+        return friendActivity;
+      default:
+        return followingActivity;
     }
-  }, [reviews, filter]);
+  }, [youActivity, friendActivity, followingActivity, filter]);
 
   return (
     <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen items-center justify-center mb-10">
@@ -79,22 +74,36 @@ export default function ActivityPage() {
         </div>
 
         {/* Scrollable list of cards */}
-        <div className="overflow-y-auto min-h-[550px] max-h-[700px] pr-2">
-          {filteredReviews.length > 0 &&
-            filteredReviews.map((r) => (
+        <div className="overflow-y-auto min-h-[550px] max-h-[700px] pr-2 flex flex-col gap-4">
+          {filteredActivities.length > 0 &&
+            filteredActivities.map((activity: Activity) => (
               <RecentReviewCard
-                key={r.id}
-                albumCover={Daft.src}
-                albumTitle={"Midnight Memories"}
-                artistName={"One Direction"}
-                rating={r.rating}
-                genre={"Pop"}
-                hasReview={r.text.length > 0}
-                profilePic={"/sample_images/profilePic.png"}
-                displayName={r.user.username}
-                userName={`@${r.user.username}`}
+                key={activity.id}
+                albumCover={
+                  activity.review_details?.album?.cover_url || Daft.src
+                }
+                albumTitle={
+                  activity.review_details?.album?.title || "Unknown Album"
+                }
+                artistName={
+                  activity.review_details?.album?.artist || "Unknown Artist"
+                }
+                rating={activity.review_details?.rating || 0}
+                genre={
+                  activity.review_details?.user_genres?.length > 0
+                    ? activity.review_details.user_genres[0]?.name || "Unknown"
+                    : "Unknown"
+                }
+                hasReview={
+                  activity.review_details?.content?.length > 0 || false
+                }
+                profilePic={
+                  activity.user?.avatar || "/sample_images/profilePic.png"
+                }
+                displayName={activity.user?.username || "Unknown User"}
+                userName={`@${activity.user?.username || "unknown"}`}
                 time={
-                  DateTime.fromISO(r.created_at)
+                  DateTime.fromISO(activity.created_at)
                     .toRelative()!
                     .replace(" ago", "") + " ago"
                 }

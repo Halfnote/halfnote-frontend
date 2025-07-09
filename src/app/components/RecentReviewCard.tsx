@@ -29,22 +29,20 @@ export const RecentReviewCard = ({
   time,
 }: RecentReviewCardProps) => {
   return (
-    <div className="flex flex-row w-full border border-black rounded-[24px] bg-white px-6 py-4 mb-4 shadow-sm min-h-[110px]">
-      {/* Left half */}
-      <div className="flex flex-row items-center justify-between w-1/2 pr-4">
-        {/* Album art + info */}
+    <div className="flex flex-row w-full border border-black rounded-2xl bg-white px-6 h-[100px] shadow-md">
+      <div className="flex flex-row items-center justify-between w-1/2 pr-2">
         <div className="flex flex-row items-center">
-          <div className="flex-shrink-0 w-[99px] h-[99px] rounded-[12px] overflow-hidden">
+          <div className="flex-shrink-0 w-[70px] h-[70px] rounded-[10px] overflow-hidden">
             <Image
               src={albumCover}
               alt={albumTitle}
-              width={99}
-              height={99}
+              width={70}
+              height={70}
               className="object-cover w-full h-full"
             />
           </div>
           <div className="flex flex-col justify-center ml-6 min-w-[120px]">
-            <span className="font-bold text-lg text-black leading-tight">
+            <span style={{ fontWeight: "normal" }} className="another-heading4">
               {albumTitle}
             </span>
             <span className="text-base text-black leading-tight">
@@ -52,16 +50,17 @@ export const RecentReviewCard = ({
             </span>
           </div>
         </div>
-        {/* Score badge */}
-        <div className="flex flex-row items-center justify-end">
+        <div
+          className="flex-shrink-0 flex items-center justify-center
+                        w-20 h-20    
+                        overflow-hidden"
+        >
           {genreBadge({ genre, rating })}
         </div>
       </div>
 
-      {/* Right half */}
-      <div className="flex flex-row items-center justify-between w-1/2 pl-4">
-        {/* Review icon (if present) */}
-        <div className="flex items-center justify-start min-w-[40px]">
+      <div className="flex flex-row items-center justify-between w-1/2 pl-4 gap-x-40">
+        <div className="flex items-center justify-center min-w-[40px]">
           {hasReview && (
             <Image
               src={writingIconSrc}
@@ -71,28 +70,24 @@ export const RecentReviewCard = ({
             />
           )}
         </div>
-        {/* Profile group centered */}
-        <div className="flex-1 flex flex-row items-center justify-center mx-4">
-          <div className="w-[56px] h-[56px] rounded-full overflow-hidden flex-shrink-0 border border-black">
+        <div className="flex-1 flex flex-row items-center justify-start">
+          <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex-shrink-0 border border-black">
             <Image
               src={profilePic}
               alt={displayName}
-              width={56}
-              height={56}
-              className="object-cover w-full h-full rounded-full"
+              width={60}
+              height={60}
+              className="object-cover w-full h-full"
             />
           </div>
           <div className="flex flex-col justify-center ml-4">
-            <span className="font-semibold text-black text-lg leading-tight">
-              {displayName}
-            </span>
+            <span className="another-heading4">{displayName}</span>
             <span className="text-black text-base leading-tight">
               {userName}
             </span>
           </div>
         </div>
-        {/* Time right-aligned */}
-        <div className="flex items-center justify-end min-w-[60px] text-black text-base text-right">
+        <div className="flex items-center justify-end min-w-[100px] text-black text-base text-right">
           {time}
         </div>
       </div>
