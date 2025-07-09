@@ -102,11 +102,7 @@ export default function ActivityPage({ user }: ActivityPageProps) {
                 }
                 displayName={activity.user?.username || "Unknown User"}
                 userName={`@${activity.user?.username || "unknown"}`}
-                time={
-                  DateTime.fromISO(activity.created_at)
-                    .toRelative()!
-                    .replace(" ago", "") + " ago"
-                }
+                time={activity?.created_at}
               />
             ))}
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
 import writingIconSrc from "../icons/miscellaneous/Writing_Icon.svg";
-import { genreBadge } from "../utils/calculations";
+import { genreBadge, getTimeAgo } from "../utils/calculations";
 
 type RecentReviewCardProps = {
   albumCover: string;
@@ -28,6 +28,7 @@ export const RecentReviewCard = ({
   userName,
   time,
 }: RecentReviewCardProps) => {
+  const timeAgo = getTimeAgo(time);
   return (
     <div className="flex flex-row w-full border border-black rounded-2xl bg-white px-6 h-[100px] shadow-md">
       <div className="flex flex-row items-center justify-between w-1/2 pr-2">
@@ -88,7 +89,7 @@ export const RecentReviewCard = ({
           </div>
         </div>
         <div className="flex items-center justify-end min-w-[100px] text-black text-base text-right">
-          {time}
+          {timeAgo}
         </div>
       </div>
     </div>
