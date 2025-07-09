@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUser } from "@/app/actions/dal";
 import {
+  getOthersActivity,
   getUserActivity,
   getUserReviews,
 } from "@/app/actions/music_and_reviews_service";
@@ -12,7 +13,7 @@ export const useUser = () =>
   useQuery<User, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(),
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 30, //grabbing from cache for 30 minutes
   });
 
 export const useUserReviews = (username: string) =>
@@ -113,4 +114,18 @@ export const useUserActivity = (username: string) =>
     refetchOnMount: true,
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
+  });
+
+export const userOthersActivity = (
+  username: string,
+  type: "friends" | "you" | "incoming"
+) =>
+  useQuery<Activity[], Error>({
+    queryKey: ["other", username, type],
+    queryFn: () => getOthersActivity(username, type),
+    enabled: !!username && !!type,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // data is fresh for 5 min
   });
