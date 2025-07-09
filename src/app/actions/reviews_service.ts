@@ -1,6 +1,6 @@
-"use server";
 import { verifySession } from "./dal";
-const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
+const BASE_URL =
+  process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 
 export const CreateReview = async (
   discogsID: string,
@@ -45,6 +45,7 @@ export const toggleLike = async (reviewId: number) => {
       const error = await response.json();
       throw new Error(error.message || "Could not like review");
     }
+    await console.log(response.json);
     return await response.json();
   } catch (error: any) {
     throw new Error(error.response?.data?.error || "Failed to like review");
