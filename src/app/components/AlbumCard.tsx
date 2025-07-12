@@ -5,21 +5,23 @@ interface AlbumCardProps {
   albumCover: StaticImageData | string;
   albumName: string;
   artistName: string;
+  size?: number;
 }
 export const AlbumCard = ({
   albumCover,
   albumName,
   artistName,
+  size=175,
 }: AlbumCardProps) => {
   return (
-    <div className="flex flex-col items-center w-[175px]">
-      <div className="w-[175px] h-[175px] rounded-[10px] shadow-md overflow-hidden border border-gray-300">
+    <div className={`flex flex-col items-center w-[${size}px]`}>
+      <div className={`w-[${size}px] h-[${size}px] rounded-[10px] shadow-md overflow-hidden border border-gray-300`}>
         <Image
           src={albumCover}
           alt={`${albumName} cover`}
           className="object-cover w-full h-full"
-          width={175}
-          height={175}
+          width={size}
+          height={size}
         />
       </div>
       <h2 className="mt-3 text-[16px] font-semibold leading-tight text-black text-center line-clamp-1">

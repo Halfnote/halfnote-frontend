@@ -14,6 +14,7 @@ import { Genre, Review } from "@/app/types/types";
 import { generateBadge, getVinylIcon } from "@/app/utils/calculations";
 import Black from "../../../../public/sample_images/black.jpeg";
 import { RecentActivityCard } from "../RecentActivityCard";
+import { AlbumTile } from "../AlbumTile";
 
 type ProfilePageProps = {
   user: {
@@ -172,7 +173,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               <h1 className="another-heading1 text-[42px]">Favorite Albums</h1>
             </div>
             <div className="flex flex-row gap-10 overflow-x-auto">
-              {userData.favorite_albums?.map((fav) => (
+              {userData.favorite_albums?.slice(0, 3).map((fav) => (
                 <AlbumCard
                   key={fav.id}
                   albumCover={fav.cover_url || "/default-album.png"}
@@ -180,6 +181,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                   artistName={fav.artist}
                 />
               ))}
+              <AlbumTile albums={userData.favorite_albums?.slice(3)} />
             </div>
           </div>
 

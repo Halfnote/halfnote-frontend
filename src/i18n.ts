@@ -3,11 +3,13 @@ import { initReactI18next } from "react-i18next";
 
 // Import your translation files
 import activityTranslations from "./locales/en/activity.json";
+import profileTranslations from "./locales/en/profile.json";
 
 i18n.use(initReactI18next).init({
   resources: {
     en: {
       activity: activityTranslations, // Namespace for activity translations
+      profile: profileTranslations,
     },
   },
   lng: "en", // Default language
