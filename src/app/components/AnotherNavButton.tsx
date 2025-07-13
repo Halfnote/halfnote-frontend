@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 interface AnotherNavButtonsProps {
   label: string;
-  onClick?: () => void;
+  // onClick?: () => void;
   /** new override flag */
   isSelected?: boolean;
   /** disable the button */
@@ -13,7 +13,7 @@ interface AnotherNavButtonsProps {
 }
 
 export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
-  const { label, onClick, isSelected: override, disabled } = props;
+  const { label, isSelected: override, disabled } = props;
   const pathname = usePathname();
   const [byPath, setByPath] = useState(false);
 
@@ -31,7 +31,6 @@ export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
 
   return (
     <button
-      onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={`another-heading4 font-bold rounded-full 
                  border border-black flex items-center 

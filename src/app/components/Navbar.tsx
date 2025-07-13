@@ -7,6 +7,7 @@ import { AnotherNavButton } from "./AnotherNavButton";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/hooks";
+import Link from "next/link";
 
 export const NavBar = () => {
   const router = useRouter();
@@ -21,32 +22,15 @@ export const NavBar = () => {
         alt="Another"
       />
       <ul className="flex w-full justify-center ml-20 gap-7">
-        <li>
-          <AnotherNavButton
-            label="Discover"
-            onClick={() => {
-              router.push("/discovery");
-            }}
-          />
-        </li>
-        <li>
-          <AnotherNavButton
-            label="Activity"
-            onClick={() => {
-              router.push("/activity");
-            }}
-          />
-        </li>
-        <li>
-          <AnotherNavButton
-            label="Profile"
-            onClick={() => {
-              if (userData?.username) {
-                router.push(`/profile/${userData.username}`);
-              }
-            }}
-          />
-        </li>
+        <Link href={"/discovery"}>
+          <AnotherNavButton label="Discover" />
+        </Link>
+        <Link href={"/activity"}>
+          <AnotherNavButton label="Activity" />
+        </Link>
+        <Link href={`/profile/${userData?.username || ""}`}>
+          <AnotherNavButton label="Profile" />
+        </Link>
       </ul>
       <Form
         action="search"
