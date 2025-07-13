@@ -13,7 +13,7 @@ export const useUser = () =>
   useQuery<User, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(),
-    staleTime: 1000 * 60 * 30, //grabbing from cache for 30 minutes
+    staleTime: 1000 * 60 * 60, //grabbing from cache for 60 minutes
   });
 
 export const useUserReviews = (username: string) =>
@@ -21,9 +21,9 @@ export const useUserReviews = (username: string) =>
     queryKey: ["reviews", username],
     queryFn: () => getUserReviews(username),
     enabled: !!username,
-    refetchOnMount: true,
+    staleTime: 1000 * 60 * 1,
     refetchOnReconnect: true,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
 export const useToggleReview = (username: string) => {
@@ -111,9 +111,9 @@ export const useUserActivity = (username: string) =>
     queryKey: ["activity", username],
     queryFn: () => getUserActivity(username),
     enabled: !!username,
-    refetchOnMount: true,
     refetchOnReconnect: true,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
+    staleTime: 2 * 60 * 1000,
   });
 
 export const userOthersActivity = (
