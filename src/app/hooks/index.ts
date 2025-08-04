@@ -129,3 +129,5 @@ export const userOthersActivity = (
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // data is fresh for 5 min
   });
+
+  

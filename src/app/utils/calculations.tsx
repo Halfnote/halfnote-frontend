@@ -101,11 +101,11 @@ export function genreBadge({
 }
 
 export const getTimeAgo = (time: string) => {
-  console.log("time: ", time);
+  // console.log("time: ", time);
   const now = new Date();
   const past = new Date(time);
-  console.log("now: ", now);
-  console.log("past: ", past);
+  // console.log("now: ", now);
+  // console.log("past: ", past);
   const diffInMs = now.getTime() - past.getTime();
 
   // Convert to different time units
