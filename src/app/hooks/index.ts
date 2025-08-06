@@ -27,14 +27,14 @@ export const useUserReviews = (username: string) =>
     queryKey: ["reviews", username],
     queryFn: () => getUserReviews(username),
     enabled: !!username,
-    staleTime: 1000 * 60 * 1, // 1 minute
   });
 
-export const useToggleReview = (username: string) => {
+export const useToggleReview = (username: string, discogsId?: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     onMutate: async (reviewId) => {
+      console.log(discogsId);
       await queryClient.cancelQueries({ queryKey: ["reviews", username] });
       await queryClient.cancelQueries({ queryKey: ["activity", username] });
 
@@ -85,6 +85,34 @@ export const useToggleReview = (username: string) => {
         })
       );
 
+      if (discogsId) {
+        queryClient.setQueryData<AlbumDetailData>(
+          ["albumDetails", discogsId],
+          (oldData) => {
+            if (!oldData) return oldData;
+
+            const updatedReviews = oldData.reviews.map((r) => {
+              if (r.id === reviewId) {
+                const newIsLiked = !r.is_liked_by_user;
+                return {
+                  ...r,
+                  is_liked_by_user: newIsLiked,
+                  likes_count: newIsLiked
+                    ? r.likes_count + 1
+                    : r.likes_count - 1,
+                };
+              }
+              return r;
+            });
+
+            return {
+              ...oldData,
+              reviews: updatedReviews,
+            };
+          }
+        );
+      }
+
       return { previousReviews, previousActivity };
     },
     onError: (_error, _reviewId, context: any) => {
@@ -104,8 +132,16 @@ export const useToggleReview = (username: string) => {
     },
     mutationFn: (reviewId: number) => toggleLike(reviewId),
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["reviews", username] });
-      queryClient.invalidateQueries({ queryKey: ["activity", username] });
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["reviews", username] });
+        queryClient.invalidateQueries({ queryKey: ["activity", username] });
+        if (discogsId) {
+          console.log("invalidating albumDetails");
+          queryClient.invalidateQueries({
+            queryKey: ["albumDetails", discogsId],
+          });
+        }
+      }, 5000);
     },
   });
   return {
@@ -134,7 +170,6 @@ export const userOthersActivity = (
     queryKey: ["other", username, type],
     queryFn: () => getOthersActivity(username, type),
     enabled: !!username && !!type,
-    staleTime: 1000 * 60 * 5, // data is fresh for 5 min
   });
 
 export const useSearch = (discogsID: string) => {
@@ -157,7 +192,6 @@ export const useSearch = (discogsID: string) => {
     },
     enabled: !!discogsID && discogsID.length > 0,
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 10,
   });
 };
 
@@ -166,7 +200,6 @@ export const useAlbumDetails = (discogsID: string) => {
     queryKey: ["albumDetails", discogsID],
     queryFn: () => getAlbumDetails(discogsID),
     enabled: !!discogsID,
-    staleTime: 1000 * 60 * 10, // Always fetch fresh data
   });
 };
 export const useCreateReview = (username: string) => {
