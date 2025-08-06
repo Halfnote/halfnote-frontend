@@ -1,7 +1,7 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
 import writingIconSrc from "../icons/miscellaneous/Writing_Icon.svg";
-import { genreBadge } from "../utils/calculations";
+import { generateRatingStamp } from "../utils/calculations";
 import { Icons } from "../icons/icons";
 import { getTimeAgo } from "../utils/calculations";
 
@@ -32,7 +32,7 @@ export const RecentActivityCard = ({
 }: RecentActivityCardProps) => {
   const timeAgo = getTimeAgo(time);
   return (
-    <div className="flex flex-row w-full border border-black rounded-2xl bg-white px-6 h-[100px] shadow-md">
+    <div className="flex flex-row w-full border border-black rounded-2xl bg-white p-2 h-[100px] shadow-md">
       {/* Left half */}
       <div className="flex flex-row items-center justify-between w-1/2 pr-3">
         {/* Album art + info */}
@@ -59,13 +59,21 @@ export const RecentActivityCard = ({
                 w-16 h-16    
                 overflow-hidden"
         >
-          {genreBadge({ genre, rating })}
+          {generateRatingStamp(rating) && (
+            <Image
+              src={generateRatingStamp(rating)!}
+              alt={`Rating Stamp`}
+              width={50}
+              height={50}
+              className="object-contain"
+            />
+          )}
         </div>
       </div>
 
       {/* Right half */}
       <div className="flex flex-row items-center w-1/2 pl-3">
-        <div className="flex items-center gap-2 min-w-[32px]">
+        <div className="flex flex-row items-center w-1/2 pl-3">
           {hasReview && (
             <Image
               src={Icons.lines}
@@ -74,7 +82,7 @@ export const RecentActivityCard = ({
               height={24}
             />
           )}
-          <span className="another-heading5 ml-6">{timeAgo}</span>
+          <span className="flex another-heading5 ml-auto">{timeAgo}</span>
         </div>
       </div>
     </div>

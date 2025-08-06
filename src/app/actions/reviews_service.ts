@@ -2,30 +2,75 @@ import { verifySession } from "./dal";
 const BASE_URL =
   process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 
-export const CreateReview = async (
+export const createReview = async (
   discogsID: string,
   ratingNumber: number,
-  description: string
+  description: string,
+  genres: string[]
 ) => {
-  fetch(`${BASE_URL}/music/albums/${discogsID}/review/`, {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer " + localStorage.getItem("access_token"),
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      rating: ratingNumber,
-      content: description,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
+  const session = await verifySession();
+  try {
+    const response = await fetch(
+      `${BASE_URL}/music/albums/${discogsID}/review/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          rating: ratingNumber,
+          content: description,
+          genres,
+        }),
+      }
+    );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to create review");
+    }
+    return await response.json();
+  } catch (error: any) {
+    console.error("Review creation failed:", error);
+    throw new Error(error.message || "Failed to create review");
+  }
+};
+
+export const editReview = async (
+  reviewId: number,
+  ratingNumber: number,
+  description: string,
+  genres: string[]
+) => {
+  console.log("GENRES: ", genres);
+  console.log("editing");
+  const session = await verifySession();
+  try {
+    const response = await fetch(`${BASE_URL}/music/reviews/${reviewId}/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        rating: ratingNumber,
+        content: description,
+        genres,
+      }),
     });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to edit review");
+    }
+    console.log("Review edited successfully");
+    return await response.json();
+  } catch (error: any) {
+    console.error("Review edit failed:", error);
+    throw new Error(error.message || "Failed to edit review");
+  }
 };
 
 export const toggleLike = async (reviewId: number) => {
-  console.log(BASE_URL);
   const session = await verifySession();
   if (!session?.access_token) {
     throw new Error("No valid session");
@@ -45,7 +90,6 @@ export const toggleLike = async (reviewId: number) => {
       const error = await response.json();
       throw new Error(error.message || "Could not like review");
     }
-    await console.log(response.json);
     return await response.json();
   } catch (error: any) {
     throw new Error(error.response?.data?.error || "Failed to like review");

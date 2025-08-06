@@ -27,7 +27,6 @@ export const getUser = async () => {
   }
 
   try {
-    console.log("access in getUser: ", session.access_token);
     const response = await fetch(`${BASE_URL}/accounts/profile/`, {
       method: "GET",
       headers: {

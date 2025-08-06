@@ -9,7 +9,7 @@ export default async function LoginPage() {
       redirect("/discovery");
     }
   } catch (err) {
-    console.log(err);
+    // Session verification failed, user needs to login
   }
 
   return <LoginForm />;
