@@ -79,7 +79,6 @@ export const getUserReviews = async (username: string) => {
 };
 
 export const getUserActivity = async (username: string) => {
-  alert("fetch");
   const session = await verifySession();
   try {
     const response = await fetch(

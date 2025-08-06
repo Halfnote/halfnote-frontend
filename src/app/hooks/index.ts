@@ -30,7 +30,7 @@ export const useUserReviews = (username: string) =>
     staleTime: 1000 * 60 * 1, // 1 minute
   });
 
-export const useToggleReview = (username: string) => {
+export const useToggleReview = (username: string, albumId?: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -106,6 +106,9 @@ export const useToggleReview = (username: string) => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", username] });
       queryClient.invalidateQueries({ queryKey: ["activity", username] });
+      if (albumId) {
+        queryClient.invalidateQueries({ queryKey: ["albumDetails", albumId] });
+      }
     },
   });
   return {

@@ -24,8 +24,9 @@ export default function DiscoverPage({ user }: DiscoverPageProps) {
   const [topRatedTime, setTopRatedTime] = useState<string>("today");
 
   return (
-    <div className="static origin-top flex flex-row gap-4 box-border bg-[#f3f3f3] items-center justify-center max-h-screen w-full scale-90">
-      <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[275px] h-[916px] bg-white">
+    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] items-stretch justify-center h-[900px] w-full scale-80">
+      {/* Left Sidebar */}
+      <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[275px] bg-white h-full">
         <h3 className="another-heading1 text-[42px]">Members</h3>
         <div className="overflow-y-auto">
           <MemberCard
@@ -55,22 +56,23 @@ export default function DiscoverPage({ user }: DiscoverPageProps) {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">
+      {/* Central Column */}
+      <div className="flex flex-col gap-4 h-full">
+        {/* Top Half */}
+        <div className="flex gap-4 h-1/2">
           {/* Top Reviews */}
-          <div className="bg-white flex flex-col border-black rounded-xl border-2 p-6 w-[815px] h-[450px]">
+          <div className="bg-white flex flex-col border-black rounded-xl border-2 p-6 w-[815px] h-full">
             <div className="flex flex-row items-center justify-start">
               <h3 className="another-heading1 text-[42px] mr-2">Top Reviews</h3>
               <TimeButtonCycle time={reviewTime} setTime={setReviewTime} />
             </div>
             <div className="overflow-y-auto">
-              {/* Add dynamic review content using user.username or access_token */}
+              {/* Add dynamic review content here */}
             </div>
           </div>
 
           {/* Top Rated Albums */}
-          <div className="bg-white flex flex-col rounded-xl p-6 w-[275px] items-center border-black border-2">
+          <div className="bg-white flex flex-col rounded-xl p-6 w-[275px] h-full items-center border-black border-2">
             <div className="flex flex-col items-center">
               <h3 className="another-heading1 text-[42px]">Top Rated</h3>
               <TimeButtonCycle time={topRatedTime} setTime={setTopRatedTime} />
@@ -79,10 +81,10 @@ export default function DiscoverPage({ user }: DiscoverPageProps) {
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="flex gap-4">
+        {/* Bottom Half */}
+        <div className="flex gap-4 h-1/2">
           {/* On This Day */}
-          <div className="bg-white flex flex-col border-black border-2 rounded-xl p-6 w-[275px] h-[450px]">
+          <div className="bg-white flex flex-col border-black border-2 rounded-xl p-6 w-[275px] h-full">
             <div className="flex flex-col items-center">
               <h3 className="another-heading1 text-[42px]">On This Day</h3>
               <div className="flex flex-row items-center">
@@ -94,7 +96,7 @@ export default function DiscoverPage({ user }: DiscoverPageProps) {
           </div>
 
           {/* New Releases */}
-          <div className="bg-white flex flex-col justify-between border-2 border-black rounded-xl p-6 w-[815px] h-[450px]">
+          <div className="bg-white flex flex-col justify-between border-2 border-black rounded-xl p-6 w-[815px] h-full">
             <h3 className="another-heading1 text-[42px] mb-4">New Releases</h3>
             <NewReleasesCarousel items={[]} />
           </div>
@@ -102,7 +104,7 @@ export default function DiscoverPage({ user }: DiscoverPageProps) {
       </div>
 
       {/* Right Sidebar */}
-      <div className="bg-white flex flex-col text-center items-center border-black border-2 rounded-xl p-6 h-[916px] w-[275px]">
+      <div className="bg-white flex flex-col text-center items-center border-black border-2 rounded-xl p-6 w-[275px] h-full">
         <h3 className="another-heading1 text-[42px]">Most Recent Reviews</h3>
         <RecentReview
           albumCover={Daft}

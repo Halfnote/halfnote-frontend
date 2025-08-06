@@ -199,8 +199,8 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                     <button
                       disabled={isPending}
                       onClick={() => toggleLikeMutation.mutate(review.id)}
-                      className={`absolute bottom-4 right-4 flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 transition-opacity duration-200 ${
-                        isLoading
+                      className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 transition-opacity duration-200 ${
+                        isPending
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:cursor-pointer"
                       }`}
