@@ -15,6 +15,9 @@ import { generateBadge, getVinylIcon } from "@/app/utils/calculations";
 import Black from "../../../../public/sample_images/black.jpeg";
 import { RecentActivityCard } from "../RecentActivityCard";
 import { AlbumTile } from "../AlbumTile";
+import { SkeletonReviewCard } from "../skeletons/SkeletonReviewCard";
+import { SkeletonRecentActivityCard } from "../skeletons/SkeletonRecentActivityCard";
+import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
 
 type ProfilePageProps = {
   user: {
@@ -24,10 +27,32 @@ type ProfilePageProps = {
 };
 
 export default function ProfilePage({ user }: ProfilePageProps) {
-  const qc = useQueryClient();
-  const { data: userData } = useUser();
-  const { data: userReviews = [] } = useUserReviews(user.username);
-  const { data: userActivity = [] } = useUserActivity(user.username);
+  const checkMark = (
+    <svg
+      className="w-6 h-6 text-gray-800 dark:text-white inline "
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+  );
+
+  const { data: userData, isLoading: isLoadingUser } = useUser();
+  const { data: userReviews = [], isLoading: isReviewLoading } = useUserReviews(
+    user.username
+  );
+  const { data: userActivity = [], isLoading: isActivityLoading } =
+    useUserActivity(user.username);
   const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
 
   const reviewedActivity = useMemo(
@@ -75,11 +100,9 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     });
   };
 
-  if (!userData) return <div>Loading...</div>;
-
+  if (!userData) return <ProfilePageSkeleton />;
   return (
-    <div className="flex flex-col border-black border-2 bg-white w-full rounded-xl overflow-hidden pb-10">
-      {/* Banner */}
+    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 scale-90 max-h-[800px]">
       <div className="w-full h-60 relative z-0">
         <Image
           src={Black}
@@ -107,13 +130,19 @@ export default function ProfilePage({ user }: ProfilePageProps) {
 
           {/* User Info */}
           <div className="flex flex-col items-center text-center mt-4 mb-10">
-            <h1 className="another-heading1 text-[42px] -mb-2">
-              {userData.name}
+            <h1 className="another-heading1 text-[42px] mb-1">
+              <span className="flex flex-row items-center gap-2">
+                {userData.name}
+                {userData.is_staff && checkMark}
+              </span>
             </h1>
+
             <p className="another-heading5 mb-3">@{userData.display_name}</p>
-            <p className="another-heading5 text-center mb-5 w-70">
+
+            <p className="another-heading5 text-center mb-5 w-[280px]">
               {userData.bio}
             </p>
+
             <p className="another-heading5">📍{userData.location}</p>
           </div>
 
@@ -179,6 +208,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                   albumCover={fav.cover_url || "/default-album.png"}
                   albumName={fav.title}
                   artistName={fav.artist}
+                  size={220}
                 />
               ))}
               <AlbumTile albums={userData.favorite_albums?.slice(3)} />
@@ -198,18 +228,23 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               <h1 className="another-heading1 text-[42px]">Pinned Reviews</h1>
             </div>
             <div className="flex flex-row gap-10 mb-10">
-              {pinnedReviews.map((review: Review) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  avatar={userData.avatar || "/default-avatar.png"}
-                  username={user.username}
-                />
-              ))}
+              {isReviewLoading ? (
+                <>
+                  <SkeletonReviewCard />
+                  <SkeletonReviewCard />
+                </>
+              ) : (
+                pinnedReviews.map((review: Review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    avatar={userData.avatar || "/default-avatar.png"}
+                    username={user.username}
+                  />
+                ))
+              )}
             </div>
           </div>
-
-          {/* Recent Activity */}
           <div className="w-full">
             {/* Header with buttons in same row */}
             <div className="flex items-center justify-between mb-4">
@@ -237,55 +272,66 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               </div>
             </div>
 
-            {/* Activity List */}
             <div className="flex flex-col gap-4 max-h-[850px] overflow-y-auto pr-2">
-              {filter === "reviewed" &&
-                reviewedActivity.map((activity) => (
-                  <RecentActivityCard
-                    key={activity.id}
-                    albumCover={activity.review_details.album.cover_url}
-                    albumTitle={
-                      activity?.review_details?.album?.artist ?? "Unknown"
-                    }
-                    artistName={
-                      activity?.review_details?.album?.artist ?? "Unknown"
-                    }
-                    rating={activity.review_details.rating}
-                    genre={
-                      activity.review_details.user_genres?.[0]?.name ??
-                      "Electronic"
-                    }
-                    hasReview={true}
-                    profilePic={activity.user.avatar ?? "/default-avatar.png"}
-                    displayName={activity.user?.username ?? "Unknown"}
-                    userName={"@" + (activity.user?.username ?? "unknown")}
-                    time={activity.created_at}
-                  />
-                ))}
+              {isActivityLoading ? (
+                [...Array(5)].map((_, index) => (
+                  <SkeletonRecentActivityCard key={index} />
+                ))
+              ) : (
+                <>
+                  {filter === "reviewed" &&
+                    reviewedActivity.map((activity) => (
+                      <RecentActivityCard
+                        key={activity.id}
+                        albumCover={activity.review_details.album.cover_url}
+                        albumTitle={
+                          activity?.review_details?.album?.artist ?? "Unknown"
+                        }
+                        artistName={
+                          activity?.review_details?.album?.artist ?? "Unknown"
+                        }
+                        rating={activity.review_details.rating}
+                        genre={
+                          activity.review_details.user_genres?.[0]?.name ??
+                          "Electronic"
+                        }
+                        hasReview={true}
+                        profilePic={
+                          activity.user.avatar ?? "/default-avatar.png"
+                        }
+                        displayName={activity.user?.username ?? "Unknown"}
+                        userName={"@" + (activity.user?.username ?? "unknown")}
+                        time={activity.created_at}
+                      />
+                    ))}
 
-              {filter === "liked" &&
-                likedActivity.map((activity) => (
-                  <RecentActivityCard
-                    key={activity.id}
-                    albumCover={activity.review_details.album.cover_url}
-                    albumTitle={
-                      activity?.review_details?.album?.artist ?? "Unknown"
-                    }
-                    artistName={
-                      activity?.review_details?.album?.artist ?? "Unknown"
-                    }
-                    rating={activity.review_details.rating}
-                    genre={
-                      activity.review_details.user_genres?.[0]?.name ??
-                      "Electronic"
-                    }
-                    hasReview={true}
-                    profilePic={activity.user.avatar ?? "/default-avatar.png"}
-                    displayName={activity.user?.username ?? "Unknown"}
-                    userName={"@" + (activity.user?.username ?? "unknown")}
-                    time={activity.created_at}
-                  />
-                ))}
+                  {filter === "liked" &&
+                    likedActivity.map((activity) => (
+                      <RecentActivityCard
+                        key={activity.id}
+                        albumCover={activity.review_details.album.cover_url}
+                        albumTitle={
+                          activity?.review_details?.album?.artist ?? "Unknown"
+                        }
+                        artistName={
+                          activity?.review_details?.album?.artist ?? "Unknown"
+                        }
+                        rating={activity.review_details.rating}
+                        genre={
+                          activity.review_details.user_genres?.[0]?.name ??
+                          "Electronic"
+                        }
+                        hasReview={true}
+                        profilePic={
+                          activity.user.avatar ?? "/default-avatar.png"
+                        }
+                        displayName={activity.user?.username ?? "Unknown"}
+                        userName={"@" + (activity.user?.username ?? "unknown")}
+                        time={activity.created_at}
+                      />
+                    ))}
+                </>
+              )}
             </div>
           </div>
         </div>

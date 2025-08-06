@@ -1,0 +1,62 @@
+"use client";
+import { useSearch } from "@/app/hooks";
+import { Album } from "@/app/types/types";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
+import { RecentReviewCard } from "../RecentReviewCard";
+import { RecentActivityCard } from "../RecentActivityCard";
+
+export const SearchResultPage = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query");
+  if (!query) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl font-bold mb-4">No Search Query Provided</h1>
+        <p className="text-gray-600">Please provide a search query.</p>
+      </div>
+    );
+  }
+  const { data: albumList, isLoading, isError } = useSearch(query);
+  useEffect(() => {
+    if (!isLoading && query) {
+      return;
+    }
+  }, [query, isLoading]);
+  return (
+    <div className="flex flex-col items-center h-screen w-screen scale-90">
+      <h1 className="text-2xl font-bold mb-4">Search Results for: {query}</h1>
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>Error fetching search results.</p>}
+      {albumList?.results && albumList.results.length > 0 ? (
+        <ul className="gap-y-2 flex flex-col w-full max-w-screen">
+          {albumList.results.map((album: any) => (
+            <button
+              onClick={() => {
+                router.push(`/albums?query=${album.id || album.discogs_id}`);
+              }}
+              className="w-full cursor-pointer"
+              key={album.id || album.discogs_id}
+            >
+              <RecentActivityCard
+                albumCover={album.cover_image || ""}
+                albumTitle={album.title || "Unknown Album"}
+                artistName={album.artist || "Unknown Artist"}
+                rating={album.rating || 0}
+                genre={album.genre || "Unknown Genre"}
+                hasReview={!!album.review}
+                profilePic={album.profile_pic || ""}
+                displayName={album.display_name || "Anonymous"}
+                userName={album.username || "unknown_user"}
+                time={album.time || new Date().toISOString()}
+              />
+            </button>
+          ))}
+        </ul>
+      ) : (
+        <p>No results found.</p>
+      )}
+    </div>
+  );
+};

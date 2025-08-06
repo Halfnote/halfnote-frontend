@@ -108,7 +108,7 @@ body {
 
 .another-heading1 {
   font-family: var(--font-instrument-serif), serif;
-  @apply font-normal leading-[63px] tracking-[-1.68px];
+  @apply font-normal leading-[63px] tracking-[-1.28px];
 }
 
 .another-heading2 {
@@ -118,7 +118,7 @@ body {
 
 .another-heading3 {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal text-[24px] leading-[36px];
+  @apply text-[24px] leading-[36px];
 }
 
 .another-heading4 {

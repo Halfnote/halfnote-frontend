@@ -36,6 +36,7 @@ export interface Album {
 }
 
 export interface Review {
+  album_discogs_id?: string;
   text: string;
   user: User;
   id: number;
@@ -54,6 +55,38 @@ export interface Review {
   is_liked_by_user: boolean;
   comments_count: number;
   user_genres: Array<{ id: number; name: string }>;
+}
+
+export interface AlbumDetailData {
+  album: AlbumData;
+  reviews: Review[];
+  review_count: number;
+  average_rating: number | null;
+  exists_in_db: boolean;
+  cached: boolean;
+}
+
+export interface AlbumData {
+  id?: string;
+  title: string;
+  artist: string;
+  year?: number;
+  cover_url?: string;
+  cover_image?: string;
+  discogs_id: string;
+  genres?: string[];
+  discogs_genres?: string[];
+  discogs_styles?: string[];
+  tracklist?: Array<{
+    position: string;
+    title: string;
+    duration?: string;
+    artists?: Array<{ name: string }>;
+  }>;
+  credits?: Array<{
+    name: string;
+    role: string;
+  }>;
 }
 
 export interface Comment {
@@ -76,7 +109,12 @@ export interface SearchResult {
 }
 export interface Activity {
   id: number;
-  activity_type: "review_liked" | "review_created";
+  activity_type:
+    | "review_liked"
+    | "review_created"
+    | "review_pinned"
+    | "user_followed"
+    | "comment_created";
   comment_details: string | null;
   created_at: string;
 
@@ -100,6 +138,7 @@ export interface Activity {
     likes_count: number;
     comments_count: number;
     album: {
+      discogs_id: string;
       title: string;
       artist: string;
       cover_url: string;

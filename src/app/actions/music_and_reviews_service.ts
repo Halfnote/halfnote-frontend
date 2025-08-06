@@ -4,35 +4,55 @@ import { verifySession } from "./dal";
 const BASE_URL =
   process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 
-//need to debounce this in the fe
-export const searchAlbums = async (query: string) => {
-  const encodedQuery = encodeURIComponent(query);
-  await fetch(`${BASE_URL}/api/music/search/?q=${encodedQuery}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.results);
+export const getAlbumDetails = async (discogsID: string) => {
+  console.log("REFETCHING ALBUM DETAILS");
+  try {
+    const session = await verifySession();
+    const response = await fetch(`${BASE_URL}/music/albums/${discogsID}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+      },
     });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `Could not get albums for ${discogsID}`);
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Album fetch failed:", error);
+    throw new Error(error.message || "Failed to get album details");
+  }
 };
 
-export const AlbumDetails = async (discogsID: string) => {
-  fetch(`${BASE_URL}/music/albums/${discogsID}/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
+export const getSearch = async (discogsID: string) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/music/search/?q=${encodeURIComponent(discogsID)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `Could not get albums for ${discogsID}`);
+    }
+    return await response.json();
+  } catch (error: any) {
+    console.error("Album fetch failed:", error);
+    throw new Error(error.message || "Failed to get album details");
+  }
 };
 
 export const getUserReviews = async (username: string) => {
+  console.log("REFETCHING USER REVIEWS");
   const session = await verifySession();
   try {
     const response = await fetch(
@@ -59,7 +79,7 @@ export const getUserReviews = async (username: string) => {
 };
 
 export const getUserActivity = async (username: string) => {
-  console.log("getting user activity");
+  alert("fetch");
   const session = await verifySession();
   try {
     const response = await fetch(
@@ -88,8 +108,6 @@ export const getUserActivity = async (username: string) => {
 };
 
 export const getOthersActivity = async (username: string, type: string) => {
-  console.log("getting OTHERS");
-  console.log("type: ", type);
   const session = await verifySession();
   try {
     const response = await fetch(`${BASE_URL}/music/activity/?type=${type}`, {

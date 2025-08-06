@@ -78,6 +78,31 @@ const genreStampMap: Record<string, StaticImageData> = {
   Rock: rockStamp,
 };
 
+const ratingBadgeMap: Record<number, StaticImageData> = {
+  1: Icons.oneStamp,
+  2: Icons.twoStamp,
+  3: Icons.threeStamp,
+  4: Icons.fourStamp,
+  5: Icons.fiveStamp,
+  6: Icons.sixStamp,
+  7: Icons.sevenStamp,
+  8: Icons.eightStamp,
+  9: Icons.nineStamp,
+  10: Icons.tenStamp,
+};
+
+const emptyRatingBadgeMap: Record<number, StaticImageData> = {
+  1: Icons.oneEmptyStamp,
+  2: Icons.twoEmptyStamp,
+  3: Icons.threeEmptyStamp,
+  4: Icons.fourEmptyStamp,
+  5: Icons.fiveEmptyStamp,
+  6: Icons.sixEmptyStamp,
+  7: Icons.sevenEmptyStamp,
+  8: Icons.eightEmptyStamp,
+  9: Icons.nineEmptyStamp,
+  10: Icons.tenEmptyStamp,
+};
 export const generateBadge = (genre: string) => {
   return genreStampMap[genre];
 };
@@ -100,12 +125,15 @@ export function genreBadge({
     : null;
 }
 
+export function generateRatingStamp(rating: number, empty: boolean = false) {
+  if (empty) {
+    return emptyRatingBadgeMap[rating];
+  }
+  return ratingBadgeMap[rating];
+}
 export const getTimeAgo = (time: string) => {
-  console.log("time: ", time);
   const now = new Date();
   const past = new Date(time);
-  console.log("now: ", now);
-  console.log("past: ", past);
   const diffInMs = now.getTime() - past.getTime();
 
   // Convert to different time units

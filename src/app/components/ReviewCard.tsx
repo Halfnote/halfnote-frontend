@@ -3,8 +3,9 @@ import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { Review } from "../types/types";
 import { useToggleReview } from "../hooks";
-import { genreBadge } from "../utils/calculations";
-import { useQueryClient } from "@tanstack/react-query";
+import { generateRatingStamp } from "../utils/calculations";
+import { useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { use } from "react";
 type ReviewCardProps = {
   avatar?: string;
   review: Review;
@@ -16,9 +17,7 @@ export default function ReviewCard({
   avatar,
   username,
 }: ReviewCardProps) {
-  const mutation = useToggleReview(username);
-  const toggleReviewMutate = mutation.mutate;
-  const isLoading = mutation.isPending;
+  const { toggleLikeMutation, isPending } = useToggleReview(username);
   const formattedDate = new Date(review.created_at).toLocaleDateString(
     "en-US",
     {
@@ -27,9 +26,8 @@ export default function ReviewCard({
       day: "numeric",
     }
   );
-
   return (
-    <div className="flex p-4 border border-black rounded-xl shadow-md bg-white gap-4 w-full max-w-[600px] min-h-[250px]">
+    <div className="flex p-4 border border-black rounded-xl shadow-md bg-white gap-4 w-[600px] h-[250px]">
       {/* Album Cover */}
       <div className="relative flex-shrink-0 w-[150px] h-[150px] border-[1px] border-black">
         <Image
@@ -44,10 +42,13 @@ export default function ReviewCard({
       <div className="flex flex-col justify-between flex-grow relative pr-3">
         {/* Rating Badge */}
         <div className="absolute right-0 -top-4 scale-70">
-          {genreBadge({
-            genre: review.user_genres[0].name,
-            rating: review.rating,
-          })}
+          <Image
+            src={generateRatingStamp(review.rating)}
+            alt={`Rating Stamp`}
+            width={100}
+            height={100}
+            className="object-contain"
+          />
         </div>
 
         {/* Title, Artist, Review */}
@@ -81,12 +82,12 @@ export default function ReviewCard({
             <p className="another-heading5 font-semibold">{review.username}</p>
             <p className="another-heading5 text-gray-500">{formattedDate}</p>
           </div>
-
+          {/* could be its own component */}
           <button
-            disabled={isLoading}
-            onClick={() => toggleReviewMutate(review.id)}
+            disabled={isPending}
+            onClick={() => toggleLikeMutation.mutate(review.id)}
             className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 transition-opacity duration-200 ${
-              isLoading
+              isPending
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:cursor-pointer"
             }`}

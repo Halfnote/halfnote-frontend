@@ -24,8 +24,7 @@ export default function DiscoverPage({ user }: DiscoverPageProps) {
   const [topRatedTime, setTopRatedTime] = useState<string>("today");
 
   return (
-    <div className="static origin-top flex flex-row gap-4 box-border bg-[#f3f3f3] items-center justify-center w-full scale-90">
-      {/* Left Sidebar */}
+    <div className="static origin-top flex flex-row gap-4 box-border bg-[#f3f3f3] items-center justify-center max-h-screen w-full scale-90">
       <div className="flex flex-col items-center border-black border-2 rounded-xl p-6 w-[275px] h-[916px] bg-white">
         <h3 className="another-heading1 text-[42px]">Members</h3>
         <div className="overflow-y-auto">

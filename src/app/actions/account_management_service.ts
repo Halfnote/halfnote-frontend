@@ -39,8 +39,7 @@ export async function createSession(
 ) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const cookieStore = await cookies();
-  console.log("acc: ", access_token);
-  console.log("ref: ", refresh_token);
+  
 
   cookieStore.set("access", access_token, {
     httpOnly: true,
