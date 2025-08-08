@@ -15,21 +15,6 @@ import rockStamp from "@/app/icons/genre_stamp/ROCK-genreTag_container.svg";
 import { Icons } from "../icons/icons";
 import * as Stamps from "@/app/icons/stamps";
 
-// import {
-//   ClassicalBadge,
-//   CountryBadge,
-//   ElectronicBadge,
-//   FolkBadge,
-//   FunkBadge,
-//   GospelBadge,
-//   HipHopBadge,
-//   JazzBadge,
-//   LatinBadge,
-//   PopBadge,
-//   ReggaeBadge,
-//   RockBadge,
-// } from "@/app/icons/stamps";
-
 export const getVinylIcon = (reviewCount: number = 0) => {
   if (reviewCount >= 1500) {
     return Icons.fifthVinyl;
@@ -42,10 +27,6 @@ export const getVinylIcon = (reviewCount: number = 0) => {
   } else {
     return Icons.firstVinyl;
   }
-};
-
-type GenreBadgeProps = {
-  genre: string;
 };
 
 const genreBadgeMap: Record<string, string> = {

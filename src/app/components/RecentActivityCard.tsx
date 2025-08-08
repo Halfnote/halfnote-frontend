@@ -1,6 +1,5 @@
 import React from "react";
-import Image, { StaticImageData } from "next/image";
-import writingIconSrc from "../icons/miscellaneous/Writing_Icon.svg";
+import Image from "next/image";
 import { generateRatingStamp } from "../utils/calculations";
 import { Icons } from "../icons/icons";
 import { getTimeAgo } from "../utils/calculations";
@@ -10,11 +9,7 @@ type RecentActivityCardProps = {
   albumTitle: string;
   artistName: string;
   rating: number;
-  genre: string;
   hasReview: boolean;
-  profilePic: StaticImageData | string;
-  displayName: string;
-  userName: string;
   time: string;
 };
 
@@ -23,11 +18,7 @@ export const RecentActivityCard = ({
   albumTitle,
   artistName,
   rating,
-  genre,
   hasReview,
-  profilePic,
-  displayName,
-  userName,
   time,
 }: RecentActivityCardProps) => {
   const timeAgo = getTimeAgo(time);
