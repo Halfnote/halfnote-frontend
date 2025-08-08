@@ -23,12 +23,9 @@ export const CreateList = async (
     }),
   });
 
-  console.log(response);
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || "Create Album List failed");
   }
 
-  const data = await response.json();
-  console.log(data);
 };

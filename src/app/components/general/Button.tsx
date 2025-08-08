@@ -27,7 +27,7 @@ export const Button = (props: ButtonsProps) => {
                      ? "bg-black text-white hover:bg-black"
                      : "bg-white text-black"
                  } 
-                 ${disabled ? "opacity-50 cursor-pointer" : ""}`}
+                 ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {children}
     </button>

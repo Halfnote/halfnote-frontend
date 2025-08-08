@@ -16,7 +16,7 @@ export const MemberCard = ({
   userName,
 }: MemberCardProps) => {
   return (
-    <div className="flex flex-col border-2 border-[#9A9A9A] rounded-xl w-[212px] h-[212px] pl-6 pr-6 pt-3 mb-4">
+    <div className="flex flex-col border-2 border-[#9A9A9A] rounded-xl w-full aspect-square p-4 mb-2">
       <div className="flex flex-row gap-10 w-full items-center">
         {/* {first} */}
         <div className="flex flex-col min-w-0 items-center">
