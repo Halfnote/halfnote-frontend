@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { verifySession } from "./dal";
 
 const BASE_URL =
@@ -14,6 +13,8 @@ export const getAlbumDetails = async (discogsID: string) => {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${session.access_token}`,
       },
+      next: { revalidate: 0 },
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -37,6 +38,8 @@ export const getSearch = async (discogsID: string) => {
         headers: {
           "Content-Type": "application/json",
         },
+        next: { revalidate: 0 },
+        cache: "no-store",
       }
     );
 
@@ -64,6 +67,8 @@ export const getUserReviews = async (username: string) => {
           "Authorization": `Bearer ${session.access_token}`,
         },
         credentials: "include",
+        next: { revalidate: 0 },
+        cache: "no-store",
       }
     );
 
@@ -79,7 +84,6 @@ export const getUserReviews = async (username: string) => {
 };
 
 export const getUserActivity = async (username: string) => {
-  alert("fetch");
   const session = await verifySession();
   try {
     const response = await fetch(
@@ -91,6 +95,8 @@ export const getUserActivity = async (username: string) => {
           "Authorization": `Bearer ${session.access_token}`,
         },
         credentials: "include",
+        next: { revalidate: 0 },
+        cache: "no-store",
       }
     );
 
@@ -117,6 +123,8 @@ export const getOthersActivity = async (username: string, type: string) => {
         "Authorization": `Bearer ${session.access_token}`,
       },
       credentials: "include",
+      next: { revalidate: 0 },
+      cache: "no-store",
     });
 
     if (!response.ok) {

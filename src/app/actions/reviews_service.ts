@@ -23,6 +23,7 @@ export const createReview = async (
           content: description,
           genres,
         }),
+        next: { revalidate: 0 },
       }
     );
     if (!response.ok) {
@@ -55,6 +56,7 @@ export const editReview = async (
         content: description,
         genres,
       }),
+      next: { revalidate: 0 },
     });
     if (!response.ok) {
       const error = await response.json();
@@ -81,6 +83,7 @@ export const toggleLike = async (reviewId: number) => {
           "Authorization": `Bearer ${session.access_token}`,
         },
         credentials: "include",
+        next: { revalidate: 0 },
       }
     );
     if (!response.ok) {

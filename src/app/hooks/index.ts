@@ -33,117 +33,125 @@ export const useToggleReview = (username: string, discogsId?: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
+    mutationFn: (reviewId: number) => toggleLike(reviewId),
+
     onMutate: async (reviewId) => {
-      console.log(discogsId);
-      await queryClient.cancelQueries({ queryKey: ["reviews", username] });
-      await queryClient.cancelQueries({ queryKey: ["activity", username] });
-
-      const previousReviews = queryClient.getQueryData<Review[]>([
-        "reviews",
-        username,
-      ]);
-      const previousActivity = queryClient.getQueryData<Activity[]>([
-        "activity",
-        username,
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: ["reviews", username] }),
+        queryClient.cancelQueries({ queryKey: ["activity", username] }),
+        discogsId &&
+          queryClient.cancelQueries({ queryKey: ["albumDetails", discogsId] }),
       ]);
 
+      const snapshots = {
+        reviews: queryClient.getQueryData(["reviews", username]),
+        activity: queryClient.getQueryData(["activity", username]),
+        album: discogsId
+          ? queryClient.getQueryData(["albumDetails", discogsId])
+          : undefined,
+      };
+
+      // Optimistic update: reviews
       queryClient.setQueryData<Review[]>(["reviews", username], (old = []) =>
-        old.map((r) => {
-          if (r.id === reviewId) {
-            const newIsLiked = !r.is_liked_by_user;
-            return {
-              ...r,
-              is_liked_by_user: newIsLiked,
-              likes_count: newIsLiked
-                ? r.likes_count + 1 // If now liked, increment
-                : r.likes_count - 1, // If now unliked, decrement
-            };
-          }
-          return r;
-        })
+        old.map((r) =>
+          r.id === reviewId
+            ? {
+                ...r,
+                is_liked_by_user: !r.is_liked_by_user,
+                likes_count: r.likes_count + (r.is_liked_by_user ? -1 : 1),
+              }
+            : r
+        )
       );
 
+      // Optimistic update: activity
       queryClient.setQueryData<Activity[]>(["activity", username], (old = []) =>
-        old.map((activity) => {
-          if (
-            activity.review_details &&
-            activity.review_details.id === reviewId
-          ) {
-            const newIsLiked = !activity.review_details.is_liked_by_user;
-            return {
-              ...activity,
-              review_details: {
-                ...activity.review_details,
-                is_liked_by_user: newIsLiked,
-                likes_count: newIsLiked
-                  ? activity.review_details.likes_count + 1
-                  : activity.review_details.likes_count - 1,
-              },
-            };
-          }
-          return activity;
-        })
+        old.map((a) =>
+          a.review_details && a.review_details.id === reviewId
+            ? {
+                ...a,
+                review_details: {
+                  ...a.review_details,
+                  is_liked_by_user: !a.review_details.is_liked_by_user,
+                  likes_count:
+                    a.review_details.likes_count +
+                    (a.review_details.is_liked_by_user ? -1 : 1),
+                },
+              }
+            : a
+        )
       );
 
+      // Optimistic update: albumDetails
       if (discogsId) {
         queryClient.setQueryData<AlbumDetailData>(
           ["albumDetails", discogsId],
-          (oldData) => {
-            if (!oldData) return oldData;
-
-            const updatedReviews = oldData.reviews.map((r) => {
-              if (r.id === reviewId) {
-                const newIsLiked = !r.is_liked_by_user;
-                return {
-                  ...r,
-                  is_liked_by_user: newIsLiked,
-                  likes_count: newIsLiked
-                    ? r.likes_count + 1
-                    : r.likes_count - 1,
-                };
-              }
-              return r;
-            });
-
-            return {
-              ...oldData,
-              reviews: updatedReviews,
-            };
-          }
+          (old) =>
+            old
+              ? {
+                  ...old,
+                  reviews: old.reviews.map((r) =>
+                    r.id === reviewId
+                      ? {
+                          ...r,
+                          is_liked_by_user: !r.is_liked_by_user,
+                          likes_count:
+                            r.likes_count + (r.is_liked_by_user ? -1 : 1),
+                        }
+                      : r
+                  ),
+                }
+              : old
         );
       }
 
-      return { previousReviews, previousActivity };
+      return snapshots;
     },
-    onError: (_error, _reviewId, context: any) => {
-      console.error("Toggle like error:", _error);
-      if (context?.previousReviews) {
-        queryClient.setQueryData(
-          ["reviews", username],
-          context.previousReviews
-        );
-      }
-      if (context?.previousActivity) {
-        queryClient.setQueryData(
-          ["activity", username],
-          context.previousActivity
-        );
+
+    onError: (_err, _vars, ctx) => {
+      ctx?.reviews &&
+        queryClient.setQueryData(["reviews", username], ctx.reviews);
+      ctx?.activity &&
+        queryClient.setQueryData(["activity", username], ctx.activity);
+      if (discogsId && ctx?.album) {
+        queryClient.setQueryData(["albumDetails", discogsId], ctx.album);
       }
     },
-    mutationFn: (reviewId: number) => toggleLike(reviewId),
-    onSettled: () => {
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["reviews", username] });
-        queryClient.invalidateQueries({ queryKey: ["activity", username] });
-        if (discogsId) {
-          console.log("invalidating albumDetails");
-          queryClient.invalidateQueries({
-            queryKey: ["albumDetails", discogsId],
-          });
-        }
-      }, 5000);
+
+    onSuccess: (serverData) => {
+      if (discogsId) {
+        // Merge server truth into cache
+        queryClient.setQueryData<AlbumDetailData>(
+          ["albumDetails", discogsId],
+          (old) =>
+            old
+              ? {
+                  ...old,
+                  reviews: old.reviews.map((r) =>
+                    r.id === serverData.id ? serverData : r
+                  ),
+                }
+              : old
+        );
+      }
+
+      // Background refetch — no UI flicker
+      queryClient.refetchQueries({
+        queryKey: ["reviews", username],
+        type: "inactive",
+      });
+      queryClient.refetchQueries({
+        queryKey: ["activity", username],
+        type: "inactive",
+      });
+      discogsId &&
+        queryClient.refetchQueries({
+          queryKey: ["albumDetails", discogsId],
+          type: "inactive",
+        });
     },
   });
+
   return {
     toggleLikeMutation: mutation,
     isPending: mutation.isPending,
@@ -162,7 +170,7 @@ export const useUserActivity = (username: string) =>
     refetchOnReconnect: false,
   });
 
-export const userOthersActivity = (
+export const useOthersActivity = (
   username: string,
   type: "friends" | "you" | "incoming"
 ) =>
@@ -200,6 +208,7 @@ export const useAlbumDetails = (discogsID: string) => {
     queryKey: ["albumDetails", discogsID],
     queryFn: () => getAlbumDetails(discogsID),
     enabled: !!discogsID,
+    refetchOnMount: true,
   });
 };
 export const useCreateReview = (username: string) => {
@@ -233,20 +242,20 @@ export const useCreateReview = (username: string) => {
       return { snapshot };
     },
 
-    onSuccess: async (data, variables) => {
+    onSuccess: (data, variables) => {
       // Invalidate and immediately refetch
-      await Promise.all([
+      Promise.all([
         queryClient.invalidateQueries({
           queryKey: ["reviews", username],
-          refetchType: "active",
+          refetchType: "inactive",
         }),
         queryClient.invalidateQueries({
           queryKey: ["activity", username],
-          refetchType: "active",
+          refetchType: "inactive",
         }),
         queryClient.refetchQueries({
           queryKey: ["albumDetails", variables.discogsId],
-          type: "active",
+          type: "inactive",
         }),
       ]);
     },
@@ -286,65 +295,142 @@ export const useEditReview = (username: string) => {
       genres: string[];
     }) => await editReview(reviewId, ratingNumber, description, genres),
 
-    onMutate: async (variables) => {
-      // Cancel all related queries
+    onMutate: async (vars) => {
       await Promise.all([
         queryClient.cancelQueries({ queryKey: ["reviews", username] }),
         queryClient.cancelQueries({ queryKey: ["activity", username] }),
         queryClient.cancelQueries({
-          queryKey: ["albumDetails", variables.discogsId],
+          queryKey: ["albumDetails", vars.discogsId],
         }),
       ]);
 
-      // Store snapshots for rollback
-      return {
-        reviewsSnapshot: queryClient.getQueryData(["reviews", username]),
-        activitySnapshot: queryClient.getQueryData(["activity", username]),
-        albumSnapshot: queryClient.getQueryData([
-          "albumDetails",
-          variables.discogsId,
-        ]),
+      const snapshots = {
+        reviews: queryClient.getQueryData(["reviews", username]),
+        activity: queryClient.getQueryData(["activity", username]),
+        album: queryClient.getQueryData(["albumDetails", vars.discogsId]),
       };
+
+      // Optimistic: albumDetails
+      queryClient.setQueryData<AlbumDetailData>(
+        ["albumDetails", vars.discogsId],
+        (old) => {
+          if (!old) return old;
+          const updatedReviews = old.reviews.map((r) =>
+            r.id === vars.reviewId
+              ? {
+                  ...r,
+                  rating: vars.ratingNumber,
+                  description: vars.description,
+                  genres: vars.genres,
+                  is_liked_by_user: r.is_liked_by_user,
+                }
+              : r
+          );
+          const n = old.review_count;
+          const oldReview = old.reviews.find((r) => r.id === vars.reviewId);
+          const oldRating = oldReview?.rating ?? 0;
+          const updatedAverageRating =
+            n > 0
+              ? parseFloat(
+                  (
+                    (old.average_rating ?? 0) +
+                    (vars.ratingNumber - oldRating) / n
+                  ).toFixed(2)
+                )
+              : vars.ratingNumber;
+          return {
+            ...old,
+            reviews: updatedReviews,
+            average_rating: updatedAverageRating,
+          };
+        }
+      );
+
+      // Optimistic: reviews
+      queryClient.setQueryData<Review[]>(["reviews", username], (old) =>
+        old
+          ? old.map((r) =>
+              r.id === vars.reviewId
+                ? {
+                    ...r,
+                    rating: vars.ratingNumber,
+                    description: vars.description,
+                    genres: vars.genres,
+                    is_liked_by_user: r.is_liked_by_user,
+                  }
+                : r
+            )
+          : old
+      );
+
+      // Optimistic: activity
+      queryClient.setQueryData<Activity[]>(["activity", username], (old) =>
+        old
+          ? old.map((a) =>
+              a.review_details && a.review_details.id === vars.reviewId
+                ? {
+                    ...a,
+                    review_details: {
+                      ...a.review_details,
+                      rating: vars.ratingNumber,
+                      description: vars.description,
+                      genres: vars.genres,
+                      is_liked_by_user: a.review_details.is_liked_by_user,
+                    },
+                  }
+                : a
+            )
+          : old
+      );
+
+      return snapshots;
     },
 
-    onSuccess: async (data, variables) => {
-      // Simply invalidate all related queries - let React Query refetch fresh data
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["reviews", username] }),
-        queryClient.invalidateQueries({ queryKey: ["activity", username] }),
-        queryClient.invalidateQueries({
-          queryKey: ["albumDetails", variables.discogsId],
-        }),
-      ]);
+    onError: (_err, vars, ctx) => {
+      ctx?.reviews &&
+        queryClient.setQueryData(["reviews", username], ctx.reviews);
+      ctx?.activity &&
+        queryClient.setQueryData(["activity", username], ctx.activity);
+      ctx?.album &&
+        queryClient.setQueryData(["albumDetails", vars.discogsId], ctx.album);
     },
 
-    onError: (error, variables, context) => {
-      // Restore all snapshots on error
-      if (context?.reviewsSnapshot) {
-        queryClient.setQueryData(
-          ["reviews", username],
-          context.reviewsSnapshot
-        );
-      }
-      if (context?.activitySnapshot) {
-        queryClient.setQueryData(
-          ["activity", username],
-          context.activitySnapshot
-        );
-      }
-      if (context?.albumSnapshot) {
-        queryClient.setQueryData(
-          ["albumDetails", variables.discogsId],
-          context.albumSnapshot
-        );
-      }
+    onSuccess: (serverData) => {
+      // Merge server truth into cache
+      queryClient.setQueryData<AlbumDetailData>(
+        ["albumDetails", serverData.album_discogs_id],
+        (old) =>
+          old
+            ? {
+                ...old,
+                reviews: old.reviews.map((r) =>
+                  r.id === serverData.id ? serverData : r
+                ),
+              }
+            : old
+      );
+
+      // Background refetch — avoids flicker
+      queryClient.refetchQueries({
+        queryKey: ["reviews", username],
+        type: "inactive",
+      });
+      queryClient.refetchQueries({
+        queryKey: ["activity", username],
+        type: "inactive",
+      });
+      queryClient.refetchQueries({
+        queryKey: ["albumDetails", serverData.album_discogs_id],
+        type: "inactive",
+      });
     },
   });
+
   return {
-    isSuccess: mutation.isSuccess,
-    isError: mutation.isError,
     editReviewMutation: mutation,
     isPending: mutation.isPending,
+    isError: mutation.isError,
+    isSuccess: mutation.isSuccess,
   };
 };
 

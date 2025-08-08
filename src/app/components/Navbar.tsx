@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { AnotherNavButton } from "./AnotherNavButton";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
-import { useSearch, useUser } from "@/app/hooks";
+import { useUser } from "@/app/hooks";
 import Link from "next/link";
 
 export const NavBar = () => {

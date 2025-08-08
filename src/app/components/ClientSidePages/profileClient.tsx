@@ -2,12 +2,10 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { Icons } from "@/app/icons/icons";
 import { AlbumCard } from "@/app/components/AlbumCard";
 import { AnotherNavButton } from "@/app/components/AnotherNavButton";
-import { RecentReviewCard } from "@/app/components/RecentReviewCard";
 import ReviewCard from "@/app/components/ReviewCard";
 import { useUser, useUserActivity, useUserReviews } from "@/app/hooks";
 import { Genre, Review } from "@/app/types/types";
@@ -47,11 +45,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     </svg>
   );
 
-  const { data: userData, isLoading: isLoadingUser } = useUser();
-  const { data: userReviews = [], isLoading: isReviewLoading } = useUserReviews(
-    user.username
-  );
-  const { data: userActivity = [], isLoading: isActivityLoading } =
+  const { data: userData, isPending: isPendingUser } = useUser();
+  const { data: userReviews = [], isPending: isPendingReviews } =
+    useUserReviews(user.username);
+  const { data: userActivity = [], isPending: isPendingActivity } =
     useUserActivity(user.username);
   const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
 
@@ -91,16 +88,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     });
   }, [userReviews, userActivity]);
 
-  const formatActivityTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-    });
-  };
-
-  if (!userData) return <ProfilePageSkeleton />;
+  if (isPendingUser || !userData) return <ProfilePageSkeleton />;
   return (
     <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 scale-90 max-h-[800px]">
       <div className="w-full h-60 relative z-0">
@@ -228,7 +216,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               <h1 className="another-heading1 text-[42px]">Pinned Reviews</h1>
             </div>
             <div className="flex flex-row gap-10 mb-10">
-              {isReviewLoading ? (
+              {isPendingReviews ? (
                 <>
                   <SkeletonReviewCard />
                   <SkeletonReviewCard />
@@ -273,7 +261,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
             </div>
 
             <div className="flex flex-col gap-4 max-h-[850px] overflow-y-auto pr-2">
-              {isActivityLoading ? (
+              {isPendingActivity ? (
                 [...Array(5)].map((_, index) => (
                   <SkeletonRecentActivityCard key={index} />
                 ))
@@ -291,16 +279,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                           activity?.review_details?.album?.artist ?? "Unknown"
                         }
                         rating={activity.review_details.rating}
-                        genre={
-                          activity.review_details.user_genres?.[0]?.name ??
-                          "Electronic"
-                        }
                         hasReview={true}
-                        profilePic={
-                          activity.user.avatar ?? "/default-avatar.png"
-                        }
-                        displayName={activity.user?.username ?? "Unknown"}
-                        userName={"@" + (activity.user?.username ?? "unknown")}
                         time={activity.created_at}
                       />
                     ))}
@@ -317,16 +296,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                           activity?.review_details?.album?.artist ?? "Unknown"
                         }
                         rating={activity.review_details.rating}
-                        genre={
-                          activity.review_details.user_genres?.[0]?.name ??
-                          "Electronic"
-                        }
                         hasReview={true}
-                        profilePic={
-                          activity.user.avatar ?? "/default-avatar.png"
-                        }
-                        displayName={activity.user?.username ?? "Unknown"}
-                        userName={"@" + (activity.user?.username ?? "unknown")}
                         time={activity.created_at}
                       />
                     ))}

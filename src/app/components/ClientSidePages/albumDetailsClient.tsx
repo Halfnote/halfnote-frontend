@@ -1,16 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
-import {
-  useAlbumDetails,
-  userOthersActivity,
-  useUserActivity,
-} from "@/app/hooks";
+import { useAlbumDetails } from "@/app/hooks";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import RatingBadge from "../ratingBadge";
 import ReviewModal from "../ReviewModal";
 import { Icons } from "../../icons/icons";
-import { useToggleReview } from "@/app/hooks";
 import { AlbumDetailRecentActivity } from "../AlbumDetailRecentActivity";
 import { Review } from "@/app/types/types";
 import { TopNotesReviewCard } from "./TopNotesReviewCard";
@@ -27,22 +21,11 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
   const router = useRouter();
   const discogsID = params.get("query");
   const show = params.get("show");
-  const { toggleLikeMutation, isPending } = useToggleReview(
-    user.username,
-    discogsID ?? undefined
-  );
-  // const { data: followingActivity = [] } = userOthersActivity(
-  //   user.username,
-  //   "incoming"
-  // );
-
   const {
     data: albumDetails = undefined,
     isLoading,
     isError,
   } = useAlbumDetails(discogsID || "");
-  console.log("ALBUM DETAILS: ", albumDetails);
-
   const handleOpenModal = () => {
     const newParams = new URLSearchParams(params.toString());
     newParams.set("show", "true");

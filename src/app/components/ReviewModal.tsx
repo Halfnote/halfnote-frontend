@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { generateRatingStamp } from "../utils/calculations";
 import { Icons } from "../icons/icons";
-import { Album, AlbumData, Review } from "../types/types";
-import { ReadonlyURLSearchParams, useRouter } from "next/navigation";
-import { useUserReviews, useCreateReview, useEditReview } from "../hooks";
+import { AlbumData, Review } from "../types/types";
+import { useRouter } from "next/navigation";
+import { useCreateReview, useEditReview } from "../hooks";
 import * as Yup from "yup";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 
 type reviewModalProps = {
   data: AlbumData;
@@ -25,11 +25,7 @@ export default function WriteReview({
     isPending: isCreating,
     isSuccess: isCreateSuccess,
   } = useCreateReview(username);
-  const {
-    editReviewMutation,
-    isPending: isEditing,
-    isSuccess: isEditSuccess,
-  } = useEditReview(username);
+  const { editReviewMutation, isPending: isEditing } = useEditReview(username);
 
   // Validation schema
   const reviewValidationSchema = Yup.object({
@@ -74,7 +70,7 @@ export default function WriteReview({
           reviewId: userReview.id,
         },
         {
-          onSuccess: () => {
+          onSettled: () => {
             router.back();
           },
         }
@@ -130,7 +126,7 @@ export default function WriteReview({
                   onClick={() => router.back()}
                   className="bg-black text-white mt-4 px-12 py-3 rounded-full another-heading3 w-[95%] font-medium transition-colors shadow-lg cursor-pointer hover:bg-white hover:text-black"
                 >
-                  Yes Ma'am
+                  <p>Yes Ma&apos;am </p>
                 </button>
               </div>
             </div>
@@ -144,7 +140,7 @@ export default function WriteReview({
               validationSchema={reviewValidationSchema}
               onSubmit={handleSubmit}
             >
-              {({ values, setFieldValue, errors, touched, isValid }) => {
+              {({ values, setFieldValue, errors, touched }) => {
                 const formIsComplete = isFormComplete(
                   values.content,
                   values.rating
