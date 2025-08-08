@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { verifySession } from "./dal";
 
 const BASE_URL =
@@ -52,9 +51,10 @@ export const getUserReviews = async (username: string) => {
       throw new Error(error.message || `Could not get reviews for ${username}`);
     }
     return await response.json();
-  } catch (error: any) {
-    console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get profile");
+  } catch (error: unknown) {
+    const err = error as { message: string };
+    console.error("Profile fetch failed:", err);
+    throw new Error(err.message || "Failed to get profile");
   }
 };
 
@@ -81,9 +81,10 @@ export const getUserActivity = async (username: string) => {
       );
     }
     return await response.json();
-  } catch (error: any) {
-    console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get activity");
+  } catch (error: unknown) {
+    const err = error as { message: string };
+    console.error("Profile fetch failed:", err);
+    throw new Error(err.message || "Failed to get activity");
   }
 };
 
@@ -106,8 +107,9 @@ export const getOthersActivity = async (username: string, type: string) => {
       throw new Error(error.message || `Could not get ${type} activity`);
     }
     return await response.json();
-  } catch (error: any) {
-    console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get profile");
+  } catch (error: unknown) {
+    const err = error as { message: string };
+    console.error("Profile fetch failed:", err);
+    throw new Error(err.message || "Failed to get profile");
   }
 };

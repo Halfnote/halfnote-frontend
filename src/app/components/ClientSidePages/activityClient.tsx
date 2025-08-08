@@ -1,6 +1,5 @@
 "use client";
 import { useMemo, useState } from "react";
-import { DateTime } from "luxon";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
 import { Activity } from "../../types/types";
 import Daft from "../../../../public/sample_images/daft.png";

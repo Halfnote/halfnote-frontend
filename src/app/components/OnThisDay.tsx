@@ -16,7 +16,7 @@ export const OnThisDay = ({ artistName, artistImage }: onThisDayProps) => {
       />
       <h1 className="another-heading4 wrap-normal text-center">
         <span className="font-bold">Coolio </span> featuring L.V.scored his
-        first UK No.1 single with 'Gangsta's Paradise'.
+        first UK No.1 single with &apos;Gangsta&apos;s Paradise&apos;.
       </h1>
     </div>
   );

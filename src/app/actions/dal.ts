@@ -1,7 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
 import { cache } from "react";
-import { redirect } from "next/navigation";
 // import { decrypt } from "./account_management_service";
 const BASE_URL =
   process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
@@ -44,8 +43,9 @@ export const getUser = async () => {
     }
 
     return await response.json();
-  } catch (error: any) {
-    console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get profile");
+  } catch (error: unknown) {
+    const err = error as { message: string };
+    console.error("Profile fetch failed:", err);
+    throw new Error(err.message || "Failed to get profile");
   }
 };

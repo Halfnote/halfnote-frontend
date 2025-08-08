@@ -12,14 +12,7 @@ import { RecentReview } from "../RecentReview";
 import { NewReleasesCarousel } from "../NewReleaseCarousel";
 import { OnThisDay } from "../OnThisDay";
 
-type DiscoverPageProps = {
-  user: {
-    username: string;
-    access_token: string;
-  };
-};
-
-export default function DiscoverPage({ user }: DiscoverPageProps) {
+export default function DiscoverPage() {
   const [reviewTime, setReviewTime] = useState<string>("today");
   const [topRatedTime, setTopRatedTime] = useState<string>("today");
 

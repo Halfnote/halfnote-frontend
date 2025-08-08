@@ -24,7 +24,7 @@ export default function LoginForm() {
     try {
       await LoginUser(formData.username, formData.password);
       router.push("/discovery");
-    } catch (err: any) {
+    } catch (_) {
       setError("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);

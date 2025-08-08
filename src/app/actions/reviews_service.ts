@@ -47,7 +47,8 @@ export const toggleLike = async (reviewId: number) => {
     }
     await console.log(response.json);
     return await response.json();
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to like review");
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { error?: string } } };
+    throw new Error(err.response?.data?.error || "Failed to like review");
   }
 };

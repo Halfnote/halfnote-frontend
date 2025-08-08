@@ -4,7 +4,6 @@ import { Icons } from "../icons/icons";
 import { Review } from "../types/types";
 import { useToggleReview } from "../hooks";
 import { genreBadge } from "../utils/calculations";
-import { useQueryClient } from "@tanstack/react-query";
 type ReviewCardProps = {
   avatar?: string;
   review: Review;

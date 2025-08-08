@@ -2,12 +2,10 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { Icons } from "@/app/icons/icons";
 import { AlbumCard } from "@/app/components/AlbumCard";
 import { AnotherNavButton } from "@/app/components/AnotherNavButton";
-import { RecentReviewCard } from "@/app/components/RecentReviewCard";
 import ReviewCard from "@/app/components/ReviewCard";
 import { useUser, useUserActivity, useUserReviews } from "@/app/hooks";
 import { Genre, Review } from "@/app/types/types";
@@ -24,7 +22,6 @@ type ProfilePageProps = {
 };
 
 export default function ProfilePage({ user }: ProfilePageProps) {
-  const qc = useQueryClient();
   const { data: userData } = useUser();
   const { data: userReviews = [] } = useUserReviews(user.username);
   const { data: userActivity = [] } = useUserActivity(user.username);
@@ -65,15 +62,6 @@ export default function ProfilePage({ user }: ProfilePageProps) {
       return review;
     });
   }, [userReviews, userActivity]);
-
-  const formatActivityTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-    });
-  };
 
   if (!userData) return <div>Loading...</div>;
 

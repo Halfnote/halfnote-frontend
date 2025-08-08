@@ -1,6 +1,5 @@
 "use client";
-import Image, { StaticImageData } from "next/image";
-import { AlbumCard } from "./AlbumCard";
+import Image from "next/image";
 import { Album } from "../types/types";
 import { useTranslation } from "react-i18next";
 
