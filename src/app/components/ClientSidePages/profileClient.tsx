@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 
 import { Icons } from "@/app/icons/icons";
+import { Title } from "@/app/components/general/Title";
 import { AlbumCard } from "@/app/components/AlbumCard";
 import { AnotherNavButton } from "@/app/components/AnotherNavButton";
 import ReviewCard from "@/app/components/ReviewCard";
@@ -13,6 +14,7 @@ import { generateBadge, getVinylIcon } from "@/app/utils/calculations";
 import Black from "../../../../public/sample_images/black.jpeg";
 import { RecentActivityCard } from "../RecentActivityCard";
 import { AlbumTile } from "../AlbumTile";
+import { CreateAlbumListModal } from "../CreateAlbumListModal";
 import { SkeletonReviewCard } from "../skeletons/SkeletonReviewCard";
 import { SkeletonRecentActivityCard } from "../skeletons/SkeletonRecentActivityCard";
 import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
@@ -51,6 +53,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   const { data: userActivity = [], isPending: isPendingActivity } =
     useUserActivity(user.username);
   const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
+  const [addAlbumListModal, setAddAlbumListModal] = useState(false);
 
   const reviewedActivity = useMemo(
     () =>
@@ -180,14 +183,23 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           {/* Favorite Albums */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <Image
-                src={Icons.star}
-                alt="Favorite Icon"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-              <h1 className="another-heading1 text-[42px]">Favorite Albums</h1>
+              <div className="flex row justify-between w-full">
+                <Title
+                  src={Icons.star}
+                  alt={"Favorite Icon"}
+                  name={"Favorite Albums"}
+                />
+                <Image
+                  src={Icons.firstVinyl}
+                  alt={"Add Album List"}
+                  width={40}
+                  height={40}
+                  className="object-contain cursor-pointer"
+                  onClick={() => {
+                    setAddAlbumListModal((prev) => !prev);
+                  }}
+                />
+              </div>
             </div>
             <div className="flex flex-row gap-10 overflow-x-auto">
               {userData.favorite_albums?.slice(0, 3).map((fav) => (
@@ -306,6 +318,9 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           </div>
         </div>
       </div>
+      {addAlbumListModal && (
+        <CreateAlbumListModal setOpen={setAddAlbumListModal} />
+      )}
     </div>
   );
 }
