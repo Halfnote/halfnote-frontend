@@ -11,11 +11,14 @@ export const AlbumCard = ({
   albumCover,
   albumName,
   artistName,
-  size=175,
+  size = 175,
 }: AlbumCardProps) => {
   return (
-    <div className={`flex flex-col items-center w-[${size}px]`}>
-      <div className={`w-[${size}px] h-[${size}px] rounded-[10px] shadow-md overflow-hidden border border-gray-300`}>
+    <div className="flex flex-col items-center" style={{ width: `${size}px` }}>
+      <div
+        className="rounded-[10px] shadow-md overflow-hidden border border-gray-300"
+        style={{ width: `${size}px`, height: `${size}px` }}
+      >
         <Image
           src={albumCover}
           alt={`${albumName} cover`}

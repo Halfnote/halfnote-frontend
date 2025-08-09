@@ -1,6 +1,5 @@
 "use client";
-import Image, { StaticImageData } from "next/image";
-import { AlbumCard } from "./AlbumCard";
+import Image from "next/image";
 import { Album } from "../types/types";
 import { useTranslation } from "react-i18next";
 
@@ -12,11 +11,14 @@ export const AlbumTile = ({ albums }: AlbumTileProps) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="grid grid-cols-2 gap-2 p-2 w-[175px] h-[175px] rounded-[10px] border border-black shadow-md">
+      <div
+        style={{ width: `210px`, height: `210px` }}
+        className="grid grid-cols-2 gap-2 p-2 rounded-[10px] border border-black shadow-md"
+      >
         {albums?.slice(0, 4).map((fav) => (
           <div
             key={fav.id}
-            className="flex items-center justify-center w-[75px] h-[75px] rounded-[10px] shadow-md overflow-hidden border border-black"
+            className="flex items-center justify-center w-[90px] h-[90px] rounded-[10px] shadow-md overflow-hidden border border-black"
           >
             <Image
               src={fav.cover_url || "/default-album.png"}

@@ -1,13 +1,12 @@
 "use client";
 import { useMemo, useState } from "react";
-import { DateTime } from "luxon";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
 import { Activity } from "../../types/types";
 import Daft from "../../../../public/sample_images/daft.png";
 import { useTranslation } from "react-i18next";
 
 import { RecentReviewCard } from "../../components/RecentReviewCard";
-import { userOthersActivity } from "@/app/hooks";
+import { useOthersActivity } from "@/app/hooks";
 
 type ActivityPageProps = {
   user: {
@@ -23,13 +22,13 @@ export default function ActivityPage({ user }: ActivityPageProps) {
 
   const [filter, setFilter] = useState<ActivityFilterState>("following");
 
-  const { data: youActivity = [] } = userOthersActivity(user.username, "you");
-  const { data: friendActivity = [] } = userOthersActivity(
+  const { data: youActivity = [] } = useOthersActivity(user.username, "you");
+  const { data: friendActivity = [] } = useOthersActivity(
     user.username,
     "friends"
   );
 
-  const { data: followingActivity = [] } = userOthersActivity(
+  const { data: followingActivity = [] } = useOthersActivity(
     user.username,
     "incoming"
   );
@@ -47,7 +46,7 @@ export default function ActivityPage({ user }: ActivityPageProps) {
   }, [youActivity, friendActivity, followingActivity, filter]);
 
   return (
-    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen items-center justify-center mb-10">
+    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen items-center justify-center mb-10 scale-90">
       <div className="bg-white border-2 border-black p-6 rounded-xl w-full">
         {/* Header + Tabs */}
         <div className="flex items-center justify-between mb-6">

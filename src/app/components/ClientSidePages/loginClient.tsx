@@ -26,6 +26,7 @@ export default function LoginForm() {
       router.push("/discovery");
     } catch (err: any) {
       setError("Login failed. Please check your credentials.");
+      console.error(err);
     } finally {
       setLoading(false);
     }

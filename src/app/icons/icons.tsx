@@ -35,6 +35,27 @@ import likedHeart from "@/app/icons/another_pixel_icons/liked_heart.png";
 import unlikedHeart from "@/app/icons/another_pixel_icons/unliked_heart.png";
 import hourGlass from "@/app/icons/another_pixel_icons/hour_glass.png";
 import lines from "@/app/icons/another_misc_icons/lines.png";
+import oneStamp from "../../../public/rating_stamps/one-ratingStamp.svg";
+import twoStamp from "../../../public/rating_stamps/two-ratingStamp.svg";
+import threeStamp from "../../../public/rating_stamps/three-ratingStamp.svg";
+import fourStamp from "../../../public/rating_stamps/four-ratingStamp.svg";
+import fiveStamp from "../../../public/rating_stamps/five-ratingStamp.svg";
+import sixStamp from "../../../public/rating_stamps/six-ratingStamp.svg";
+import sevenStamp from "../../../public/rating_stamps/seven-ratingStamp.svg";
+import eightStamp from "../../../public/rating_stamps/eight-ratingStamp.svg";
+import nineStamp from "../../../public/rating_stamps/nine-ratingStamp.svg";
+import tenStamp from "../../../public/rating_stamps/ten-ratingStamp.svg";
+import oneEmptyStamp from "../../../public/empty_rating_stamps/oneEmpty-ratingStamp.svg";
+import twoEmptyStamp from "../../../public/empty_rating_stamps/twoEmpty-ratingStamp.svg";
+import threeEmptyStamp from "../../../public/empty_rating_stamps/threeEmpty-ratingStamp.svg";
+import fourEmptyStamp from "../../../public/empty_rating_stamps/fourEmpty-ratingStamp.svg";
+import fiveEmptyStamp from "../../../public/empty_rating_stamps/fiveEmpty-ratingStamp.svg";
+import sixEmptyStamp from "../../../public/empty_rating_stamps/sixEmpty-ratingStamp.svg";
+import sevenEmptyStamp from "../../../public/empty_rating_stamps/sevenEmpty-ratingStamp.svg";
+import eightEmptyStamp from "../../../public/empty_rating_stamps/eightEmpty-ratingStamp.svg";
+import nineEmptyStamp from "../../../public/empty_rating_stamps/nineEmpty-ratingStamp.svg";
+import tenEmptyStamp from "../../../public/empty_rating_stamps/tenEmpty-ratingStamp.svg";
+import pencil from "@/app/icons/another_pixel_icons/Group 2354.svg";
 
 export const Icons = {
   classical: Classical,
@@ -74,4 +95,25 @@ export const Icons = {
   unlikedHeart: unlikedHeart,
   hourGlass: hourGlass,
   lines: lines,
+  oneStamp: oneStamp,
+  twoStamp: twoStamp,
+  threeStamp: threeStamp,
+  fourStamp: fourStamp,
+  fiveStamp: fiveStamp,
+  sixStamp: sixStamp,
+  sevenStamp: sevenStamp,
+  eightStamp: eightStamp,
+  nineStamp: nineStamp,
+  tenStamp: tenStamp,
+  oneEmptyStamp: oneEmptyStamp,
+  twoEmptyStamp: twoEmptyStamp,
+  threeEmptyStamp: threeEmptyStamp,
+  fourEmptyStamp: fourEmptyStamp,
+  fiveEmptyStamp: fiveEmptyStamp,
+  sixEmptyStamp: sixEmptyStamp,
+  sevenEmptyStamp: sevenEmptyStamp,
+  eightEmptyStamp: eightEmptyStamp,
+  nineEmptyStamp: nineEmptyStamp,
+  tenEmptyStamp: tenEmptyStamp,
+  pencil: pencil,
 };

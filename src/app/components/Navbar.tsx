@@ -12,16 +12,15 @@ import Link from "next/link";
 export const NavBar = () => {
   const router = useRouter();
   const { data: userData } = useUser();
-
   return (
-    <nav className="rounded-full outline-solid outline-2 outline-black flex justify-between items-center bg-white p-4 mb-[25px]">
+    <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 scale-90">
       <Image
-        className="w-[230px] h-[55px] ml-5"
+        className="w-[230px] h-[55px] ml-5 justify-self-start"
         priority
         src={Icons.halfnote}
         alt="Another"
       />
-      <ul className="flex w-full justify-center ml-20 gap-7">
+      <ul className="flex justify-center gap-7">
         <Link href={"/discovery"}>
           <AnotherNavButton label="Discover" />
         </Link>
@@ -32,17 +31,32 @@ export const NavBar = () => {
           <AnotherNavButton label="Profile" />
         </Link>
       </ul>
-      <Form
-        action="search"
-        className="flex flex-row justify-between border bg-[var(--color-bg-gray)] border-black rounded-full p-3 mr-5 w-60 focus:outline-none"
-      >
-        <Image src={Icons.search} alt="Search Icon" width={24} height={24} />
-        <input
-          type="text"
-          placeholder="Search"
-          className="w-full focus:outline-none another-heading4 text-black ml-5 placeholder:text-black"
-        />
-      </Form>
+      <div className="justify-self-end mr-5">
+        <Form
+          action={(formData: FormData) => {
+            const query = formData.get("search") as string;
+            if (!query || query.length === 0) return;
+            const encodedQuery = encodeURIComponent(query);
+            router.push(`/search?query=${encodedQuery}`);
+          }}
+          className="flex flex-row justify-between border bg-[var(--color-bg-gray)] border-black rounded-full p-3 w-40 focus-within:w-80 transition-all duration-300 ease-in-out focus:outline-none"
+        >
+          <button type="submit">
+            <Image
+              src={Icons.search}
+              alt="Search Icon"
+              width={24}
+              height={24}
+            />
+          </button>
+          <input
+            name="search"
+            type="text"
+            placeholder="Search"
+            className="w-full focus:outline-none another-heading4 text-black ml-5 placeholder:text-black bg-transparent"
+          />
+        </Form>
+      </div>
     </nav>
   );
 };
