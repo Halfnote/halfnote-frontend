@@ -52,7 +52,7 @@ export default function RootLayout({
     >
       <QueryClientProvider client={queryClient}>
         <TranslationProvider>
-          <body className="items-center justify-center max-h-screen">
+          <body className="items-center justify-center m-12 flex flex-col gap-8">
             <NavBar />
             {children}
           </body>

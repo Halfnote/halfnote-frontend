@@ -93,7 +93,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
 
   if (isPendingUser || !userData) return <ProfilePageSkeleton />;
   return (
-    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 scale-90 max-h-[800px]">
+    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 max-h-[800px]">
       <div className="w-full h-60 relative z-0">
         <Image
           src={Black}

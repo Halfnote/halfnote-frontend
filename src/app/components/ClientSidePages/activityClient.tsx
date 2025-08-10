@@ -46,7 +46,7 @@ export default function ActivityPage({ user }: ActivityPageProps) {
   }, [youActivity, friendActivity, followingActivity, filter]);
 
   return (
-    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen items-center justify-center mb-10 scale-90">
+    <div className="flex flex-row gap-4 box-border bg-[#f3f3f3] max-h-screen w-full items-center justify-center mb-10">
       <div className="bg-white border-2 border-black p-6 rounded-xl w-full">
         {/* Header + Tabs */}
         <div className="flex items-center justify-between mb-6">
