@@ -1,9 +1,7 @@
-import { Activity, Review } from "../types/types";
+import { Review } from "../types/types";
 import Image from "next/image";
-import RatingBadge from "./ratingBadge";
-import { CountryBadge } from "../icons/stamps";
-import { generateBadge, generateRatingStamp } from "../utils/calculations";
-import { act } from "react";
+
+import { generateRatingStamp } from "../utils/calculations";
 
 interface AlbumDetailRecentActivityProps {
   activity: Review;
@@ -11,29 +9,6 @@ interface AlbumDetailRecentActivityProps {
 export const AlbumDetailRecentActivity = ({
   activity,
 }: AlbumDetailRecentActivityProps) => {
-  // const handleActivityType = (activity: Activity) => {
-  //   switch (activity.activity_type) {
-  //     case "comment_created":
-  //       return (
-  //         <h1 className="another-heading5 text-gray-400">{`${activity.user.username} commented on your review`}</h1>
-  //       );
-  //     case "review_created":
-  //       return (
-  //         <Image
-  //           width={75}
-  //           height={75}
-  //           src={generateRatingStamp(activity.review_details?.rating)}
-  //           alt={` Badge`}
-  //         />
-  //       );
-  //     case "review_liked":
-  //       return (s
-  //         <h1 className="another-heading5 text-gray-400">{`${activity.user.username} liked your review`}</h1>
-  //       );
-  //     case "review_pinned":
-  //       <h1 className="another-heading5 text-gray-400">{`${activity.user.username} pinned your review`}</h1>;
-  //   }
-  // };
   return (
     <div
       key={activity.id}

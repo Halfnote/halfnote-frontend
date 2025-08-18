@@ -1,6 +1,6 @@
 import { verifySession } from "@/app/actions/dal";
 import { redirect } from "next/navigation";
-import DiscoverPage from "@/app/components/ClientSidePages/discoveryClient";
+import DiscoverPage from "@/app/components/ClientSidePages/discoveryClient/index";
 
 export default async function Page() {
   try {

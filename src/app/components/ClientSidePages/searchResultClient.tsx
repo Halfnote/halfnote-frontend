@@ -1,15 +1,21 @@
 "use client";
 import { useSearch } from "@/app/hooks";
-import { Album } from "@/app/types/types";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
-import { RecentReviewCard } from "../RecentReviewCard";
 import { RecentActivityCard } from "../RecentActivityCard";
 
 export const SearchResultPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("query");
+  const { data: albumList, isLoading, isError } = useSearch(query || "");
+
+  useEffect(() => {
+    if (!isLoading && query) {
+      return;
+    }
+  }, [query, isLoading]);
+
   if (!query) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -18,12 +24,7 @@ export const SearchResultPage = () => {
       </div>
     );
   }
-  const { data: albumList, isLoading, isError } = useSearch(query);
-  useEffect(() => {
-    if (!isLoading && query) {
-      return;
-    }
-  }, [query, isLoading]);
+
   return (
     <div className="flex flex-col items-center h-screen w-screen scale-90">
       <h1 className="text-2xl font-bold mb-4">Search Results for: {query}</h1>
@@ -44,11 +45,7 @@ export const SearchResultPage = () => {
                 albumTitle={album.title || "Unknown Album"}
                 artistName={album.artist || "Unknown Artist"}
                 rating={album.rating || 0}
-                genre={album.genre || "Unknown Genre"}
                 hasReview={!!album.review}
-                profilePic={album.profile_pic || ""}
-                displayName={album.display_name || "Anonymous"}
-                userName={album.username || "unknown_user"}
                 time={album.time || new Date().toISOString()}
               />
             </button>

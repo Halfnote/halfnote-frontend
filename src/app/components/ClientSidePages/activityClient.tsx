@@ -1,13 +1,12 @@
 "use client";
 import { useMemo, useState } from "react";
-import { DateTime } from "luxon";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
 import { Activity } from "../../types/types";
 import Daft from "../../../../public/sample_images/daft.png";
 import { useTranslation } from "react-i18next";
 
 import { RecentReviewCard } from "../../components/RecentReviewCard";
-import { userOthersActivity } from "@/app/hooks";
+import { useOthersActivity } from "@/app/hooks";
 
 type ActivityPageProps = {
   user: {
@@ -23,13 +22,13 @@ export default function ActivityPage({ user }: ActivityPageProps) {
 
   const [filter, setFilter] = useState<ActivityFilterState>("following");
 
-  const { data: youActivity = [] } = userOthersActivity(user.username, "you");
-  const { data: friendActivity = [] } = userOthersActivity(
+  const { data: youActivity = [] } = useOthersActivity(user.username, "you");
+  const { data: friendActivity = [] } = useOthersActivity(
     user.username,
     "friends"
   );
 
-  const { data: followingActivity = [] } = userOthersActivity(
+  const { data: followingActivity = [] } = useOthersActivity(
     user.username,
     "incoming"
   );

@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { AnotherNavButton } from "./AnotherNavButton";
 import Form from "next/form";
 import { useRouter } from "next/navigation";
-import { useSearch, useUser } from "@/app/hooks";
+import { useUser } from "@/app/hooks";
 import Link from "next/link";
 
 export const NavBar = () => {
   const router = useRouter();
   const { data: userData } = useUser();
   return (
-    <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 scale-90">
+    <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full">
       <Image
-        className="w-[230px] h-[55px] ml-5 justify-self-start"
+        className="w-[200px] h-[55px] justify-self-start"
         priority
         src={Icons.halfnote}
         alt="Another"
@@ -31,7 +31,7 @@ export const NavBar = () => {
           <AnotherNavButton label="Profile" />
         </Link>
       </ul>
-      <div className="justify-self-end mr-5">
+      <div className="justify-self-end mr-2">
         <Form
           action={(formData: FormData) => {
             const query = formData.get("search") as string;

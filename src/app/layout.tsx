@@ -2,16 +2,20 @@
 import { NavBar } from "./components/Navbar";
 import "./globals.css";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
-import ReactQueryProvider from "./providers/QueryProvider";
 import TranslationProvider from "./providers/TranslationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { useState } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes (was cacheTime in v4)
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMount: "always", // or true
+    },
+    mutations: {
+      gcTime: 5 * 60 * 1000, // 5 minutes for mutation cache
     },
   },
 });
@@ -48,7 +52,7 @@ export default function RootLayout({
     >
       <QueryClientProvider client={queryClient}>
         <TranslationProvider>
-          <body className="items-center justify-center max-h-screen">
+          <body className="items-center justify-center m-12 flex flex-col gap-8">
             <NavBar />
             {children}
           </body>

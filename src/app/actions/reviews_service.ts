@@ -23,6 +23,7 @@ export const createReview = async (
           content: description,
           genres,
         }),
+        next: { revalidate: 0 },
       }
     );
     if (!response.ok) {
@@ -42,8 +43,6 @@ export const editReview = async (
   description: string,
   genres: string[]
 ) => {
-  console.log("GENRES: ", genres);
-  console.log("editing");
   const session = await verifySession();
   try {
     const response = await fetch(`${BASE_URL}/music/reviews/${reviewId}/`, {
@@ -57,12 +56,12 @@ export const editReview = async (
         content: description,
         genres,
       }),
+      next: { revalidate: 0 },
     });
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to edit review");
     }
-    console.log("Review edited successfully");
     return await response.json();
   } catch (error: any) {
     console.error("Review edit failed:", error);
@@ -84,6 +83,7 @@ export const toggleLike = async (reviewId: number) => {
           "Authorization": `Bearer ${session.access_token}`,
         },
         credentials: "include",
+        next: { revalidate: 0 },
       }
     );
     if (!response.ok) {

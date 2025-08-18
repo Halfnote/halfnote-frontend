@@ -1,7 +1,7 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
+import { Vinyl } from "./general/Vinyl";
 
-import { Icons } from "../icons/icons";
 type MemberCardProps = {
   numRatings: number;
   profilePic: StaticImageData;
@@ -16,70 +16,47 @@ export const MemberCard = ({
   userName,
 }: MemberCardProps) => {
   return (
-    <div className="flex flex-col border-2 border-[#9A9A9A] rounded-xl w-[212px] h-[212px] pl-6 pr-6 pt-3 mb-4">
-      <div className="flex flex-row gap-10 w-full items-center">
-        {/* {first} */}
-        <div className="flex flex-col min-w-0 items-center">
-          <Image
-            src={profilePic}
-            alt="Profile Picture"
-            className="aspect-square w-[75px] object-cover rounded-full ring-2"
-          />
+    <div className="border-2 border-[#9A9A9A] rounded-xl p-4 mb-2 aspect-square w-full">
+      {/* Inside of square */}
+      <div className="flex flex-col h-full w-full">
+        {/* Top row */}
+        <div className="flex flex-row gap-2 items-center flex-shrink-0">
+          {/* Profile */}
+          <div className="flex flex-col items-center w-1/2">
+            <Image
+              src={profilePic}
+              alt="Profile Picture"
+              className="aspect-square w-full object-cover rounded-full ring-2"
+            />
+            <h1 className="another-heading3">{userName}</h1>
+          </div>
 
-          <h1 className="truncate another-heading3">{userName}</h1>
+          {/* Vinyl + ratings */}
+          <div className="flex flex-col items-center justify-between w-1/2 overflow-hidden">
+            <div className="w-3/4 overflow-hidden">
+              <Vinyl numRatings={numRatings} />
+            </div>
+            <div className="flex flex-col items-center">
+              <h1 className="another-heading4 -mb-1">{numRatings}</h1>
+              <h3 className="another-body mt-0">reviews</h3>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col min-w-0 items-center gap-0">
-          {numRatings === 0 ? (
+
+        {/* Spacer */}
+        <div className="flex-1"></div>
+
+        {/* Albums row */}
+        <div className="flex flex-row gap-1 justify-start overflow-x-auto">
+          {topAlbums.map((album, index) => (
             <Image
-              src={Icons.firstVinyl}
-              alt="First vinyl"
-              className="aspect-square w-[54px] object-cover rounded-full ring-2"
+              key={index}
+              src={album}
+              alt="Top Album"
+              className="aspect-square w-1/3 object-cover rounded-md flex-shrink-0"
             />
-          ) : numRatings >= 1 && numRatings <= 99 ? (
-            <Image
-              src={Icons.secondVinyl}
-              alt="Second vinyl"
-              className="aspect-square w-[54px] object-cover rounded-full ring-2"
-            />
-          ) : numRatings >= 100 && numRatings <= 499 ? (
-            <Image
-              src={Icons.thirdVinyl}
-              alt="Third vinyl"
-              className="aspect-square w-[54px] object-cover rounded-full ring-2"
-            />
-          ) : numRatings >= 500 && numRatings <= 1499 ? (
-            <Image
-              src={Icons.fourthVinyl}
-              alt="Forth vinyl"
-              className="aspect-square w-[54px] object-cover rounded-full ring-2"
-            />
-          ) : (
-            <Image
-              src={Icons.fifthVinyl}
-              alt="Fifth vinyl"
-              className="aspect-square w-[54px] object-cover rounded-full ring-2"
-            />
-          )}
-          <h1 className="another-heading4 -mb-1">{numRatings}</h1>
-          <h3 className="another-body mt-0">reviews</h3>
+          ))}
         </div>
-      </div>
-      <div className="flex flex-row gap-1 justify-center mt-3">
-        <Image
-          src={topAlbums[0]}
-          alt="Top Album"
-          className="w-[60px] h-[60px] object-cover rounded-md object-center"
-        />
-        <Image
-          src={topAlbums[1]}
-          alt="Top Album"
-          className="w-[60px] h-[60px] object-cover rounded-md object-center"
-        />
-        <Image
-          src={topAlbums[2]}
-          alt="Top Album"
-          className="w-[60px] h-[60px] object-cover rounded-md object-center"
-        />
       </div>
     </div>
   );
