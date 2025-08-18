@@ -201,7 +201,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 />
               </div>
             </div>
-            <div className="flex flex-row gap-10 overflow-x-auto">
+            <div className="flex flex-row gap-10 overflow-x-auto gro">
               {userData.favorite_albums?.slice(0, 3).map((fav) => (
                 <AlbumCard
                   key={fav.id}
