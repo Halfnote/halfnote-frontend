@@ -55,9 +55,9 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 lg:w-screen h-screen mb-5 scale-90">
+      <div className="grid grid-cols-1 gap-5 h-screen mb-5 lg:grid-cols-4 lg:w-[100%]">
         {/* left side */}
-        <div className="lg:col-span-1 flex flex-col space-y-0 max-h-screen">
+        <div className="flex flex-col space-y-0 max-h-screen lg:col-span-1">
           {/* white box */}
           <div className="border-1 border-black rounded-xl bg-white h-screen max-w-sm overflow-hidden">
             {typeof imageSrc === "string" && (
@@ -152,7 +152,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
         </div>
 
         {/* Right Panel: Tracklist and Credits */}
-        <div className="lg:col-span-3 space-y-5 pl-0 flex flex-col h-screen">
+        <div className="space-y-5 pl-0 flex flex-col h-screen lg:col-span-3">
           {/* Top Notes */}
           <div className="bg-white rounded-xl border-1 border-black p-5 min-h-[290px]">
             <h2 className="another-heading1 text-4xl mb-2">Top Notes</h2>
@@ -175,11 +175,11 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
           <div className="flex flex-row gap-4 h-screen">
             {/* Recent Activity - 60% width */}
             <div className="bg-white rounded-xl border-1 border-black p-5 w-[60%] h-full">
-              {/* We are down */}
               <h1 className="another-heading1 text-4xl">Recent Activity</h1>
               {albumDetails.reviews.length > 0 ? (
                 albumDetails.reviews.map((activity) => (
                   <AlbumDetailRecentActivity
+                    username={user.username}
                     activity={activity}
                     key={activity.id}
                   />

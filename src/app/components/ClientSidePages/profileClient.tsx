@@ -201,14 +201,14 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 />
               </div>
             </div>
-            <div className="flex flex-row gap-10 overflow-x-auto">
+            <div className="flex flex-row gap-10 overflow-x-clip">
               {userData.favorite_albums?.slice(0, 3).map((fav) => (
                 <AlbumCard
                   key={fav.id}
                   albumCover={fav.cover_url || "/default-album.png"}
                   albumName={fav.title}
                   artistName={fav.artist}
-                  size={220}
+                  size={200}
                 />
               ))}
               <AlbumTile albums={userData.favorite_albums?.slice(3)} />
