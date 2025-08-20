@@ -3,6 +3,8 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { StaticImageData } from "next/image";
 import { NextRequest, NextResponse } from "next/server";
+import { verifySession } from "./dal";
+import { redirect } from "next/navigation";
 
 const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
 const secretKey = process.env.SESSION_SECRET!;
@@ -39,7 +41,6 @@ export async function createSession(
 ) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const cookieStore = await cookies();
-  
 
   cookieStore.set("access", access_token, {
     httpOnly: true,
@@ -63,34 +64,44 @@ export async function createSession(
 
 export const RegisterUser = async (
   username: string,
-  password: string,
-  bio?: string,
-  avatar_url?: StaticImageData
+  email: string,
+  password: string
 ) => {
-  fetch(`${BASE_URL}/accounts/register/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: username,
-      password: password,
-      bio: bio,
-      avatar_url: avatar_url,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // Store tokens
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("refresh_token", data.refresh_token);
+  try {
+    const response = await fetch(`${BASE_URL}/accounts/register/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, email, password }),
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || data.detail || "Registration failed");
+    }
+
+    if (!data.access_token || !data.refresh_token) {
+      throw new Error("Invalid token data received");
+    }
+
+    await createSession(data.access_token, data.refresh_token, username);
+    return data;
+  } catch (error) {
+    console.error("Registration error:", error);
+    throw error;
+  }
 };
 
 export async function deleteSession() {
-  // Destroy the session
   const cookieStore = await cookies();
+  console.log(() => verifySession().then.toString);
+
   cookieStore.delete("access");
+  cookieStore.delete("refresh");
+  cookieStore.delete("username");
+  console.log(() => verifySession());
 }
 
 export const logoutUser = async () => {
@@ -111,6 +122,7 @@ export const LoginUser = async (
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         username,
         password,
@@ -123,6 +135,7 @@ export const LoginUser = async (
     }
 
     const data = await response.json();
+    console.log("data login: ", data);
 
     if (!data.access_token || !data.refresh_token) {
       throw new Error("Invalid token data received");
@@ -135,22 +148,3 @@ export const LoginUser = async (
     throw new Error(error.message || "An error occurred during login");
   }
 };
-
-// export const getOwnProfile = async () => {
-//   try {
-//     const response = await fetch(`${BASE_URL}/accounts/profile/`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     if (!response.ok) {
-//       const error = await response.json();
-//       throw new Error(error.message || "Could not get profile data");
-//     }
-//     const data = await response.json();
-//     return data;
-//   } catch (error: any) {
-//     throw new Error(error.response?.data?.error || "Failed to get profile");
-//   }
-// };

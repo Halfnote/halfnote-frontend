@@ -32,8 +32,12 @@ export default function LoginForm() {
     }
   };
 
+  const handleRegister = () => {
+    router.push("/register");
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-5">
+    <div className="h-[800px] flex items-center justify-center px-5">
       <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-200 w-full max-w-[400px]">
         <div className="text-center mb-8">
           <Image
@@ -44,6 +48,7 @@ export default function LoginForm() {
             className="mx-auto mb-2"
           />
           <p className="text-gray-500 text-base">Sign in to your account</p>
+          <div className="w-full h-px bg-gray-200 mt-4"></div>
         </div>
 
         {error && (
@@ -52,7 +57,11 @@ export default function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form
+          method="post"
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5"
+        >
           <input
             name="username"
             placeholder="Username"
@@ -73,9 +82,17 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-gray-900 text-white py-3 px-4 rounded-lg font-semibold"
+            className="bg-gray-900 text-white py-3 px-4 rounded-lg font-semibold cursor-pointer"
           >
             {loading ? "Signing in..." : "Sign In"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleRegister}
+            className="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
+          >
+            Create Account
           </button>
         </form>
       </div>

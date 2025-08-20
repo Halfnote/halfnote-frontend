@@ -22,7 +22,6 @@ import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
 type ProfilePageProps = {
   user: {
     username: string;
-    access_token: string;
   };
 };
 
@@ -71,6 +70,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     [userActivity]
   );
 
+  console.log(userReviews);
   const pinnedReviews = useMemo(() => {
     const pinned = userReviews.filter((review: Review) => review.is_pinned);
     return pinned.map((review: Review) => {
@@ -91,7 +91,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     });
   }, [userReviews, userActivity]);
 
-  if (isPendingUser || !userData) return <ProfilePageSkeleton />;
+  if (isPendingUser) return <ProfilePageSkeleton />;
   return (
     <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 max-h-[800px]">
       <div className="w-full h-60 relative z-0">

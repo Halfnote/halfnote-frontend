@@ -16,16 +16,22 @@ import { useQueryClient } from "@tanstack/react-query";
 import { User, Activity, Review, AlbumDetailData } from "../types/types";
 
 export const useUser = () =>
-  useQuery<User, Error>({
+  useQuery<User | null, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(),
-    staleTime: 1000 * 60 * 60, //grabbing from cache for 60 minutes
+    staleTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
 export const useUserReviews = (username: string) =>
   useQuery<Review[]>({
     queryKey: ["reviews", username],
-    queryFn: () => getUserReviews(username),
+    queryFn: async () => {
+      const res = await getUserReviews(username);
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
     enabled: !!username,
   });
 
@@ -162,7 +168,11 @@ export const useToggleReview = (username: string, discogsId?: string) => {
 export const useUserActivity = (username: string) =>
   useQuery<Activity[], Error>({
     queryKey: ["activity", username],
-    queryFn: () => getUserActivity(username),
+    queryFn: async () => {
+      const res = await getUserActivity(username);
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
     enabled: !!username,
     staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,

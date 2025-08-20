@@ -11,7 +11,6 @@ import { useOthersActivity } from "@/app/hooks";
 type ActivityPageProps = {
   user: {
     username: string;
-    access_token: string;
   };
 };
 

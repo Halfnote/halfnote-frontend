@@ -1,6 +1,4 @@
 "use client";
-import { albums } from "../../mockdata/mockClients";
-import { RecentReview } from "../../RecentReview";
 import { MembersSection } from "./membersSection";
 import { TopReviewsSection } from "./topReviewsSection";
 import { TopRatedAlbumsSection } from "./topRatedAlbumsSection";
@@ -11,7 +9,6 @@ import { MostRecentReviewsSection } from "./mostRecentReviewsSection";
 type DiscoverPageProps = {
   user: {
     username: string;
-    access_token: string;
   };
 };
 

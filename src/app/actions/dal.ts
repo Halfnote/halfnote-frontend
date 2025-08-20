@@ -6,15 +6,21 @@ const BASE_URL =
   process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 
 export const verifySession = cache(async () => {
-  const cookieStore = cookies();
-  const access = (await cookieStore).get("access")?.value;
-  const username = (await cookieStore).get("username")?.value;
+  const cookieStore = await cookies();
+  const access_token = cookieStore.get("access")?.value;
+  const username = cookieStore.get("username")?.value;
 
-  if (!access) throw new Error("No access token found");
+  if (!access_token) {
+    return {
+      isAuth: false,
+      access_token: null,
+      username: null,
+    };
+  }
 
   return {
     isAuth: true,
-    access_token: access,
+    access_token,
     username,
   };
 });
@@ -24,7 +30,6 @@ export const getUser = async () => {
   if (!session?.access_token) {
     throw new Error("No valid session");
   }
-
   try {
     const response = await fetch(`${BASE_URL}/accounts/profile/`, {
       method: "GET",
@@ -33,11 +38,11 @@ export const getUser = async () => {
         "Authorization": `Bearer ${session.access_token}`,
       },
       credentials: "include",
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600 }, // cached for 1h
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = await response.json().catch(() => ({}));
       throw new Error(error.message || "Could not get profile data");
     }
 

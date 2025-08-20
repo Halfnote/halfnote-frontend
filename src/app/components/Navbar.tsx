@@ -5,32 +5,53 @@ import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { AnotherNavButton } from "./AnotherNavButton";
 import Form from "next/form";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/app/hooks";
 import Link from "next/link";
+import { logoutUser } from "../actions/account_management_service";
 
 export const NavBar = () => {
   const router = useRouter();
+  const path = usePathname();
   const { data: userData } = useUser();
+
+  // Hide navbar on landing/register
+  if (path === "/register" || path === "/" || !userData?.username) return null;
+
   return (
     <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full">
+      {/* Logo */}
       <Image
         className="w-[200px] h-[55px] justify-self-start"
         priority
         src={Icons.halfnote}
         alt="Another"
       />
+
+      {/* Center nav links */}
       <ul className="flex justify-center gap-7">
-        <Link href={"/discovery"}>
+        <Link href="/discovery">
           <AnotherNavButton label="Discover" />
         </Link>
-        <Link href={"/activity"}>
+        <Link href="/activity">
           <AnotherNavButton label="Activity" />
         </Link>
-        <Link href={`/profile/${userData?.username || ""}`}>
+        <Link href={`/profile/${userData.username}`}>
           <AnotherNavButton label="Profile" />
         </Link>
+        <Image
+          src={Icons.firstVinyl}
+          alt={"Add Album List"}
+          width={40}
+          height={40}
+          className="object-contain cursor-pointer"
+          onClick={() => {
+            logoutUser();
+          }}
+        />
       </ul>
+
+      {/* Search bar */}
       <div className="justify-self-end mr-2">
         <Form
           action={(formData: FormData) => {
