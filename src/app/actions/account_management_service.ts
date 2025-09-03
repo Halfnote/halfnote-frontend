@@ -65,15 +65,21 @@ export async function createSession(
 export const RegisterUser = async (
   username: string,
   email: string,
-  password: string
+  password: string,
+  bio?: string,
+  avatar?: File
 ) => {
   try {
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", password);
+    if (bio) formData.append("bio", bio);
+    if (avatar) formData.append("avatar", avatar);
+    console.log("formdata: ", JSON.stringify(formData));
     const response = await fetch(`${BASE_URL}/accounts/register/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, email, password }),
+      body: formData,
     });
 
     const data = await response.json();
@@ -96,12 +102,9 @@ export const RegisterUser = async (
 
 export async function deleteSession() {
   const cookieStore = await cookies();
-  console.log(() => verifySession().then.toString);
-
   cookieStore.delete("access");
   cookieStore.delete("refresh");
   cookieStore.delete("username");
-  console.log(() => verifySession());
 }
 
 export const logoutUser = async () => {

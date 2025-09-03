@@ -9,14 +9,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/app/hooks";
 import Link from "next/link";
 import { logoutUser } from "../actions/account_management_service";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { SkeletonNavBar } from "./skeletons/SkeletonNavBar";
 
 export const NavBar = () => {
+  const qc = useQueryClient();
   const router = useRouter();
   const path = usePathname();
-  const { data: userData } = useUser();
+  const { data: userData, isLoading: isUserLoading } = useUser();
+  const handleLogout = async () => {
+    await logoutUser();
+    qc.clear();
+    router.replace("/");
+    router.refresh();
+  };
 
   // Hide navbar on landing/register
-  if (path === "/register" || path === "/" || !userData?.username) return null;
+  if (path === "/register" || path === "/") return null;
+  if (isUserLoading) return <SkeletonNavBar />;
 
   return (
     <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full">
@@ -45,9 +55,7 @@ export const NavBar = () => {
           width={40}
           height={40}
           className="object-contain cursor-pointer"
-          onClick={() => {
-            logoutUser();
-          }}
+          onClick={handleLogout}
         />
       </ul>
 

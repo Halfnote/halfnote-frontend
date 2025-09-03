@@ -4,8 +4,10 @@ import { useState } from "react";
 import { LoginUser } from "@/app/actions/account_management_service";
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LoginForm() {
+  const qc = useQueryClient();
   const router = useRouter();
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,9 @@ export default function LoginForm() {
 
     try {
       await LoginUser(formData.username, formData.password);
-      router.push("/discovery");
+      await qc.invalidateQueries({ queryKey: ["user"] }); // refetch user
+      router.replace("/discovery");
+      router.refresh();
     } catch (err: any) {
       setError("Login failed. Please check your credentials.");
       console.error(err);

@@ -38,7 +38,6 @@ export const getUser = async () => {
         "Authorization": `Bearer ${session.access_token}`,
       },
       credentials: "include",
-      next: { revalidate: 3600 }, // cached for 1h
     });
 
     if (!response.ok) {

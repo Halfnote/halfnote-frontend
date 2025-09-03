@@ -39,6 +39,10 @@ export default function RegisterForm() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // 👁️ Password visibility toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-8 w-full">
       <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-200 w-full max-w-[400px]">
@@ -74,7 +78,8 @@ export default function RegisterForm() {
               await RegisterUser(
                 values.username,
                 values.email,
-                values.password
+                values.password,
+                values.bio
               );
               router.push("/discovery");
             } catch (err) {
@@ -123,16 +128,23 @@ export default function RegisterForm() {
               </div>
 
               {/* Password */}
-              <div>
+              <div className="relative">
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   Password
                 </label>
                 <Field
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
-                  className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400"
+                  className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
                 <ErrorMessage
                   name="password"
                   component="div"
@@ -141,16 +153,23 @@ export default function RegisterForm() {
               </div>
 
               {/* Confirm Password */}
-              <div>
+              <div className="relative">
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   Confirm Password
                 </label>
                 <Field
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirm ? "text" : "password"}
                   placeholder="Confirm your password"
-                  className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400"
+                  className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirm ? "🙈" : "👁️"}
+                </button>
                 <ErrorMessage
                   name="confirmPassword"
                   component="div"
