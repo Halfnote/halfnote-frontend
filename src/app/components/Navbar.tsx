@@ -26,7 +26,7 @@ export const NavBar = () => {
 
   // Hide navbar on landing/register
   if (path === "/register" || path === "/") return null;
-  if (isUserLoading) return <SkeletonNavBar />;
+  if (isUserLoading || !userData) return <SkeletonNavBar />;
 
   return (
     <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full">
