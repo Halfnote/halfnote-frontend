@@ -19,13 +19,14 @@ export const useUser = () =>
   useQuery<User, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(),
-    staleTime: 1000 * 60 * 60, //grabbing from cache for 60 minutes
+    staleTime: 0,
   });
 
 export const useUserReviews = (username: string) =>
   useQuery<Review[]>({
     queryKey: ["reviews", username],
     queryFn: () => getUserReviews(username),
+
     enabled: !!username,
   });
 
@@ -433,40 +434,3 @@ export const useEditReview = (username: string) => {
     isSuccess: mutation.isSuccess,
   };
 };
-
-// // Keep the old hook for backward compatibility, but it now uses the appropriate specific hook
-// export const useWriteReview = (username: string) => {
-//   const createReviewMutation = useCreateReview(username);
-//   const editReviewMutation = useEditReview(username);
-
-//   return {
-//     mutate: (variables: {
-//       discogsId: string;
-//       id: string | number;
-//       ratingNumber: number;
-//       description: string;
-//       genres: string[];
-//     }) => {
-//       if (typeof variables.id === "string") {
-//         // Creating a new review
-//         createReviewMutation.mutate({
-//           discogsId: variables.discogsId,
-//           ratingNumber: variables.ratingNumber,
-//           description: variables.description,
-//           genres: variables.genres,
-//         });
-//       } else {
-//         // Editing an existing review
-//         editReviewMutation.mutate({
-//           reviewId: variables.id,
-//           discogsId: variables.discogsId,
-//           ratingNumber: variables.ratingNumber,
-//           description: variables.description,
-//           genres: variables.genres,
-//         });
-//       }
-//     },
-//     isPending: createReviewMutation.isPending || editReviewMutation.isPending,
-//     isError: createReviewMutation.isError || editReviewMutation.isError,
-//   };
-// };

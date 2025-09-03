@@ -71,12 +71,12 @@ export const getUserReviews = async (username: string) => {
         cache: "no-store",
       }
     );
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || `Could not get reviews for ${username}`);
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      return [];
     }
-    return await response.json();
+
+    return data;
   } catch (error: any) {
     console.error("Profile fetch failed:", error);
     throw new Error(error.message || "Failed to get profile");
@@ -99,14 +99,12 @@ export const getUserActivity = async (username: string) => {
         cache: "no-store",
       }
     );
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(
-        error.message || `Could not get activity for ${username}`
-      );
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      return [];
     }
-    return await response.json();
+
+    return data;
   } catch (error: any) {
     console.error("Profile fetch failed:", error);
     throw new Error(error.message || "Failed to get activity");

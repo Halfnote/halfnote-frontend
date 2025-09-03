@@ -147,3 +147,7 @@ export interface Activity {
     user_genres: Array<{ id: number; name: string }>;
   };
 }
+
+type UserLoaderProps = {
+  Component: React.ComponentType<{ user: User }>;
+};

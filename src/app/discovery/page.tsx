@@ -1,19 +1,31 @@
+// app/discovery/page.tsx
+import { Suspense } from "react";
 import { verifySession } from "@/app/actions/dal";
+import DiscoverPage from "@/app/components/ClientSidePages/discoveryClient";
 import { redirect } from "next/navigation";
-import DiscoverPage from "@/app/components/ClientSidePages/discoveryClient/index";
 
-export default async function Page() {
-  try {
-    const session = await verifySession();
-    return (
-      <DiscoverPage
-        user={{
-          username: session.username ?? "",
-          access_token: session.access_token,
-        }}
-      />
-    );
-  } catch {
+async function UserLoader() {
+  const session = await verifySession().catch(() => null);
+
+  if (!session || !session.username) {
     redirect("/");
   }
+
+  return (
+    <DiscoverPage
+      user={{
+        username: session.username,
+      }}
+    />
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={<div className="p-6 text-lg">Loading your profile...</div>}
+    >
+      <UserLoader />
+    </Suspense>
+  );
 }

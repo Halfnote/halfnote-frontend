@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-
 import { Icons } from "@/app/icons/icons";
 import { Title } from "@/app/components/general/Title";
 import { AlbumCard } from "@/app/components/AlbumCard";
@@ -22,7 +21,6 @@ import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
 type ProfilePageProps = {
   user: {
     username: string;
-    access_token: string;
   };
 };
 
@@ -91,7 +89,8 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     });
   }, [userReviews, userActivity]);
 
-  if (isPendingUser || !userData) return <ProfilePageSkeleton />;
+  if (isPendingUser) return <ProfilePageSkeleton />;
+
   return (
     <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 max-h-[800px]">
       <div className="w-full h-60 relative z-0">
@@ -109,7 +108,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           {/* Profile Picture */}
           <div className="w-[200px] h-[200px] -mt-20 border-2 border-black bg-white z-10 overflow-hidden relative flex-shrink-0 rounded-full">
             <Image
-              src={userData.avatar || "/default-avatar.png"}
+              src={userData?.avatar || "/default-avatar.png"}
               alt="profile"
               fill
               className="object-cover"
@@ -123,40 +122,42 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           <div className="flex flex-col items-center text-center mt-4 mb-10">
             <h1 className="another-heading1 text-[42px] mb-1">
               <span className="flex flex-row items-center gap-2">
-                {userData.name}
-                {userData.is_staff && checkMark}
+                {userData?.name || "Loading"}
+                {userData?.is_staff && checkMark}
               </span>
             </h1>
 
-            <p className="another-heading5 mb-3">@{userData.display_name}</p>
+            <p className="another-heading5 mb-3">@{userData?.display_name}</p>
 
             <p className="another-heading5 text-center mb-5 w-[280px]">
-              {userData.bio}
+              {userData?.bio}
             </p>
 
-            <p className="another-heading5">📍{userData.location}</p>
+            <p className="another-heading5">📍{userData?.location}</p>
           </div>
 
           {/* Stats */}
           <div className="flex flex-row gap-3 mb-3">
             <div className="w-30 h-35 rounded-md border-1 border-black flex-col flex justify-center items-center text-center">
               <Image
-                src={getVinylIcon(userData.review_count)}
+                src={getVinylIcon(userData?.review_count)}
                 alt="Vinyl icon"
                 className="aspect-square w-[54px] object-cover rounded-full ring-2"
               />
               <div>
-                <h1 className="another-heading4">{userData.review_count}</h1>
+                <h1 className="another-heading4">{userData?.review_count}</h1>
                 <h3 className="another-heading5">Reviews</h3>
               </div>
             </div>
             <div className="w-30 h-35 rounded-md border-1 border-black flex-col flex justify-center items-center text-center">
               <div>
-                <h1 className="another-heading4">{userData.follower_count}</h1>
+                <h1 className="another-heading4">{userData?.follower_count}</h1>
                 <h3 className="another-heading5">Followers</h3>
               </div>
               <div>
-                <h1 className="another-heading4">{userData.following_count}</h1>
+                <h1 className="another-heading4">
+                  {userData?.following_count}
+                </h1>
                 <h3 className="another-heading5">Following</h3>
               </div>
             </div>
@@ -165,7 +166,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           {/* Most Reviewed Genres */}
           <div className="w-63 h-full rounded-md border-1 border-black flex-col flex items-center text-center">
             <h1 className="another-heading2 mt-3 mb-2">Most Reviewed Genres</h1>
-            {userData.most_reviewed_genres?.map((genre: Genre) => (
+            {userData?.most_reviewed_genres?.map((genre: Genre) => (
               <div className="mb-3" key={genre.id}>
                 <Image
                   width={100}
@@ -195,24 +196,29 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                   width={40}
                   height={40}
                   className="object-contain cursor-pointer"
-                  onClick={() => {
-                    setAddAlbumListModal((prev) => !prev);
-                  }}
+                  onClick={() => setAddAlbumListModal((prev) => !prev)}
                 />
               </div>
             </div>
-            <div className="flex flex-row gap-10 overflow-x-clip">
-              {userData.favorite_albums?.slice(0, 3).map((fav) => (
-                <AlbumCard
-                  key={fav.id}
-                  albumCover={fav.cover_url || "/default-album.png"}
-                  albumName={fav.title}
-                  artistName={fav.artist}
-                  size={200}
-                />
-              ))}
-              <AlbumTile albums={userData.favorite_albums?.slice(3)} />
-            </div>
+
+            {userData?.favorite_albums?.length ? (
+              <div className="flex flex-row gap-10 overflow-x-clip">
+                {userData.favorite_albums.slice(0, 3).map((fav) => (
+                  <AlbumCard
+                    key={fav.id}
+                    albumCover={fav.cover_url || "/default-album.png"}
+                    albumName={fav.title}
+                    artistName={fav.artist}
+                    size={200}
+                  />
+                ))}
+                <AlbumTile albums={userData.favorite_albums.slice(3)} />
+              </div>
+            ) : (
+              <p className="text-gray-500 italic mt-2">
+                No favorite albums yet.
+              </p>
+            )}
           </div>
 
           {/* Pinned Reviews */}
@@ -227,26 +233,33 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               />
               <h1 className="another-heading1 text-[42px]">Pinned Reviews</h1>
             </div>
-            <div className="flex flex-row gap-10 mb-10">
-              {isPendingReviews ? (
-                <>
-                  <SkeletonReviewCard />
-                  <SkeletonReviewCard />
-                </>
-              ) : (
-                pinnedReviews.map((review: Review) => (
+
+            {isPendingReviews ? (
+              <div className="flex flex-row gap-10 mb-10">
+                <SkeletonReviewCard />
+                <SkeletonReviewCard />
+              </div>
+            ) : pinnedReviews.length ? (
+              <div className="flex flex-row gap-10 mb-10">
+                {pinnedReviews.map((review: Review) => (
                   <ReviewCard
                     key={review.id}
                     review={review}
-                    avatar={userData.avatar || "/default-avatar.png"}
+                    avatar={userData?.avatar || "/default-avatar.png"}
                     username={user.username}
                   />
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 italic mt-2">
+                No pinned reviews yet.
+              </p>
+            )}
           </div>
+
+          {/* Recent Activity */}
           <div className="w-full">
-            {/* Header with buttons in same row */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <Image
@@ -272,49 +285,49 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 max-h-[850px] overflow-y-auto pr-2">
-              {isPendingActivity ? (
-                [...Array(5)].map((_, index) => (
-                  <SkeletonRecentActivityCard key={index} />
-                ))
-              ) : (
-                <>
-                  {filter === "reviewed" &&
-                    reviewedActivity.map((activity) => (
-                      <RecentActivityCard
-                        key={activity.id}
-                        albumCover={activity.review_details.album.cover_url}
-                        albumTitle={
-                          activity?.review_details?.album?.artist ?? "Unknown"
-                        }
-                        artistName={
-                          activity?.review_details?.album?.artist ?? "Unknown"
-                        }
-                        rating={activity.review_details.rating}
-                        hasReview={true}
-                        time={activity.created_at}
-                      />
-                    ))}
-
-                  {filter === "liked" &&
-                    likedActivity.map((activity) => (
-                      <RecentActivityCard
-                        key={activity.id}
-                        albumCover={activity.review_details.album.cover_url}
-                        albumTitle={
-                          activity?.review_details?.album?.artist ?? "Unknown"
-                        }
-                        artistName={
-                          activity?.review_details?.album?.artist ?? "Unknown"
-                        }
-                        rating={activity.review_details.rating}
-                        hasReview={true}
-                        time={activity.created_at}
-                      />
-                    ))}
-                </>
-              )}
-            </div>
+            {isPendingActivity ? (
+              [...Array(5)].map((_, index) => (
+                <SkeletonRecentActivityCard key={index} />
+              ))
+            ) : filter === "reviewed" && reviewedActivity.length ? (
+              reviewedActivity.map((activity) => (
+                <div className="mb-2" key={activity.id}>
+                  <RecentActivityCard
+                    key={activity.id}
+                    albumCover={activity.review_details.album.cover_url}
+                    albumTitle={
+                      activity?.review_details?.album?.title ?? "Unknown"
+                    }
+                    artistName={
+                      activity?.review_details?.album?.artist ?? "Unknown"
+                    }
+                    rating={activity.review_details.rating}
+                    hasReview={true}
+                    time={activity.created_at}
+                  />
+                </div>
+              ))
+            ) : filter === "liked" && likedActivity.length ? (
+              likedActivity.map((activity) => (
+                <div className="mb-2" key={activity.id}>
+                  <RecentActivityCard
+                    key={activity.id}
+                    albumCover={activity.review_details.album.cover_url}
+                    albumTitle={
+                      activity?.review_details?.album?.title ?? "Unknown"
+                    }
+                    artistName={
+                      activity?.review_details?.album?.artist ?? "Unknown"
+                    }
+                    rating={activity.review_details.rating}
+                    hasReview={true}
+                    time={activity.created_at}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 italic">No recent activity yet.</p>
+            )}
           </div>
         </div>
       </div>
