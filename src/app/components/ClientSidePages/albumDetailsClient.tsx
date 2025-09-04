@@ -7,6 +7,7 @@ import ReviewModal from "../ReviewModal";
 import { Icons } from "../../icons/icons";
 import { AlbumDetailRecentActivity } from "../AlbumDetailRecentActivity";
 import { Review } from "@/app/types/types";
+import Lorde from "../../../../public/sample_images/lorde.jpeg";
 import { TopNotesReviewCard } from "./TopNotesReviewCard";
 
 type AlbumDetailsProps = {
@@ -151,31 +152,47 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
           {/* white box end*/}
         </div>
 
-        {/* Right Panel: Tracklist and Credits */}
-        <div className="space-y-5 pl-0 flex flex-col h-screen lg:col-span-3">
+        <div className="space-y-5 pl-0 flex flex-row h-screen lg:col-span-3 gap-4">
           {/* Top Notes */}
-          <div className="bg-white rounded-xl border-1 border-black p-5 min-h-[290px]">
-            <h2 className="another-heading1 text-4xl mb-2">Top Notes</h2>
-            {albumDetails.reviews.length > 0 ? (
-              <div>
-                {albumDetails.reviews.map((review) => (
-                  <TopNotesReviewCard
-                    review={review}
-                    username={user.username}
-                    key={review.id}
-                  />
-                ))}
+          <div className="flex flex-col gap-4 w-[75%]">
+            <div className="bg-white rounded-xl border-1 border-black p-5 min-h-[350px] ">
+              <div className="flex items-center gap-3 mb-2">
+                <Image
+                  src={Icons.trophy}
+                  alt="Pin Icon"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+                <h2 className="another-heading1 text-4xl mb-2">Top Reviews</h2>
               </div>
-            ) : (
-              <p className="text-gray-500 another-heading5">
-                No reviews yet for this album.
-              </p>
-            )}
-          </div>
-          <div className="flex flex-row gap-4 h-screen">
-            {/* Recent Activity - 60% width */}
-            <div className="bg-white rounded-xl border-1 border-black p-5 w-[60%] h-full">
-              <h1 className="another-heading1 text-4xl">Recent Activity</h1>
+              {albumDetails.reviews.length > 0 ? (
+                <div className="flex flex-row gap-4">
+                  {albumDetails.reviews.map((review) => (
+                    <TopNotesReviewCard
+                      review={review}
+                      username={user.username}
+                      key={review.id}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 another-heading5">
+                  No reviews yet for this album.
+                </p>
+              )}
+            </div>
+            <div className="bg-white rounded-xl border-1 border-black p-5  h-full">
+              <div className="flex items-center gap-3 mb-2">
+                <Image
+                  src={Icons.hourGlass}
+                  alt="Pin Icon"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+                <h1 className="another-heading1 text-4xl">Recent Activity</h1>
+              </div>
               {albumDetails.reviews.length > 0 ? (
                 albumDetails.reviews.map((activity) => (
                   <AlbumDetailRecentActivity
@@ -190,10 +207,30 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                 </p>
               )}
             </div>
+          </div>
 
-            {/* Album Lists - 40% width */}
-            <div className="bg-white rounded-xl border-1 border-black p-5 w-[40%] h-full">
-              <h1 className="another-heading1 text-4xl">Album Lists</h1>
+          <div className="flex flex-col gap-4 h-screen w-[25%]">
+            <div className="bg-white rounded-xl border-1 border-black p-5 h-[50%] w-full relative overflow-hidden">
+              <Image src={Lorde} alt="Lorde" fill className="object-cover" />
+            </div>
+
+            <div className="bg-white rounded-xl border-1 border-black p-5 h-full flex flex-col items-center relative">
+              <div className="flex justify-center gap-3 mb-2">
+                <Image
+                  src={Icons.vinylStack}
+                  alt="Pin Icon"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+                <h1 className="another-heading1 text-4xl">Album Lists</h1>
+              </div>
+              <button
+                className="bg-black text-white p-2 rounded-full another-heading4 hover:bg-gray-50 hover:text-black border-1 hover:cursor-pointer transition-colors mt-3 w-[90%] mb-5 flex flex-row justify-center gap-3"
+                onClick={() => console.log("hello")}
+              >
+                Add to List
+              </button>
             </div>
           </div>
         </div>
