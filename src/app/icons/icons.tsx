@@ -56,6 +56,8 @@ import eightEmptyStamp from "../../../public/empty_rating_stamps/eightEmpty-rati
 import nineEmptyStamp from "../../../public/empty_rating_stamps/nineEmpty-ratingStamp.svg";
 import tenEmptyStamp from "../../../public/empty_rating_stamps/tenEmpty-ratingStamp.svg";
 import pencil from "@/app/icons/another_pixel_icons/Group 2354.svg";
+import trophy from "@/app/icons/another_pixel_icons/trophy.png";
+import vinylStack from "@/app/icons/another_pixel_icons/stack_vinyl.png";
 
 export const Icons = {
   classical: Classical,
@@ -116,4 +118,6 @@ export const Icons = {
   nineEmptyStamp: nineEmptyStamp,
   tenEmptyStamp: tenEmptyStamp,
   pencil: pencil,
+  trophy: trophy,
+  vinylStack: vinylStack,
 };

@@ -2,7 +2,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow } from "swiper/modules";
-import { NewReleases } from "../types/review";
+import { NewReleases } from "../types/reviews";
 import Image from "next/image";
 import Clairo from "../../../public/sample_images/813adHqElhL.jpg";
 
