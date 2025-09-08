@@ -28,7 +28,7 @@ export const CreateAlbumListModal = ({ setOpen }: ModalType) => {
 
     if (nameMissing) {
       setMissing({ name: nameMissing });
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
@@ -44,7 +44,7 @@ export const CreateAlbumListModal = ({ setOpen }: ModalType) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white w-1/2 p-6 rounded-lg shadow-lg">
         <Title src={Icons.star} alt={"Favorite Icon"} name={"Create List"} />
 
@@ -93,7 +93,7 @@ export const CreateAlbumListModal = ({ setOpen }: ModalType) => {
           <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button
             onClick={() => {
-              handleSubmit()
+              handleSubmit();
             }}
             disabled={loading}
             isSelected

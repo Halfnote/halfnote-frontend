@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAlbumDetails } from "@/app/hooks";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import { AlbumDetailRecentActivity } from "../AlbumDetailRecentActivity";
 import { Review } from "@/app/types/types";
 import Lorde from "../../../../public/sample_images/lorde.jpeg";
 import { TopNotesReviewCard } from "./TopNotesReviewCard";
+import { CreateAlbumListModal } from "../CreateAlbumListModal";
 
 type AlbumDetailsProps = {
   user: {
@@ -32,6 +33,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
     newParams.set("show", "true");
     router.push(`${pathname}?${newParams.toString()}`);
   };
+  const [addAlbumListModal, setAddAlbumListModal] = useState(false);
 
   useEffect(() => {
     if (show === "true") {
@@ -154,7 +156,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
 
         <div className="space-y-5 pl-0 flex flex-row h-screen lg:col-span-3 gap-4">
           {/* Top Notes */}
-          <div className="flex flex-col gap-4 w-[75%]">
+          <div className="flex flex-col gap-4 w-[75%] h-full">
             <div className="bg-white rounded-xl border-1 border-black p-5 min-h-[350px] ">
               <div className="flex items-center gap-3 mb-2">
                 <Image
@@ -182,7 +184,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                 </p>
               )}
             </div>
-            <div className="bg-white rounded-xl border-1 border-black p-5  h-full">
+            <div className="bg-white rounded-xl border-1 border-black p-5 h-full">
               <div className="flex items-center gap-3 mb-2">
                 <Image
                   src={Icons.hourGlass}
@@ -227,7 +229,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
               </div>
               <button
                 className="bg-black text-white p-2 rounded-full another-heading4 hover:bg-gray-50 hover:text-black border-1 hover:cursor-pointer transition-colors mt-3 w-[90%] mb-5 flex flex-row justify-center gap-3"
-                onClick={() => console.log("hello")}
+                onClick={() => setAddAlbumListModal((prev) => !prev)}
               >
                 Add to List
               </button>
@@ -241,6 +243,9 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
           username={user.username}
           userReview={alreadyReviewed}
         />
+      )}
+      {addAlbumListModal && (
+        <CreateAlbumListModal setOpen={setAddAlbumListModal} />
       )}
     </>
   );
