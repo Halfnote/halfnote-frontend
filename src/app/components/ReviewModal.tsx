@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { generateRatingStamp } from "../utils/calculations";
 import { Icons } from "../icons/icons";
@@ -12,12 +12,14 @@ type reviewModalProps = {
   data: AlbumData;
   username: string;
   userReview?: Review | undefined;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function WriteReview({
   data,
   username,
   userReview,
+  setOpen,
 }: reviewModalProps) {
   const router = useRouter();
   const {
@@ -87,7 +89,7 @@ export default function WriteReview({
         {/* Header with Close Button */}
         <div className="flex justify-start items-start mb-4">
           <button
-            onClick={() => router.back()}
+            onClick={() => setOpen(false)}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
           >
             <div className="w-6 h-6 border-2 border-gray-400 rounded flex items-center justify-center">
@@ -123,7 +125,7 @@ export default function WriteReview({
                   You are now an author!
                 </h1>
                 <button
-                  onClick={() => router.back()}
+                  onClick={() => setOpen(false)}
                   className="bg-black text-white mt-4 px-12 py-3 rounded-full another-heading3 w-[95%] font-medium transition-colors shadow-lg cursor-pointer hover:bg-white hover:text-black"
                 >
                   <p>Yes Ma&apos;am </p>
@@ -213,17 +215,16 @@ export default function WriteReview({
                               <Image
                                 width={32}
                                 height={32}
-                                src={generateRatingStamp(
-                                  num,
-                                  values.rating !== num
-                                )}
+                                src={generateRatingStamp(num, {
+                                  empty: values.rating !== num,
+                                })}
                                 alt={`Rating ${num}`}
                                 className="absolute inset-0 w-full h-full object-contain group-hover:opacity-0 transition-opacity duration-200"
                               />
                               <Image
                                 width={32}
                                 height={32}
-                                src={generateRatingStamp(num)}
+                                src={generateRatingStamp(num, { empty: false })}
                                 alt={`Hover Rating ${num}`}
                                 className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                               />

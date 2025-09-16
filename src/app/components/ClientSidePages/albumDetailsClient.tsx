@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAlbumDetails } from "@/app/hooks";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -10,6 +10,9 @@ import { Review } from "@/app/types/types";
 import Lorde from "../../../../public/sample_images/lorde.jpeg";
 import { TopNotesReviewCard } from "./TopNotesReviewCard";
 import { CreateAlbumListModal } from "../CreateAlbumListModal";
+import useEmblaCarousel from "embla-carousel-react";
+import { ExpandedReviewModal } from "./expandedReviewModal";
+import { generateRatingStamp } from "@/app/utils/calculations";
 
 type AlbumDetailsProps = {
   user: {
@@ -22,26 +25,51 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
   const params = useSearchParams();
   const router = useRouter();
   const discogsID = params.get("query");
-  const show = params.get("show");
   const {
     data: albumDetails = undefined,
     isLoading,
     isError,
   } = useAlbumDetails(discogsID || "");
-  const handleOpenModal = () => {
-    const newParams = new URLSearchParams(params.toString());
-    newParams.set("show", "true");
-    router.push(`${pathname}?${newParams.toString()}`);
-  };
-  const [addAlbumListModal, setAddAlbumListModal] = useState(false);
+  // const handleOpenModal = () => {
+  //   const newParams = new URLSearchParams(params.toString());
+  //   newParams.set("show", "true");
+  //   router.push(`${pathname}?${newParams.toString()}`);
+  // };
+  const [albumListModal, setAddAlbumListModal] = useState(false);
+  const [writeReviewModal, setWriteReviewModal] = useState(false);
+  const [expandModal, setExpandModal] = useState<boolean>(false);
+  const [selectedReview, setSelectedReview] = useState<Review>();
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "center",
+    slidesToScroll: 1,
+  });
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  // Setup listeners
   useEffect(() => {
-    if (show === "true") {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-  }, [show]);
+    if (!emblaApi) return;
+
+    setScrollSnaps(emblaApi.scrollSnapList());
+    emblaApi.on("select", onSelect);
+    onSelect();
+  }, [emblaApi, onSelect]);
+
+  // useEffect(() => {
+  //   if (show === "true") {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "";
+  //   }
+  // }, [show]);
 
   if (isLoading)
     return <p className="text-center mt-10">Loading album details...</p>;
@@ -50,19 +78,21 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
       <p className="text-center mt-10 text-red-500">Error loading album.</p>
     );
 
+  // lowercase as backend retrieves usernames as lowercase
   const alreadyReviewed = albumDetails.reviews.find(
-    (review: Review) => review.username === user.username
+    (review: Review) => review.username === user.username.toLowerCase()
   );
+
   const imageSrc =
     albumDetails.album.cover_url || albumDetails.album.cover_image;
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-5 h-screen mb-5 lg:grid-cols-4 lg:w-[100%]">
+      <div className="grid grid-cols-1 gap-5 mb-5 lg:grid-cols-4 lg:w-[100%]">
         {/* left side */}
         <div className="flex flex-col space-y-0 max-h-screen lg:col-span-1">
           {/* white box */}
-          <div className="border-1 border-black rounded-xl bg-white h-screen max-w-sm overflow-hidden">
+          <div className="border-1 border-black rounded-xl bg-white max-w-sm overflow-hidden">
             {typeof imageSrc === "string" && (
               <Image
                 src={imageSrc}
@@ -90,7 +120,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
             <div className="flex justify-center">
               <button
                 className="bg-black text-white p-2 rounded-full another-heading4 hover:bg-gray-50 hover:text-black border-1 hover:cursor-pointer transition-colors mt-3 w-[80%] mb-5 flex flex-row justify-center gap-3"
-                onClick={handleOpenModal}
+                onClick={() => setWriteReviewModal(true)}
               >
                 <Image
                   src={Icons.pencil}
@@ -115,9 +145,16 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
               </span>
               <span className="flex flex-col items-center">
                 <p className="font-bold another-heading5">avg.score</p>
-                <p className="another-heading6">
-                  {albumDetails.average_rating}/10
-                </p>
+                {/* defaulting to 1 for now, need to change */}
+                <Image
+                  width={80}
+                  height={80}
+                  src={generateRatingStamp(albumDetails.average_rating ?? 1, {
+                    empty: false,
+                    outTen: true,
+                  })}
+                  alt="Badge"
+                />
               </span>
             </div>
             <hr className="mt-5" />
@@ -131,7 +168,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                     {albumDetails.album.tracklist?.length} songs
                   </span>
                 </div>
-                <div className="space-y-1 overflow-y-auto flex-1 max-h-48">
+                <div className="space-y-1 overflow-y-auto flex-1 max-h-48 =">
                   {albumDetails.album.tracklist?.map((track, index) => (
                     <div
                       key={`${track.position}-${track.title}-${index}`}
@@ -156,9 +193,9 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
 
         <div className="space-y-5 pl-0 flex flex-row h-screen lg:col-span-3 gap-4">
           {/* Top Notes */}
-          <div className="flex flex-col gap-4 w-[75%] h-full">
+          <div className="flex flex-col gap-4 w-[70%] h-full overflow-hidden">
             <div className="bg-white rounded-xl border-1 border-black p-5 min-h-[350px] ">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3">
                 <Image
                   src={Icons.trophy}
                   alt="Pin Icon"
@@ -166,25 +203,44 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                   height={40}
                   className="object-contain"
                 />
-                <h2 className="another-heading1 text-4xl mb-2">Top Reviews</h2>
+                <h2 className="another-heading1 text-4xl">Top Reviews</h2>
               </div>
+
               {albumDetails.reviews.length > 0 ? (
-                <div className="flex flex-row gap-4">
-                  {albumDetails.reviews.map((review) => (
-                    <TopNotesReviewCard
-                      review={review}
-                      username={user.username}
-                      key={review.id}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="embla" ref={emblaRef}>
+                    <div className="embla__container flex">
+                      {albumDetails.reviews.map((review, index) => (
+                        <div className="embla__slide px-2" key={index}>
+                          <TopNotesReviewCard
+                            review={review}
+                            username={user.username}
+                            setOpen={setExpandModal}
+                            setSelected={setSelectedReview}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-center gap-2 mt-4">
+                    {scrollSnaps.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => emblaApi?.scrollTo(index)}
+                        className={`w-3 h-3 rounded-full border-black border-2 ${
+                          index === selectedIndex ? "bg-black" : "bg-gray-400"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
               ) : (
                 <p className="text-gray-500 another-heading5">
                   No reviews yet for this album.
                 </p>
               )}
             </div>
-            <div className="bg-white rounded-xl border-1 border-black p-5 h-full">
+            <div className="bg-white rounded-xl border-1 border-black p-5 flex-1 overflow-y-auto">
               <div className="flex items-center gap-3 mb-2">
                 <Image
                   src={Icons.hourGlass}
@@ -211,7 +267,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 h-screen w-[25%]">
+          <div className="flex flex-col gap-4 h-screen w-[30%]">
             <div className="bg-white rounded-xl border-1 border-black p-5 h-[50%] w-full relative overflow-hidden">
               <Image src={Lorde} alt="Lorde" fill className="object-cover" />
             </div>
@@ -237,15 +293,24 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
           </div>
         </div>
       </div>
-      {show === "true" && (
+      {writeReviewModal && (
         <ReviewModal
           data={albumDetails.album}
           username={user.username}
           userReview={alreadyReviewed}
+          setOpen={setWriteReviewModal}
         />
       )}
-      {addAlbumListModal && (
+      {albumListModal && (
         <CreateAlbumListModal setOpen={setAddAlbumListModal} />
+      )}
+      {expandModal && (
+        <ExpandedReviewModal
+          setSelected={setSelectedReview}
+          setOpen={setExpandModal}
+          review={selectedReview}
+          username={user.username}
+        />
       )}
     </>
   );

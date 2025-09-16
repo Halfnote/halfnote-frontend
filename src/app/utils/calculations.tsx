@@ -15,6 +15,11 @@ import rockStamp from "@/app/icons/genre_stamp/ROCK-genreTag_container.svg";
 import { Icons } from "../icons/icons";
 import * as Stamps from "@/app/icons/stamps";
 
+type RatingStampOptions = {
+  empty?: boolean;
+  outTen?: boolean;
+};
+
 export const getVinylIcon = (reviewCount: number = 0) => {
   if (reviewCount >= 1500) {
     return Icons.fifthVinyl;
@@ -72,6 +77,19 @@ const ratingBadgeMap: Record<number, StaticImageData> = {
   10: Icons.tenStamp,
 };
 
+const ratingOutTenBadgeMap: Record<number, StaticImageData> = {
+  1: Icons.oneOutTen,
+  2: Icons.twoOutTen,
+  3: Icons.threeOutTen,
+  4: Icons.fourOutTen,
+  5: Icons.fiveOutTen,
+  6: Icons.sixOutTen,
+  7: Icons.sevenOutTen,
+  8: Icons.eightOutTen,
+  9: Icons.nineOutTen,
+  10: Icons.tenOutTen,
+};
+
 const emptyRatingBadgeMap: Record<number, StaticImageData> = {
   1: Icons.oneEmptyStamp,
   2: Icons.twoEmptyStamp,
@@ -106,9 +124,15 @@ export function genreBadge({
     : null;
 }
 
-export function generateRatingStamp(rating: number, empty: boolean = false) {
+export function generateRatingStamp(
+  rating: number,
+  { empty = true, outTen = false }: RatingStampOptions = {}
+) {
   if (empty) {
     return emptyRatingBadgeMap[rating];
+  }
+  if (outTen) {
+    return ratingOutTenBadgeMap[rating];
   }
   return ratingBadgeMap[rating];
 }

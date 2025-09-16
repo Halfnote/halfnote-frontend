@@ -58,7 +58,18 @@ import tenEmptyStamp from "../../../public/empty_rating_stamps/tenEmpty-ratingSt
 import pencil from "@/app/icons/another_pixel_icons/Group 2354.svg";
 import trophy from "@/app/icons/another_pixel_icons/trophy.png";
 import vinylStack from "@/app/icons/another_pixel_icons/stack_vinyl.png";
-
+import expandIcon from "@/app/icons/another_misc_icons/expand.svg";
+import backButton from "@/app/icons/another_pixel_icons/backButton.svg";
+import oneOutTen from "../../../public/rating_stamps_ten/oneOutTenStamp.svg";
+import twoOutTen from "../../../public/rating_stamps_ten/twoOutTenStamp.svg";
+import threeOutTen from "../../../public/rating_stamps_ten/threeOutTenStamp.svg";
+import fourOutTen from "../../../public/rating_stamps_ten/fourOutTenStamp.svg";
+import fiveOutTen from "../../../public/rating_stamps_ten/fiveOutTenStamp.svg";
+import sixOutTen from "../../../public/rating_stamps_ten/sixOutTenStamp.svg";
+import sevenOutTen from "../../../public/rating_stamps_ten/sevenOutTenStamp.svg";
+import eightOutTen from "../../../public/rating_stamps_ten/eightOutTenStamp.svg";
+import nineOutTen from "../../../public/rating_stamps_ten/nineOutTenStamp.svg";
+import tenOutTen from "../../../public/rating_stamps_ten/tenOutTenStamp.svg";
 export const Icons = {
   classical: Classical,
   country: Country,
@@ -120,4 +131,16 @@ export const Icons = {
   pencil: pencil,
   trophy: trophy,
   vinylStack: vinylStack,
+  expandIcon: expandIcon,
+  backButton: backButton,
+  oneOutTen: oneOutTen,
+  twoOutTen: twoOutTen,
+  threeOutTen: threeOutTen,
+  fourOutTen: fourOutTen,
+  fiveOutTen: fiveOutTen,
+  sixOutTen: sixOutTen,
+  sevenOutTen: sevenOutTen,
+  eightOutTen: eightOutTen,
+  nineOutTen: nineOutTen,
+  tenOutTen: tenOutTen,
 };

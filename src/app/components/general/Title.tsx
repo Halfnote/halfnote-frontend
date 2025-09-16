@@ -3,14 +3,14 @@ import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 
 type TitleProps = {
-    src: string | StaticImport
-    alt: string
-    name: string
-}
+  src: string | StaticImport;
+  alt: string;
+  name: string;
+};
 
-export const Title = ({src, alt, name}:TitleProps) => {
+export const Title = ({ src, alt, name }: TitleProps) => {
   return (
-    <div className="flex row">
+    <div className="flex row items-center gap-3">
       <Image
         src={src}
         alt={alt}

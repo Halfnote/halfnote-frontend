@@ -21,7 +21,7 @@ export const AlbumDetailRecentActivity = ({
   return (
     <div
       key={activity.id}
-      className="bg-white border border-black rounded-2xl p-4 mb-4 flex items-start justify-between"
+      className="bg-white border border-black rounded-2xl p-4 mb-4 flex items-start justify-between min-h-20 max-h-55"
     >
       {/* Left section: avatar + text */}
       <div className="flex flex-row gap-3 flex-1">
@@ -40,7 +40,10 @@ export const AlbumDetailRecentActivity = ({
               activity.created_at
             )}`}</span>
           </div>
-          <p className="another-heading6">{activity.content}</p>
+
+          <p className="another-heading6 flex-1 overflow-hidden text-ellipsis line-clamp-4 mb-4">
+            {activity.content}
+          </p>
           <button
             disabled={isPending}
             onClick={() => toggleLikeMutation.mutate(activity.id)}
@@ -73,7 +76,7 @@ export const AlbumDetailRecentActivity = ({
         <Image
           width={55}
           height={55}
-          src={generateRatingStamp(activity.rating)}
+          src={generateRatingStamp(activity.rating, { empty: false })}
           alt="Badge"
         />
       </div>
