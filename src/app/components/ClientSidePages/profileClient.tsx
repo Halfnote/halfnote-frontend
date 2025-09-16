@@ -17,6 +17,7 @@ import { CreateAlbumListModal } from "../CreateAlbumListModal";
 import { SkeletonReviewCard } from "../skeletons/SkeletonReviewCard";
 import { SkeletonRecentActivityCard } from "../skeletons/SkeletonRecentActivityCard";
 import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
+import { EditProfileModal } from "./editProfileModal";
 
 type ProfilePageProps = {
   user: {
@@ -51,7 +52,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   const { data: userActivity = [], isPending: isPendingActivity } =
     useUserActivity(user.username);
   const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
-  const [addAlbumListModal, setAddAlbumListModal] = useState(false);
+  const [editProfileModal, setEditProfileModal] = useState(false);
 
   const reviewedActivity = useMemo(
     () =>
@@ -91,6 +92,8 @@ export default function ProfilePage({ user }: ProfilePageProps) {
 
   if (isPendingUser) return <ProfilePageSkeleton />;
 
+  const handleOpenEditProfileModal = () => {};
+
   return (
     <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 max-h-[800px]">
       <div className="w-full h-60 relative z-0">
@@ -106,34 +109,49 @@ export default function ProfilePage({ user }: ProfilePageProps) {
         {/* Profile Info Sidebar */}
         <div className="col-span-2 flex flex-col items-center px-50">
           {/* Profile Picture */}
-          <div className="w-[200px] h-[200px] -mt-20 border-2 border-black bg-white z-10 overflow-hidden relative flex-shrink-0 rounded-full">
+          <div className="w-[250px] h-[250px] -mt-30 border-2 border-black bg-white z-10 overflow-hidden relative flex-shrink-0 rounded-full">
             <Image
               src={userData?.avatar || "/default-avatar.png"}
               alt="profile"
               fill
               className="object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "/default-avatar.png";
-              }}
             />
           </div>
 
           {/* User Info */}
-          <div className="flex flex-col items-center text-center mt-4 mb-10">
-            <h1 className="another-heading1 text-[42px] mb-1">
-              <span className="flex flex-row items-center gap-2">
-                {userData?.name || "Loading"}
+          <div className="flex flex-col items-center text-center mb-10">
+            {/* first three */}
+            <div className="flex flex-col items-center w-full ">
+              <span className="flex flex-row items-center align-baseline gap-2">
+                <h1 className="another-heading1 text-[42px]">
+                  {userData?.name || ""}
+                </h1>
                 {userData?.is_staff && checkMark}
               </span>
-            </h1>
+              <p className="another-heading5">@{userData?.display_name}</p>
+              <button
+                className="bg-black text-white p-2 rounded-full another-heading4 hover:bg-gray-50 hover:text-black border-1 hover:cursor-pointer transition-colors w-[80%] flex flex-row justify-center gap-3 mb-4 mt-4"
+                onClick={() => setEditProfileModal((prev) => !prev)}
+              >
+                <Image
+                  src={Icons.pencil}
+                  alt="Edit Icon"
+                  width={30}
+                  height={30}
+                  className="object-contain"
+                />
+                Edit Profile
+              </button>
+            </div>
 
-            <p className="another-heading5 mb-3">@{userData?.display_name}</p>
+            {/* last two  */}
+            <div className="flex flex-col items-center w-full">
+              <p className="another-heading5 text-center w-[280px]">
+                {userData?.bio}
+              </p>
 
-            <p className="another-heading5 text-center mb-5 w-[280px]">
-              {userData?.bio}
-            </p>
-
-            <p className="another-heading5">📍{userData?.location}</p>
+              <p className="another-heading5">📍{userData?.location}</p>
+            </div>
           </div>
 
           {/* Stats */}
@@ -183,20 +201,12 @@ export default function ProfilePage({ user }: ProfilePageProps) {
         <div className="col-span-6 mt-3 px-10">
           {/* Favorite Albums */}
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3">
               <div className="flex row justify-between w-full">
                 <Title
                   src={Icons.star}
                   alt={"Favorite Icon"}
                   name={"Favorite Albums"}
-                />
-                <Image
-                  src={Icons.firstVinyl}
-                  alt={"Add Album List"}
-                  width={40}
-                  height={40}
-                  className="object-contain cursor-pointer"
-                  onClick={() => setAddAlbumListModal((prev) => !prev)}
                 />
               </div>
             </div>
@@ -224,14 +234,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           {/* Pinned Reviews */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <Image
-                src={Icons.pin}
-                alt="Pin Icon"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-              <h1 className="another-heading1 text-[42px]">Pinned Reviews</h1>
+              <Title src={Icons.pin} alt={"Pin Icon"} name={"Pinned Reviews"} />
             </div>
 
             {isPendingReviews ? (
@@ -262,14 +265,11 @@ export default function ProfilePage({ user }: ProfilePageProps) {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <Image
+                <Title
                   src={Icons.hourGlass}
-                  alt="Recent Icon"
-                  width={40}
-                  height={40}
-                  className="object-contain"
+                  alt={"Recent Icon"}
+                  name={"Recent"}
                 />
-                <h1 className="another-heading1 text-[42px]">Recent</h1>
               </div>
               <div className="flex gap-4">
                 <AnotherNavButton
@@ -331,9 +331,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
           </div>
         </div>
       </div>
-      {addAlbumListModal && (
-        <CreateAlbumListModal setOpen={setAddAlbumListModal} />
-      )}
+      {editProfileModal && <EditProfileModal setOpen={setEditProfileModal} />}
     </div>
   );
 }

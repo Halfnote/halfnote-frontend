@@ -25,7 +25,7 @@ export default function ReviewCard({
     }
   );
   return (
-    <div className="flex p-4 border border-black rounded-xl shadow-md bg-white gap-4 w-[600px] h-[250px]">
+    <div className="flex p-4 border border-black rounded-xl shadow-md bg-white gap-4 w-[500px] h-[250px]">
       {/* Album Cover */}
       <div className="relative flex-shrink-0 w-[150px] h-[150px] border-[1px] border-black">
         <Image
