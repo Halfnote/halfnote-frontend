@@ -7,22 +7,19 @@ import { generateRatingStamp, getTimeAgo } from "@/app/utils/calculations";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { text } from "stream/consumers";
 import { ExpandedReviewModal } from "./expandedReviewModal";
-type TopNotesReviewCardProps = {
+type ProperReviewCardProps = {
   review: Review;
   username: string;
   className?: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  setSelected: Dispatch<SetStateAction<Review | undefined>>;
+  setSelected?: Dispatch<SetStateAction<Review | undefined>>;
 };
-export const TopNotesReviewCard = ({
+export const ProperReviewCard = ({
   review,
   username,
   setOpen,
   setSelected,
-}: TopNotesReviewCardProps) => {
-  const handleExpand = () => {
-    console.log("expanding");
-  };
+}: ProperReviewCardProps) => {
   const textRef = useRef(null);
   const isOverFlowing = (element: HTMLElement | null) => {
     if (element) {
@@ -36,11 +33,13 @@ export const TopNotesReviewCard = ({
 
   const handleOpen = () => {
     setOpen(true);
-    setSelected(review);
+    if (setSelected) {
+      setSelected(review);
+    }
   };
   return (
     <>
-      <div className="p-4 border-1 border-gray-500 rounded-xl bg-white w-full h-55 relative hover:cursor-grab">
+      <div className="p-4 border-1 border-gray-500 rounded-xl bg-white w-full h-55 relative">
         <div
           key={review.id}
           className="grid grid-cols-[auto_1fr_auto] gap-4 h-full"

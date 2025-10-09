@@ -84,7 +84,7 @@ export default function WriteReview({
   };
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center p-4 z-50 border-black">
       <div className="bg-white rounded-2xl shadow-2xl p-5 flex flex-col">
         {/* Header with Close Button */}
         <div className="flex justify-start items-start mb-4">
@@ -92,7 +92,7 @@ export default function WriteReview({
             onClick={() => setOpen(false)}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
           >
-            <div className="w-6 h-6 border-2 border-gray-400 rounded flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-black rounded flex items-center justify-center cursor-pointer">
               X
             </div>
             <span className="text-sm font-medium">Close</span>

@@ -21,7 +21,7 @@ export const AlbumDetailRecentActivity = ({
   return (
     <div
       key={activity.id}
-      className="bg-white border border-black rounded-2xl p-4 mb-4 flex items-start justify-between min-h-20 max-h-55"
+      className="bg-white p-4 mb-4 flex items-start justify-between min-h-20 max-h-55 border-b-1 border-black"
     >
       {/* Left section: avatar + text */}
       <div className="flex flex-row gap-3 flex-1">
