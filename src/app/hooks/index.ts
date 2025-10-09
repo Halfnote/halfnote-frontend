@@ -19,7 +19,7 @@ export const useUser = () =>
   useQuery<User, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(),
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useUserReviews = (username: string) =>

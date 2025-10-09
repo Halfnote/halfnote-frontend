@@ -8,7 +8,7 @@ import { Icons } from "../../icons/icons";
 import { AlbumDetailRecentActivity } from "../AlbumDetailRecentActivity";
 import { Review } from "@/app/types/types";
 import Lorde from "../../../../public/sample_images/lorde.jpeg";
-import { TopNotesReviewCard } from "./TopNotesReviewCard";
+import { ProperReviewCard } from "./ProperReviewCard";
 import { CreateAlbumListModal } from "../CreateAlbumListModal";
 import useEmblaCarousel from "embla-carousel-react";
 import { ExpandedReviewModal } from "./expandedReviewModal";
@@ -30,11 +30,6 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
     isLoading,
     isError,
   } = useAlbumDetails(discogsID || "");
-  // const handleOpenModal = () => {
-  //   const newParams = new URLSearchParams(params.toString());
-  //   newParams.set("show", "true");
-  //   router.push(`${pathname}?${newParams.toString()}`);
-  // };
   const [albumListModal, setAddAlbumListModal] = useState(false);
   const [writeReviewModal, setWriteReviewModal] = useState(false);
   const [expandModal, setExpandModal] = useState<boolean>(false);
@@ -62,14 +57,6 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
     emblaApi.on("select", onSelect);
     onSelect();
   }, [emblaApi, onSelect]);
-
-  // useEffect(() => {
-  //   if (show === "true") {
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     document.body.style.overflow = "";
-  //   }
-  // }, [show]);
 
   if (isLoading)
     return <p className="text-center mt-10">Loading album details...</p>;
@@ -203,7 +190,9 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                   height={40}
                   className="object-contain"
                 />
-                <h2 className="another-heading1 text-4xl">Top Reviews</h2>
+                <h2 className="another-heading1 text-4xl sticky">
+                  Top Reviews
+                </h2>
               </div>
 
               {albumDetails.reviews.length > 0 ? (
@@ -212,7 +201,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                     <div className="embla__container flex">
                       {albumDetails.reviews.map((review, index) => (
                         <div className="embla__slide px-2" key={index}>
-                          <TopNotesReviewCard
+                          <ProperReviewCard
                             review={review}
                             username={user.username}
                             setOpen={setExpandModal}
@@ -240,7 +229,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                 </p>
               )}
             </div>
-            <div className="bg-white rounded-xl border-1 border-black p-5 flex-1 overflow-y-auto">
+            <div className="bg-white rounded-xl border-1 border-black p-5 flex-1 overflow-y-scroll">
               <div className="flex items-center gap-3 mb-2">
                 <Image
                   src={Icons.hourGlass}
@@ -249,7 +238,7 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                   height={40}
                   className="object-contain"
                 />
-                <h1 className="another-heading1 text-4xl">Recent Activity</h1>
+                <h1 className="another-heading1 text-4xl sticky">Activity</h1>
               </div>
               {albumDetails.reviews.length > 0 ? (
                 albumDetails.reviews.map((activity) => (

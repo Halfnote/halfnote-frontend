@@ -1,12 +1,13 @@
 "use client";
 import { useMemo, useState } from "react";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
-import { Activity } from "../../types/types";
+import { Activity, Review } from "../../types/types";
 import Daft from "../../../../public/sample_images/daft.png";
 import { useTranslation } from "react-i18next";
 
 import { RecentReviewCard } from "../../components/RecentReviewCard";
 import { useOthersActivity } from "@/app/hooks";
+import { ProperReviewCard } from "./ProperReviewCard";
 
 type ActivityPageProps = {
   user: {
@@ -15,6 +16,30 @@ type ActivityPageProps = {
 };
 
 type ActivityFilterState = "following" | "friends" | "you";
+
+const extractReviewFromActivity = (activity: Activity): Review => {
+  const review_details = activity.review_details;
+  return {
+    id: review_details.id,
+    album_discogs_id: review_details.album.discogs_id,
+    text: review_details.content,
+    username: activity.user.username,
+    user_avatar: activity.user.avatar,
+    user_is_staff: activity.user.is_staff ?? false,
+    rating: review_details.rating,
+    content: review_details.content,
+    created_at: activity.created_at,
+    album_title: review_details.album.title,
+    album_artist: review_details.album.artist,
+    album_cover: review_details.album.cover_url,
+    album_year: review_details.album.year,
+    is_pinned: false,
+    likes_count: review_details.likes_count,
+    is_liked_by_user: review_details.is_liked_by_user,
+    comments_count: review_details.comments_count,
+    user_genres: review_details.user_genres,
+  };
+};
 
 export default function ActivityPage({ user }: ActivityPageProps) {
   const { t } = useTranslation("activity");
@@ -45,10 +70,13 @@ export default function ActivityPage({ user }: ActivityPageProps) {
   }, [youActivity, friendActivity, followingActivity, filter]);
 
   return (
-    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 scale-90 h-[800px] px-9 py-9">
+    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 h-auto px-9 py-9 w-[70%]">
       {/* Header + Tabs */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="another-heading1 text-[42px]">{t("reviews.recent")}</h1>
+        <h1 className="another-heading1 text-[42px]">
+          {/* {t("reviews.activity")} */}
+          Recent Activity
+        </h1>
         <div className="flex gap-4">
           <AnotherNavButton
             label={t("filter.following")}
@@ -72,28 +100,11 @@ export default function ActivityPage({ user }: ActivityPageProps) {
       <div className="overflow-y-auto min-h-[550px] max-h-[700px] pr-2 flex flex-col gap-4">
         {filteredActivities.length > 0 &&
           filteredActivities.map((activity: Activity) => (
-            <RecentReviewCard
+            <ProperReviewCard
               key={activity.id}
-              albumCover={activity.review_details?.album?.cover_url || Daft.src}
-              albumTitle={
-                activity.review_details?.album?.title || "Unknown Album"
-              }
-              artistName={
-                activity.review_details?.album?.artist || "Unknown Artist"
-              }
-              rating={activity.review_details?.rating || 0}
-              genre={
-                activity.review_details?.user_genres?.length > 0
-                  ? activity.review_details.user_genres[0]?.name || "Unknown"
-                  : "Unknown"
-              }
-              hasReview={activity.review_details?.content?.length > 0 || false}
-              profilePic={
-                activity.user?.avatar || "/sample_images/profilePic.png"
-              }
-              displayName={activity.user?.username || "Unknown User"}
-              userName={`@${activity.user?.username || "unknown"}`}
-              time={activity?.created_at}
+              review={extractReviewFromActivity(activity)}
+              username={activity.user.username}
+              setOpen={() => {}}
             />
           ))}
       </div>

@@ -38,7 +38,6 @@ export interface Album {
 export interface Review {
   album_discogs_id?: string;
   text: string;
-  user: User;
   id: number;
   username: string;
   user_avatar: string;
