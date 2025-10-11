@@ -71,24 +71,11 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   );
 
   const pinnedReviews = useMemo(() => {
-    const pinned = userReviews.filter((review: Review) => review.is_pinned);
-    return pinned.map((review: Review) => {
-      const correspondingActivity = userActivity.find(
-        (activity) => activity.review_details?.id === review.id
-      );
-
-      if (correspondingActivity?.review_details) {
-        return {
-          ...review,
-          is_liked_by_user:
-            correspondingActivity.review_details.is_liked_by_user,
-          likes_count: correspondingActivity.review_details.likes_count,
-        };
-      }
-
-      return review;
-    });
-  }, [userReviews, userActivity]);
+    // Use reviews as the primary source of truth since it should have the most up-to-date data
+    // Only fallback to activity if review data is missing fields
+    console.log("userReviews", userReviews);
+    return userReviews.filter((review: Review) => review.is_pinned);
+  }, [userReviews]);
 
   if (isPendingUser) return <ProfilePageSkeleton />;
 
