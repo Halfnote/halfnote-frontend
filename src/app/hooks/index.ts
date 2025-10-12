@@ -12,6 +12,7 @@ import {
   editReview,
   toggleLike,
 } from "@/app/actions/reviews_service";
+import { EditProfile } from "@/app/actions/account_management_service";
 import { useQueryClient } from "@tanstack/react-query";
 import { User, Activity, Review, AlbumDetailData } from "../types/types";
 
@@ -500,6 +501,73 @@ export const useEditReview = (username: string) => {
 
   return {
     editReviewMutation: mutation,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    isSuccess: mutation.isSuccess,
+  };
+};
+
+export const useEditProfile = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ["editProfile"],
+    mutationFn: async ({
+      name,
+      bio,
+      location,
+      avatar,
+      banner,
+    }: {
+      name: string;
+      bio?: string;
+      location?: string;
+      avatar?: File;
+      banner?: File;
+    }) => await EditProfile(name, bio, location, avatar, banner),
+
+    onMutate: async (vars) => {
+      // Cancel outgoing user queries
+      await queryClient.cancelQueries({ queryKey: ["user"] });
+
+      // Snapshot current user data
+      const previousUser = queryClient.getQueryData<User>(["user"]);
+
+      // Optimistically update user data
+      queryClient.setQueryData<User>(["user"], (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          username: vars.name,
+          bio: vars.bio ?? old.bio,
+          location: vars.location ?? old.location,
+          // For avatar/banner, we'll keep old values until server confirms
+          // since we need the uploaded URLs from server
+        };
+      });
+
+      return { previousUser };
+    },
+
+    onError: (_err, _vars, context) => {
+      // Rollback to previous user data on error
+      if (context?.previousUser) {
+        queryClient.setQueryData(["user"], context.previousUser);
+      }
+    },
+
+    onSuccess: (serverData) => {
+      // Update with server response (includes uploaded image URLs)
+      queryClient.setQueryData(["user"], serverData);
+
+      // Invalidate related queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+
+  return {
+    editProfileMutation: mutation,
     isPending: mutation.isPending,
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,
