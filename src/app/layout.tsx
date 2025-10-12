@@ -2,8 +2,6 @@ import { NavBar } from "./components/Navbar";
 import "./globals.css";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import TranslationProvider from "./providers/TranslationProvider";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { verifySession } from "./actions/dal";
 import ReactQueryProvider from "./providers/QueryProvider";
 
 // const queryClient = new QueryClient({

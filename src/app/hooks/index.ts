@@ -111,10 +111,12 @@ export const useToggleReview = (username: string, discogsId?: string) => {
     },
 
     onError: (_err, _vars, ctx) => {
-      ctx?.reviews &&
+      if (ctx?.reviews) {
         queryClient.setQueryData(["reviews", username], ctx.reviews);
-      ctx?.activity &&
+      }
+      if (ctx?.activity) {
         queryClient.setQueryData(["activity", username], ctx.activity);
+      }
       if (discogsId && ctx?.album) {
         queryClient.setQueryData(["albumDetails", discogsId], ctx.album);
       }
@@ -359,7 +361,6 @@ export const useEditReview = (username: string) => {
     mutationKey: ["editReview"],
     mutationFn: async ({
       reviewId,
-      discogsId,
       ratingNumber,
       description,
       genres,
@@ -463,12 +464,15 @@ export const useEditReview = (username: string) => {
     },
 
     onError: (_err, vars, ctx) => {
-      ctx?.reviews &&
+      if (ctx?.reviews) {
         queryClient.setQueryData(["reviews", username], ctx.reviews);
-      ctx?.activity &&
+      }
+      if (ctx?.activity) {
         queryClient.setQueryData(["activity", username], ctx.activity);
-      ctx?.album &&
+      }
+      if (ctx?.album) {
         queryClient.setQueryData(["albumDetails", vars.discogsId], ctx.album);
+      }
     },
 
     onSuccess: (serverData) => {

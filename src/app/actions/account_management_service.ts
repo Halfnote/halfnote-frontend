@@ -1,13 +1,7 @@
 "use server";
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { StaticImageData } from "next/image";
-import { NextRequest, NextResponse } from "next/server";
-import { verifySession } from "./dal";
-import { redirect } from "next/navigation";
 
 const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
-const secretKey = process.env.SESSION_SECRET!;
 // export async function decrypt(session: string | undefined = "") {
 //   if (!session) {
 //     throw new Error("No session token provided");
@@ -158,8 +152,8 @@ export async function deleteSession() {
 export const logoutUser = async () => {
   try {
     await deleteSession();
-  } catch (error: any) {
-    throw new Error(error.message || "Could not logout");
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : "Could not logout");
   }
 };
 //assumes no cookies are set
@@ -194,8 +188,8 @@ export const LoginUser = async (
 
     // Create session with tokens
     await createSession(data.access_token, data.refresh_token, username);
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Re-throw the error for the component to handle
-    throw new Error(error.message || "An error occurred during login");
+    throw new Error(error instanceof Error ? error.message : "An error occurred during login");
   }
 };

@@ -2,10 +2,7 @@
 import { useMemo, useState } from "react";
 import { AnotherNavButton } from "../../components/AnotherNavButton";
 import { Activity, Review } from "../../types/types";
-import Daft from "../../../../public/sample_images/daft.png";
 import { useTranslation } from "react-i18next";
-
-import { RecentReviewCard } from "../../components/RecentReviewCard";
 import { useOthersActivity } from "@/app/hooks";
 import { ProperReviewCard } from "./ProperReviewCard";
 

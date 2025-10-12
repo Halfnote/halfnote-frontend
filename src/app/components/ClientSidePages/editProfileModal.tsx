@@ -70,7 +70,7 @@ export const EditProfileModal = ({ setOpen }: ModalType) => {
           }
         }}
       >
-        {({ values, handleChange, handleSubmit, setFieldValue }) => (
+        {({ values, handleChange, handleSubmit }) => (
           <div className="bg-white rounded-2xl w-full max-w-2xl p-6 flex flex-col items-center shadow-xl overflow-y-auto max-h-[90vh]">
             {/* Header */}
             <div className="w-full flex items-center justify-between mb-6">

@@ -46,8 +46,8 @@ export const getUser = async () => {
     }
 
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get profile");
+    throw new Error(error instanceof Error ? error.message : "Failed to get profile");
   }
 };

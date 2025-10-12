@@ -23,9 +23,9 @@ export const getAlbumDetails = async (discogsID: string) => {
     }
 
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Album fetch failed:", error);
-    throw new Error(error.message || "Failed to get album details");
+    throw new Error(error instanceof Error ? error.message : "Failed to get album details");
   }
 };
 
@@ -48,9 +48,9 @@ export const getSearch = async (discogsID: string) => {
       throw new Error(error.message || `Could not get albums for ${discogsID}`);
     }
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Album fetch failed:", error);
-    throw new Error(error.message || "Failed to get album details");
+    throw new Error(error instanceof Error ? error.message : "Failed to get album details");
   }
 };
 
@@ -77,9 +77,9 @@ export const getUserReviews = async (username: string) => {
     }
 
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get profile");
+    throw new Error(error instanceof Error ? error.message : "Failed to get profile");
   }
 };
 
@@ -105,9 +105,9 @@ export const getUserActivity = async (username: string) => {
     }
 
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get activity");
+    throw new Error(error instanceof Error ? error.message : "Failed to get activity");
   }
 };
 
@@ -130,8 +130,8 @@ export const getOthersActivity = async (username: string, type: string) => {
       throw new Error(error.message || `Could not get ${type} activity`);
     }
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Profile fetch failed:", error);
-    throw new Error(error.message || "Failed to get profile");
+    throw new Error(error instanceof Error ? error.message : "Failed to get profile");
   }
 };

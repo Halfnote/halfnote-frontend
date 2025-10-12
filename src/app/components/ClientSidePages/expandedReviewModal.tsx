@@ -1,15 +1,10 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Title } from "../general/Title";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Icons } from "@/app/icons/icons";
-import { Button } from "../general/Button";
-import { Toggle } from "../general/Toggle";
-import { CreateList } from "@/app/actions/list_service";
 import { Review } from "@/app/types/types";
 import Image from "next/image";
 import { generateRatingStamp, getTimeAgo } from "@/app/utils/calculations";
-import { useToggleReview } from "@/app/hooks";
 
 type ModalType = {
   setSelected: Dispatch<SetStateAction<Review | undefined>>;
@@ -21,7 +16,6 @@ type ModalType = {
 export const ExpandedReviewModal = ({
   setOpen,
   review,
-  username,
   setSelected,
 }: ModalType) => {
   useEffect(() => {
@@ -30,10 +24,6 @@ export const ExpandedReviewModal = ({
       document.body.style.overflow = "";
     };
   }, []);
-  const { toggleLikeMutation, isPending } = useToggleReview(
-    username,
-    review?.album_discogs_id
-  );
   console.log(review);
   return (
     review && (
@@ -44,7 +34,7 @@ export const ExpandedReviewModal = ({
               className="another-heading6 absolute left-0 cursor-pointer flex flex-row gap-x-2"
               onClick={() => {
                 setOpen(false);
-                setSelected((review) => undefined);
+                setSelected(() => undefined);
               }}
             >
               <Image src={Icons.backButton} width={20} height={20} alt="back" />
