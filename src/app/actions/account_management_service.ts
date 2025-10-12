@@ -1,7 +1,8 @@
 "use server";
 import { cookies } from "next/headers";
 
-const BASE_URL = process.env.BASE_URL || `http://localhost:8000`;
+const BASE_URL =
+  process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
 // export async function decrypt(session: string | undefined = "") {
 //   if (!session) {
 //     throw new Error("No session token provided");
@@ -153,7 +154,9 @@ export const logoutUser = async () => {
   try {
     await deleteSession();
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : "Could not logout");
+    throw new Error(
+      error instanceof Error ? error.message : "Could not logout"
+    );
   }
 };
 //assumes no cookies are set
@@ -190,6 +193,8 @@ export const LoginUser = async (
     await createSession(data.access_token, data.refresh_token, username);
   } catch (error: unknown) {
     // Re-throw the error for the component to handle
-    throw new Error(error instanceof Error ? error.message : "An error occurred during login");
+    throw new Error(
+      error instanceof Error ? error.message : "An error occurred during login"
+    );
   }
 };
