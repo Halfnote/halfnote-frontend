@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { TopRated } from "../types/review";
+import { TopRated } from "../types/types";
 import Image from "next/image";
 import { RockBadge } from "../icons/stamps";
 import Clairo from "../../../public/sample_images/813adHqElhL.jpg";

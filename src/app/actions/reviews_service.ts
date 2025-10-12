@@ -31,9 +31,9 @@ export const createReview = async (
       throw new Error(error.message || "Failed to create review");
     }
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Review creation failed:", error);
-    throw new Error(error.message || "Failed to create review");
+    throw new Error(error instanceof Error ? error.message : "Failed to create review");
   }
 };
 
@@ -63,9 +63,9 @@ export const editReview = async (
       throw new Error(error.message || "Failed to edit review");
     }
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Review edit failed:", error);
-    throw new Error(error.message || "Failed to edit review");
+    throw new Error(error instanceof Error ? error.message : "Failed to edit review");
   }
 };
 
@@ -91,7 +91,7 @@ export const toggleLike = async (reviewId: number) => {
       throw new Error(error.message || "Could not like review");
     }
     return await response.json();
-  } catch (error: any) {
-    throw new Error(error.response?.data?.error || "Failed to like review");
+  } catch {
+    throw new Error("Failed to like review");
   }
 };

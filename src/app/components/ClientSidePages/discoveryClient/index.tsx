@@ -12,7 +12,7 @@ type DiscoverPageProps = {
   };
 };
 
-export default function DiscoverPage({ user }: DiscoverPageProps) {
+export default function DiscoverPage({}: DiscoverPageProps) {
   return (
     <div className="static origin-top flex flex-row gap-4 box-border bg-[#f3f3f3] items-center justify-center w-full lg:text-5xl md:text-4xl">
       {/* Left Sidebar */}

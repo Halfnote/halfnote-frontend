@@ -36,7 +36,7 @@ export const CreateAlbumListModal = ({ setOpen }: ModalType) => {
       console.log("Calling CreateList...");
       await CreateList(listName, description, isPublic);
       setOpen(false);
-    } catch (err: any) {
+    } catch {
       setError("List creation failed. Please try again later.");
     } finally {
       setLoading(false);

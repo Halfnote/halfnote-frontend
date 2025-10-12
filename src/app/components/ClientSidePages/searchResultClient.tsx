@@ -32,7 +32,7 @@ export const SearchResultPage = () => {
       {isError && <p>Error fetching search results.</p>}
       {albumList?.results && albumList.results.length > 0 ? (
         <ul className="gap-y-2 flex flex-col w-full max-w-screen">
-          {albumList.results.map((album: any) => (
+          {albumList.results.map((album: { id?: string; discogs_id?: string; cover_image?: string; title?: string; artist?: string; rating?: number; review?: unknown; time?: string }) => (
             <button
               onClick={() => {
                 router.push(`/albums?query=${album.id || album.discogs_id}`);

@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAlbumDetails } from "@/app/hooks";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import ReviewModal from "../ReviewModal";
 import { Icons } from "../../icons/icons";
@@ -21,9 +21,7 @@ type AlbumDetailsProps = {
   };
 };
 const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
-  const pathname = usePathname();
   const params = useSearchParams();
-  const router = useRouter();
   const discogsID = params.get("query");
   const {
     data: albumDetails = undefined,

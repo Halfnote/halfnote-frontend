@@ -28,7 +28,7 @@ export default function LoginForm() {
       await qc.invalidateQueries({ queryKey: ["user"] }); // refetch user
       router.replace("/discovery");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError("Login failed. Please check your credentials.");
       console.error(err);
     } finally {

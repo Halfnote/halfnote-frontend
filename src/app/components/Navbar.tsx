@@ -9,7 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/app/hooks";
 import Link from "next/link";
 import { logoutUser } from "../actions/account_management_service";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { SkeletonNavBar } from "./skeletons/SkeletonNavBar";
 
 export const NavBar = () => {

@@ -1,12 +1,9 @@
 import { useToggleReview } from "@/app/hooks";
 import { Review } from "@/app/types/types";
 import Image from "next/image";
-import RatingBadge from "../ratingBadge";
 import { Icons } from "@/app/icons/icons";
 import { generateRatingStamp, getTimeAgo } from "@/app/utils/calculations";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { text } from "stream/consumers";
-import { ExpandedReviewModal } from "./expandedReviewModal";
+import { Dispatch, SetStateAction, useRef } from "react";
 type ProperReviewCardProps = {
   review: Review;
   username: string;

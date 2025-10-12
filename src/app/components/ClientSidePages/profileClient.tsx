@@ -13,7 +13,6 @@ import { generateBadge, getVinylIcon } from "@/app/utils/calculations";
 import Black from "../../../../public/sample_images/black.jpeg";
 import { RecentActivityCard } from "../RecentActivityCard";
 import { AlbumTile } from "../AlbumTile";
-import { CreateAlbumListModal } from "../CreateAlbumListModal";
 import { SkeletonReviewCard } from "../skeletons/SkeletonReviewCard";
 import { SkeletonRecentActivityCard } from "../skeletons/SkeletonRecentActivityCard";
 import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
@@ -75,8 +74,6 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   }, [userReviews]);
 
   if (isPendingUser) return <ProfilePageSkeleton />;
-
-  const handleOpenEditProfileModal = () => {};
 
   return (
     <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 max-h-[800px]">

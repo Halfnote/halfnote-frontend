@@ -147,6 +147,18 @@ export interface Activity {
   };
 }
 
-type UserLoaderProps = {
-  Component: React.ComponentType<{ user: User }>;
-};
+export interface NewReleases {
+  albumName: string;
+  artistName: string;
+  coverUrl?: string;
+  year?: number;
+  discogsId?: string;
+}
+
+export interface TopRated {
+  albumName: string;
+  artistName: string;
+  coverUrl?: string;
+  rating?: number;
+  discogsId?: string;
+}
