@@ -10,10 +10,12 @@ async function UserLoader() {
     redirect("/");
   }
 
+  const username = session.username;
+
   return (
     <ProfilePage
       user={{
-        username: session.username,
+        username,
       }}
     />
   );

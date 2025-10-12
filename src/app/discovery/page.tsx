@@ -10,11 +10,12 @@ async function UserLoader() {
   if (!session || !session.username) {
     redirect("/");
   }
+  const username = session.username;
 
   return (
     <DiscoverPage
       user={{
-        username: session.username,
+        username,
       }}
     />
   );

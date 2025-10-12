@@ -17,7 +17,6 @@ import { generateRatingStamp } from "@/app/utils/calculations";
 type AlbumDetailsProps = {
   user: {
     username: string;
-    access_token: string;
   };
 };
 const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
