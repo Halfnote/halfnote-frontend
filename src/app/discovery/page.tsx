@@ -1,21 +1,20 @@
 // app/discovery/page.tsx
 import { Suspense } from "react";
-import { verifySession } from "@/app/actions/dal";
+import { getSafeSession } from "@/app/actions/dal";
 import DiscoverPage from "@/app/components/ClientSidePages/discoveryClient";
 import { redirect } from "next/navigation";
 
 async function UserLoader() {
-  const session = await verifySession().catch(() => null);
+  const session = await getSafeSession();
 
-  if (!session || !session.username) {
+  if (!session.isAuth || !session.username) {
     redirect("/");
   }
-  const username = session.username;
 
   return (
     <DiscoverPage
       user={{
-        username,
+        username: session.username,
       }}
     />
   );

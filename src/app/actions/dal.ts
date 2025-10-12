@@ -25,6 +25,17 @@ export const verifySession = cache(async () => {
   };
 });
 
+export const getSafeSession = cache(async () => {
+  const cookieStore = await cookies();
+  const username = cookieStore.get("username")?.value;
+  const hasAccess = !!cookieStore.get("access")?.value;
+
+  return {
+    isAuth: hasAccess,
+    username: username || null,
+  };
+});
+
 export const getUser = async () => {
   const session = await verifySession();
   if (!session?.access_token) {
@@ -48,6 +59,8 @@ export const getUser = async () => {
     return await response.json();
   } catch (error: unknown) {
     console.error("Profile fetch failed:", error);
-    throw new Error(error instanceof Error ? error.message : "Failed to get profile");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to get profile"
+    );
   }
 };
