@@ -18,11 +18,44 @@ export const verifySession = cache(async () => {
     };
   }
 
-  return {
-    isAuth: true,
-    access_token,
-    username,
-  };
+  // Verify token with backend by calling a protected endpoint
+  try {
+    const response = await fetch(`${BASE_URL}/accounts/profile/`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      // Token is invalid or expired (401), clear cookies
+      cookieStore.delete("access");
+      cookieStore.delete("refresh");
+      cookieStore.delete("username");
+
+      return {
+        isAuth: false,
+        access_token: null,
+        username: null,
+      };
+    }
+
+    return {
+      isAuth: true,
+      access_token,
+      username,
+    };
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    cookieStore.delete("access");
+    cookieStore.delete("refresh");
+    cookieStore.delete("username");
+    return {
+      isAuth: false,
+      access_token: null,
+      username: null,
+    };
+  }
 });
 
 export const getSafeSession = cache(async () => {

@@ -34,20 +34,23 @@ export async function createSession(
   refresh_token: string,
   username: string
 ) {
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  // Access token expires in 1 day (matches backend JWT config)
+  const accessExpiresAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+  // Refresh token expires in 7 days (matches backend JWT config)
+  const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const cookieStore = await cookies();
 
   cookieStore.set("access", access_token, {
     httpOnly: true,
     secure: true,
-    expires: expiresAt,
+    expires: accessExpiresAt,
     sameSite: "lax",
     path: "/",
   });
   cookieStore.set("refresh", refresh_token, {
     httpOnly: true,
     secure: true,
-    expires: expiresAt,
+    expires: refreshExpiresAt,
     sameSite: "lax",
     path: "/",
   });
@@ -119,7 +122,6 @@ export const RegisterUser = async (
     formData.append("password", password);
     if (bio) formData.append("bio", bio);
     if (avatar) formData.append("avatar", avatar);
-    console.log("formdata: ", JSON.stringify(formData));
     const response = await fetch(`${BASE_URL}/accounts/register/`, {
       method: "POST",
       body: formData,
