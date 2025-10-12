@@ -17,6 +17,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^12.6.5",
     "i18next": "^25.3.1",
+    "lucide-react": "^0.545.0",
     "luxon": "^3.6.1",
     "next": "^15.3.0",
     "next-auth": "^4.24.11",

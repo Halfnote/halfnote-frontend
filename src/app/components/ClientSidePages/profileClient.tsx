@@ -71,9 +71,6 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   );
 
   const pinnedReviews = useMemo(() => {
-    // Use reviews as the primary source of truth since it should have the most up-to-date data
-    // Only fallback to activity if review data is missing fields
-    console.log("userReviews", userReviews);
     return userReviews.filter((review: Review) => review.is_pinned);
   }, [userReviews]);
 

@@ -52,7 +52,7 @@ export const RecentActivityCard = ({
         >
           {generateRatingStamp(rating) && (
             <Image
-              src={generateRatingStamp(rating)!}
+              src={generateRatingStamp(rating, { empty: false })}
               alt={`Rating Stamp`}
               width={50}
               height={50}

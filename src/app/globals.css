@@ -108,47 +108,47 @@ body {
 
 .another-heading1 {
   font-family: var(--font-instrument-serif), serif;
-  @apply font-normal leading-[63px] tracking-[-0.03em];
+  @apply font-normal tracking-[-0.03em];
 }
 
 .another-heading2 {
   font-family: var(--font-instrument-serif), serif;
-  @apply font-normal text-[28px] leading-[44px] tracking-[-0.03em];
+  @apply font-normal text-[28px] tracking-[-0.03em];
 }
 
 .another-heading3 {
   font-family: var(--font-instrument-sans), sans;
-  @apply text-[24px] leading-[36px] tracking-[-0.03em];
+  @apply text-[24px] tracking-[-0.03em];
 }
 
 .another-heading4 {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal text-[20px] leading-[30px] tracking-[-0.03em];
+  @apply font-normal text-[20px] tracking-[-0.03em];
 }
 
 .another-heading5 {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal text-[16px] leading-[26px] tracking-[-0.03em];
+  @apply text-[16px] tracking-[-0.03em];
 }
 
 .another-heading6 {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal text-[14px] leading-[21px] tracking-[-0.03em];
+  @apply font-normal text-[14px] tracking-[-0.03em];
 }
 
 .another-body {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal text-[14px] leading-[21px] tracking-[-0.03em];
+  @apply font-normal text-[14px] tracking-[-0.03em];
 }
 
 .another-label {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-normal text-[10px] leading-[21px] tracking-[-0.03em];
+  @apply font-normal text-[10px] tracking-[-0.03em];
 }
 
 .another-top-rated-album {
   font-family: var(--font-instrument-sans), sans;
-  @apply font-bold text-[28px] leading-[28px] tracking-[-0.03em] text-center;
+  @apply font-bold text-[28px] tracking-[-0.03em] text-center;
 }
 
 .custom-bullet {

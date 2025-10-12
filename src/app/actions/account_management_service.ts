@@ -62,6 +62,54 @@ export async function createSession(
   });
 }
 
+export const EditProfile = async (
+  name?: string,
+  bio?: string,
+  location?: string,
+  avatar?: File,
+  banner?: File
+) => {
+  try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("access")?.value;
+
+    if (!accessToken) {
+      throw new Error("No authentication token found");
+    }
+
+    const formData = new FormData();
+    if (name) formData.append("name", name);
+    if (bio) formData.append("bio", bio);
+    if (location) formData.append("location", location);
+    if (avatar) formData.append("avatar", avatar);
+    if (banner) formData.append("banner", banner);
+
+    const response = await fetch(`${BASE_URL}/accounts/profile/`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server error response:", errorText);
+      let errorMessage = "Failed to edit profile";
+      try {
+        const error = JSON.parse(errorText);
+        errorMessage = error.message || error.detail || JSON.stringify(error);
+      } catch {
+        errorMessage = errorText;
+      }
+      throw new Error(errorMessage);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Profile edit failed:", error);
+    throw error;
+  }
+};
+
 export const RegisterUser = async (
   username: string,
   email: string,
