@@ -292,7 +292,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 >
                   <RecentActivityCard
                     key={activity.id}
-                    albumCover={activity.review_details.album.cover_url}
+                    albumCover={activity.review_details.album.cover_url || ""}
                     albumTitle={
                       activity?.review_details?.album?.title ?? "Unknown"
                     }
@@ -322,7 +322,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 >
                   <RecentActivityCard
                     key={activity.id}
-                    albumCover={activity.review_details.album.cover_url}
+                    albumCover={activity.review_details.album.cover_url || ""}
                     albumTitle={
                       activity?.review_details?.album?.title ?? "Unknown"
                     }
@@ -330,7 +330,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                       activity?.review_details?.album?.artist ?? "Unknown"
                     }
                     rating={activity.review_details.rating}
-                    hasReview={activity.review_details.content.length > 0}
+                    hasReview={activity.review_details?.content.length > 0}
                     time={activity.created_at}
                   />
                 </div>

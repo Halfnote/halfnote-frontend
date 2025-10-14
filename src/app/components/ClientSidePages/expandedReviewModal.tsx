@@ -32,14 +32,15 @@ export const ExpandedReviewModal = ({
     if (!review) return null;
 
     if (isActivity(review)) {
+      console.log("ues");
       return {
-        albumCover: review.review_details.album.cover_url,
-        albumTitle: review.review_details.album.title,
-        albumArtist: review.review_details.album.artist,
-        rating: review.review_details.rating,
-        content: review.review_details.content,
-        username: review.user.username,
-        userAvatar: review.user.avatar,
+        albumCover: review.review_details?.album.cover_url,
+        albumTitle: review.review_details?.album.title,
+        albumArtist: review.review_details?.album.artist,
+        rating: review.review_details?.rating,
+        content: review.review_details?.content,
+        username: review.review_details?.user.username,
+        userAvatar: review.review_details?.user.avatar,
         createdAt: review.created_at,
       };
     } else {
@@ -83,7 +84,7 @@ export const ExpandedReviewModal = ({
               <Image
                 width={500}
                 height={500}
-                src={data.albumCover}
+                src={data.albumCover || ""}
                 alt={`${data.albumTitle} cover`}
                 className="w-full object-cover mx-auto"
               />
@@ -112,7 +113,7 @@ export const ExpandedReviewModal = ({
               </div>
               <div className="flex flex-row gap-x-4 mb-4">
                 <Image
-                  src={data.userAvatar}
+                  src={data.userAvatar || ""}
                   alt={data.username}
                   width={50}
                   height={50}
