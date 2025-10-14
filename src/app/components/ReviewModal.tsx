@@ -33,13 +33,11 @@ export default function WriteReview({
   const reviewValidationSchema = Yup.object({
     content: Yup.string()
       .trim()
-      .min(10, "Review must be at least 10 characters long")
       .max(2000, "Review cannot exceed 2000 characters")
       .matches(
         /^[a-zA-Z0-9\s.,!?'"()\-_@#$%&*+=/:;[\]{}|\\~`]*$/,
         "Review contains invalid characters"
-      )
-      .required(""),
+      ),
     rating: Yup.number()
       .min(1, "Please select a rating")
       .max(10, "Rating cannot exceed 10")
@@ -47,13 +45,8 @@ export default function WriteReview({
   });
 
   // Helper function to check if form is complete
-  const isFormComplete = (content: string, rating: number | undefined) => {
-    return (
-      content.trim().length >= 10 &&
-      rating !== undefined &&
-      rating >= 1 &&
-      rating <= 10
-    );
+  const isFormComplete = (rating: number | undefined) => {
+    return rating !== undefined && rating >= 1 && rating <= 10;
   };
 
   const handleSubmit = async (values: { content: string; rating: number }) => {
@@ -143,10 +136,7 @@ export default function WriteReview({
               onSubmit={handleSubmit}
             >
               {({ values, setFieldValue, errors, touched }) => {
-                const formIsComplete = isFormComplete(
-                  values.content,
-                  values.rating
-                );
+                const formIsComplete = isFormComplete(values.rating);
 
                 return (
                   <Form className="flex-1 flex flex-col">
