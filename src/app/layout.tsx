@@ -39,7 +39,7 @@ const instrumentSerif = Instrument_Serif({
   adjustFontFallback: true,
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -49,14 +49,14 @@ export default async function RootLayout({
       lang="en"
       className={`${instrumentSans.variable} ${instrumentSerif.variable}`}
     >
-      <ReactQueryProvider>
-        <TranslationProvider>
-          <body className="items-center justify-center m-12 flex flex-col gap-8">
+      <body className="items-center justify-center m-12 flex flex-col gap-8">
+        <ReactQueryProvider>
+          <TranslationProvider>
             <NavBar />
             {children}
-          </body>
-        </TranslationProvider>
-      </ReactQueryProvider>
+          </TranslationProvider>
+        </ReactQueryProvider>
+      </body>
     </html>
   );
 }

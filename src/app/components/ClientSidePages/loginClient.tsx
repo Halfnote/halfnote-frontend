@@ -1,4 +1,5 @@
 "use client";
+import { EyeClosed, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LoginUser } from "@/app/actions/account_management_service";
@@ -12,6 +13,7 @@ export default function LoginForm() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,7 +27,7 @@ export default function LoginForm() {
 
     try {
       await LoginUser(formData.username, formData.password);
-      await qc.invalidateQueries({ queryKey: ["user"] }); // refetch user
+      await qc.invalidateQueries({ queryKey: ["user"] });
       router.replace("/discovery");
       router.refresh();
     } catch (err: unknown) {
@@ -74,15 +76,24 @@ export default function LoginForm() {
             required
             className="p-3 border border-gray-300 rounded-lg"
           />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded-lg"
-          />
+          <div className="flex items-center border border-gray-300 rounded-lg">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="flex-1 p-3 bg-transparent focus:outline-none placeholder-gray-400"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="px-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+            >
+              {showPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
           <button
             type="submit"
             disabled={loading}

@@ -1,12 +1,12 @@
 // app/discovery/page.tsx
-import { verifySession } from "@/app/actions/dal";
+import { getSafeSession } from "@/app/actions/dal";
 import { redirect } from "next/navigation";
 import ProfilePage from "@/app/components/ClientSidePages/profileClient";
 
 async function UserLoader() {
-  const session = await verifySession();
+  const session = await getSafeSession();
 
-  if (!session || !session.username) {
+  if (!session.isAuth || !session.username) {
     redirect("/");
   }
 

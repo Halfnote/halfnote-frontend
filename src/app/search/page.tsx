@@ -1,11 +1,12 @@
-import { verifySession } from "@/app/actions/dal";
+import { getSafeSession } from "@/app/actions/dal";
 import { redirect } from "next/navigation";
 import { SearchResultPage } from "../components/ClientSidePages/searchResultClient";
 export default async function Page() {
-  try {
-    await verifySession();
-    return <SearchResultPage />;
-  } catch {
+  const session = await getSafeSession();
+
+  if (!session.isAuth) {
     redirect("/");
   }
+
+  return <SearchResultPage />;
 }

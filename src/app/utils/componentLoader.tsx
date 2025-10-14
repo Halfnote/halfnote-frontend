@@ -1,4 +1,4 @@
-import { verifySession } from "@/app/actions/dal";
+import { getSafeSession } from "@/app/actions/dal";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -11,9 +11,9 @@ type ComponentLoaderProps = {
 };
 
 export async function ComponentLoader({ Component }: ComponentLoaderProps) {
-  const session = await verifySession().catch(() => null);
+  const session = await getSafeSession();
 
-  if (!session || !session.username) {
+  if (!session.isAuth || !session.username) {
     redirect("/");
   }
 

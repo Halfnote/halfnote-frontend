@@ -131,19 +131,24 @@ export interface Activity {
 
   review_details: {
     id: number;
-    rating: number;
-    content: string;
-    is_liked_by_user: boolean;
-    likes_count: number;
-    comments_count: number;
     album: {
-      discogs_id: string;
       title: string;
       artist: string;
-      cover_url: string;
-      year: number;
+      year?: number;
+      cover_url?: string;
+      discogs_id?: string;
     };
+    rating: number;
+    content: string;
+    likes_count?: number;
+    is_liked_by_user: boolean;
+    comments_count?: number;
     user_genres: Array<{ id: number; name: string }>;
+    user: {
+      username: string;
+      avatar?: string;
+      is_staff?: boolean;
+    };
   };
 }
 
