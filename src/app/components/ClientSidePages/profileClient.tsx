@@ -8,7 +8,7 @@ import { AlbumCard } from "@/app/components/AlbumCard";
 import { AnotherNavButton } from "@/app/components/AnotherNavButton";
 import ReviewCard from "@/app/components/ReviewCard";
 import { useUser, useUserActivity, useUserReviews } from "@/app/hooks";
-import { Genre, Review } from "@/app/types/types";
+import { Activity, Genre, Review } from "@/app/types/types";
 import { generateBadge, getVinylIcon } from "@/app/utils/calculations";
 import Black from "../../../../public/sample_images/black.jpeg";
 import { RecentActivityCard } from "../RecentActivityCard";
@@ -17,6 +17,7 @@ import { SkeletonReviewCard } from "../skeletons/SkeletonReviewCard";
 import { SkeletonRecentActivityCard } from "../skeletons/SkeletonRecentActivityCard";
 import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
 import { EditProfileModal } from "./editProfileModal";
+import { ExpandedReviewModal } from "./expandedReviewModal";
 
 type ProfilePageProps = {
   user: {
@@ -52,6 +53,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     useUserActivity(user.username);
   const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
   const [editProfileModal, setEditProfileModal] = useState(false);
+  const [openReview, setOpenReview] = useState(false);
+  const [chosenReview, setChosenReview] = useState<
+    Review | Activity | undefined
+  >(undefined);
 
   const reviewedActivity = useMemo(
     () =>
@@ -272,7 +277,19 @@ export default function ProfilePage({ user }: ProfilePageProps) {
               ))
             ) : filter === "reviewed" && reviewedActivity.length ? (
               reviewedActivity.map((activity) => (
-                <div className="mb-2" key={activity.id}>
+                <div
+                  className={`mb-2 ${
+                    activity.review_details.content.length > 0 &&
+                    "cursor-pointer"
+                  }`}
+                  key={activity.id}
+                  onClick={() => {
+                    if (activity.review_details.content.length > 0) {
+                      setChosenReview(activity);
+                      setOpenReview(true);
+                    }
+                  }}
+                >
                   <RecentActivityCard
                     key={activity.id}
                     albumCover={activity.review_details.album.cover_url}
@@ -283,14 +300,26 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                       activity?.review_details?.album?.artist ?? "Unknown"
                     }
                     rating={activity.review_details.rating}
-                    hasReview={true}
+                    hasReview={activity.review_details.content.length > 0}
                     time={activity.created_at}
                   />
                 </div>
               ))
             ) : filter === "liked" && likedActivity.length ? (
               likedActivity.map((activity) => (
-                <div className="mb-2" key={activity.id}>
+                <div
+                  className={`mb-2 ${
+                    activity.review_details.content.length > 0 &&
+                    "cursor-pointer"
+                  }`}
+                  key={activity.id}
+                  onClick={() => {
+                    if (activity.review_details.content.length > 0) {
+                      setChosenReview(activity);
+                      setOpenReview(true);
+                    }
+                  }}
+                >
                   <RecentActivityCard
                     key={activity.id}
                     albumCover={activity.review_details.album.cover_url}
@@ -301,7 +330,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                       activity?.review_details?.album?.artist ?? "Unknown"
                     }
                     rating={activity.review_details.rating}
-                    hasReview={true}
+                    hasReview={activity.review_details.content.length > 0}
                     time={activity.created_at}
                   />
                 </div>
@@ -313,6 +342,13 @@ export default function ProfilePage({ user }: ProfilePageProps) {
         </div>
       </div>
       {editProfileModal && <EditProfileModal setOpen={setEditProfileModal} />}
+      {openReview && (
+        <ExpandedReviewModal
+          review={chosenReview}
+          setSelected={setChosenReview}
+          setOpen={setOpenReview}
+        />
+      )}
     </div>
   );
 }

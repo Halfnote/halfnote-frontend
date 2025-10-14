@@ -28,7 +28,6 @@ export const verifySession = cache(async () => {
     });
 
     if (!response.ok) {
-      // Token is invalid or expired (401), clear cookies
       cookieStore.delete("access");
       cookieStore.delete("refresh");
       cookieStore.delete("username");
