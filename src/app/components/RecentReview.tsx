@@ -47,15 +47,15 @@ export const RecentReview = ({
     return BadgeComponent ? <BadgeComponent number={number} /> : null;
   };
   return (
-    <div className="flex flex-row gap-2 w-[212px] items-center relative mb-4">
+    <div className="flex flex-row gap-2 w-full items-center relative mb-2">
       <Image
         src={albumCover}
         alt="Top Album"
-        className="w-[90px] h-[90px] object-cover rounded-md object-center"
+        className="relative aspect-square w-2/5 h-auto object-cover rounded-md object-center"
       />
 
-      <div className="relative w-[90px] h-[90px] flex items-center justify-center">
-        <div className="w-[80px] absolute flex items-center justify-center">
+      <div className="relative aspect-square w-2/5 h-auto flex items-center justify-center">
+        <div className="w-full absolute flex items-center justify-center">
           {getBadgeComponent(genre, rating)}
         </div>
       </div>

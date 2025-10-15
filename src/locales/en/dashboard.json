@@ -1,0 +1,16 @@
+{
+  "title": {
+    "members": "Members",
+    "most_recent_reviews": "Most Recent Reviews",
+    "top_reviews": "Top Reviews",
+    "top_rated": "Top Rated",
+    "on_this_day": "On This Day",
+    "new_releases": "New Releases"
+  },
+  "on_this_day": {
+    "in": "In"
+  },
+  "members": {
+    "reviews": "reviews"
+  }
+}

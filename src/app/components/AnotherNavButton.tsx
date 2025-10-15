@@ -2,9 +2,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
 interface AnotherNavButtonsProps {
   label: string;
+  icon: string | StaticImport;
   onClick?: () => void;
   /** new override flag */
   isSelected?: boolean;
@@ -13,7 +16,7 @@ interface AnotherNavButtonsProps {
 }
 
 export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
-  const { label, onClick, isSelected: override, disabled } = props;
+  const { label, icon, onClick, isSelected: override, disabled } = props;
   const pathname = usePathname();
   const [byPath, setByPath] = useState(false);
 
@@ -34,16 +37,24 @@ export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={`another-heading4 font-bold rounded-full 
-                 border border-black flex items-center 
-                 justify-center h-10 px-4 hover:cursor-pointer hover:bg-gray-200
+                 md:border border-black flex items-center 
+                 justify-center md:px-4 hover:cursor-pointer hover:bg-gray-200
                  ${
                    active
-                     ? "bg-black text-white hover:bg-black"
-                     : "bg-white text-black"
+                     ? "md:bg-black md:text-white md:hover:bg-black"
+                     : "md:bg-white md:text-black"
                  } 
                  ${disabled ? "opacity-50 cursor-pointer" : ""}`}
     >
-      {label}
+      {/* Show text on md+ */}
+      <span className="hidden md:inline">{label}</span>
+      {/* Show icon on small screens */}
+      <Image
+        className="w-full h-full justify-self-start md:hidden"
+        priority
+        src={icon}
+        alt={label}
+      />
     </button>
   );
 };

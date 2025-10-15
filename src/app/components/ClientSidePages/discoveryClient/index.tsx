@@ -14,34 +14,31 @@ type DiscoverPageProps = {
 
 export default function DiscoverPage({}: DiscoverPageProps) {
   return (
-    <div className="static origin-top flex flex-row gap-4 box-border bg-[#f3f3f3] items-center justify-center w-full lg:text-5xl md:text-4xl">
+    <div className="static origin-top flex flex-row md:flex-row gap-4 box-border bg-[#f3f3f3] justify-center w-full text-2xl lg:text-4xl">
       {/* Left Sidebar */}
-      <div className="w-1/5">
+      <div className="w-2/5 flex flex-col gap-4 md:w-1/5 sm:w-2/5">
         <MembersSection />
+        {/* Only show on mobile */}
+        <div className="block md:hidden">
+          <MostRecentReviewsSection />
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col gap-4 h-full w-3/5">
-        <div className="flex gap-4">
-          {/* Top Reviews */}
+      <div className="flex flex-col gap-4 h-full w-3/5 md:w-3/5 sm:w-3/5">
+        <div className="flex flex-col md:flex-row gap-4">
           <TopReviewsSection />
-
-          {/* Top Rated Albums */}
           <TopRatedAlbumsSection />
         </div>
 
-        {/* Bottom Section */}
-        <div className="flex gap-4">
-          {/* On This Day */}
+        <div className="flex flex-col md:flex-row gap-4 w-full">
           <OnThisDaySection />
-
-          {/* New Releases */}
           <NewReleasesSection />
         </div>
       </div>
 
-      {/* Right Sidebar */}
-      <div className="w-1/5">
+      {/* Right Sidebar - only visible on desktop */}
+      <div className="w-full md:w-1/5 hidden md:block">
         <MostRecentReviewsSection />
       </div>
     </div>

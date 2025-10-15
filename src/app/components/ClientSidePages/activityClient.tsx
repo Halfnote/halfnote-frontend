@@ -4,6 +4,7 @@ import { AnotherNavButton } from "../../components/AnotherNavButton";
 import { Activity, Review } from "../../types/types";
 import { useTranslation } from "react-i18next";
 import { useOthersActivity } from "@/app/hooks";
+import { Button } from "../general/Button";
 import { ProperReviewCard } from "./ProperReviewCard";
 
 type ActivityPageProps = {
@@ -75,21 +76,24 @@ export default function ActivityPage({ user }: ActivityPageProps) {
           Recent Activity
         </h1>
         <div className="flex gap-4">
-          <AnotherNavButton
-            label={t("filter.following")}
+          <Button
             onClick={() => setFilter("following")}
             isSelected={filter === "following"}
-          />
-          <AnotherNavButton
-            label={t("filter.friends")}
+          >
+            {t("filter.following")}
+          </Button>
+          <Button
             onClick={() => setFilter("friends")}
             isSelected={filter === "friends"}
-          />
-          <AnotherNavButton
-            label={t("filter.you")}
+          >
+            {t("filter.friends")}
+          </Button>
+          <Button
             onClick={() => setFilter("you")}
             isSelected={filter === "you"}
-          />
+          >
+            {t("filter.you")}
+          </Button>
         </div>
       </div>
 

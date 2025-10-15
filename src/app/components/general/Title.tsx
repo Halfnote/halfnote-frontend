@@ -6,11 +6,12 @@ type TitleProps = {
   src: string | StaticImport;
   alt: string;
   name: string;
+  className?: string;
 };
 
-export const Title = ({ src, alt, name }: TitleProps) => {
+export const Title = ({ src, alt, name, className = "" }: TitleProps) => {
   return (
-    <div className="flex row items-center gap-3">
+    <div className={`flex flex-row items-center gap-2 ${className}`}>
       <Image
         src={src}
         alt={alt}
