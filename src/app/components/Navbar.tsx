@@ -29,38 +29,27 @@ export const NavBar = () => {
   if (isUserLoading || !userData) return <SkeletonNavBar />;
 
   return (
-    <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full">
-      {/* Logo */}
+    <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-7 items-center bg-white p-4 w-full">
       <Image
-        className="w-[200px] h-[55px] justify-self-start"
+        className="w-[100px] justify-self-start col-span-2"
         priority
         src={Icons.halfnote}
         alt="Another"
       />
-
-      {/* Center nav links */}
-      <ul className="flex justify-center gap-7">
-        <Link href="/discovery">
-          <AnotherNavButton label="Discover" />
+      <ul className="w-full flex justify-center col-span-3 gap-4">
+        {/* <div className="w-full grid grid-cols-3"> */}
+        <Link href={"/discovery"}>
+          <AnotherNavButton label="Discover" icon={Icons.discover} />
         </Link>
-        <Link href="/activity">
-          <AnotherNavButton label="Activity" />
+        <Link href={"/activity"}>
+          <AnotherNavButton label="Activity" icon={Icons.activity} />
         </Link>
-        <Link href={`/profile/${userData.username}`}>
-          <AnotherNavButton label="Profile" />
+        <Link href={`/profile/${userData?.username || ""}`}>
+          <AnotherNavButton label="Profile" icon={Icons.profile} />
         </Link>
-        <Image
-          src={Icons.firstVinyl}
-          alt={"Add Album List"}
-          width={40}
-          height={40}
-          className="object-contain cursor-pointer"
-          onClick={handleLogout}
-        />
+        {/* </div> */}
       </ul>
-
-      {/* Search bar */}
-      <div className="justify-self-end mr-2">
+      <div className="justify-self-end mr-2 col-span-2">
         <Form
           action={(formData: FormData) => {
             const query = formData.get("search") as string;
@@ -68,21 +57,21 @@ export const NavBar = () => {
             const encodedQuery = encodeURIComponent(query);
             router.push(`/search?query=${encodedQuery}`);
           }}
-          className="flex flex-row justify-between border bg-[var(--color-bg-gray)] border-black rounded-full p-3 w-40 focus-within:w-80 transition-all duration-300 ease-in-out focus:outline-none"
+          className="flex flex-row justify-self-end border bg-[var(--color-bg-gray)] border-black rounded-full 
+               w-2/3 focus-within:w-full transition-all duration-300 ease-in-out"
         >
-          <button type="submit">
+          <button type="submit" className="m-2 flex items-center justify-center">
             <Image
+              className="w-7 h-7 object-contain"
               src={Icons.search}
               alt="Search Icon"
-              width={24}
-              height={24}
             />
           </button>
           <input
             name="search"
             type="text"
             placeholder="Search"
-            className="w-full focus:outline-none another-heading4 text-black ml-5 placeholder:text-black bg-transparent"
+            className="w-full focus:outline-none another-heading5 md:another-heading4 text-black placeholder:text-black bg-transparent"
           />
         </Form>
       </div>

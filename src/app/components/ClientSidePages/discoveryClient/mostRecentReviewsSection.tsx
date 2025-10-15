@@ -1,11 +1,14 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import { albums } from "../../mockdata/mockClients";
 import { RecentReview } from "../../RecentReview";
 
 export const MostRecentReviewsSection = () => {
+  const { t } = useTranslation("dashboard");
+
   return (
-    <div className="bg-white flex flex-col text-center items-center border-black border-2 rounded-xl p-6 w-full h-[916px] overflow-auto">
-      <h3 className="another-heading1">Most Recent Reviews</h3>
+    <div className="bg-white flex flex-col text-center items-center border-black border-2 rounded-xl p-2 lg:p-4 w-full h-[916px] overflow-hidden">
+      <h3 className="another-heading1">{t("title.most_recent_reviews")}</h3>
       <RecentReview
         albumCover={albums[0]}
         rating={10}
