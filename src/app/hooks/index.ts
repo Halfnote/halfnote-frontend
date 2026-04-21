@@ -47,11 +47,18 @@ export const useUserReviews = (username: string) =>
 export const useToggleReview = (username: string, discogsId?: string) => {
   const queryClient = useQueryClient();
 
+  const othersActivityKeys = [
+    queryKeys.othersActivity(username, ActivityFilterType.YOU),
+    queryKeys.othersActivity(username, ActivityFilterType.FRIENDS),
+    queryKeys.othersActivity(username, ActivityFilterType.INCOMING),
+  ];
+
   const mutation = useMutation({
     mutationKey: ["toggleLike"],
     mutationFn: (reviewId: number) => toggleLike(reviewId),
 
     onMutate: async (reviewId) => {
+
       await Promise.all([
         queryClient.cancelQueries({
           queryKey: queryKeys.reviewsByUser(username),
@@ -59,6 +66,9 @@ export const useToggleReview = (username: string, discogsId?: string) => {
         queryClient.cancelQueries({
           queryKey: queryKeys.activityByUser(username),
         }),
+        ...othersActivityKeys.map((key) =>
+          queryClient.cancelQueries({ queryKey: key }),
+        ),
         discogsId &&
           queryClient.cancelQueries({
             queryKey: queryKeys.albumDetails(discogsId),
@@ -68,6 +78,10 @@ export const useToggleReview = (username: string, discogsId?: string) => {
       const snapshots = {
         reviews: queryClient.getQueryData(queryKeys.reviewsByUser(username)),
         activity: queryClient.getQueryData(queryKeys.activityByUser(username)),
+        othersActivity: othersActivityKeys.map((key) => ({
+          key,
+          data: queryClient.getQueryData(key),
+        })),
         album: discogsId
           ? queryClient.getQueryData(queryKeys.albumDetails(discogsId))
           : undefined,
@@ -106,6 +120,26 @@ export const useToggleReview = (username: string, discogsId?: string) => {
                 }
               : a,
           ),
+      );
+
+      // Optimistic update: othersActivity feeds (YOU, FRIENDS, INCOMING)
+      const toggleActivity = (old: Activity[] = []) =>
+        old.map((a) =>
+          a.review_details && a.review_details.id === reviewId
+            ? {
+                ...a,
+                review_details: {
+                  ...a.review_details,
+                  is_liked_by_user: !a.review_details.is_liked_by_user,
+                  likes_count:
+                    (a.review_details.likes_count ?? 0) +
+                    (a.review_details.is_liked_by_user ? -1 : 1),
+                },
+              }
+            : a,
+        );
+      othersActivityKeys.forEach((key) =>
+        queryClient.setQueryData<Activity[]>(key, toggleActivity),
       );
 
       // Optimistic update: albumDetails
@@ -147,6 +181,9 @@ export const useToggleReview = (username: string, discogsId?: string) => {
           ctx.activity,
         );
       }
+      ctx?.othersActivity?.forEach(({ key, data }) => {
+        queryClient.setQueryData(key, data);
+      });
       if (discogsId && ctx?.album) {
         queryClient.setQueryData(queryKeys.albumDetails(discogsId), ctx.album);
       }
@@ -176,6 +213,9 @@ export const useToggleReview = (username: string, discogsId?: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.activityByUser(username),
       });
+      othersActivityKeys.forEach((key) =>
+        queryClient.invalidateQueries({ queryKey: key }),
+      );
       if (discogsId) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.albumDetails(discogsId),
