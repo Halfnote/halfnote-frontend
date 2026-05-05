@@ -14,6 +14,7 @@ import reggaeStamp from "@/app/icons/genre_stamp/REGGAE-genreTag_container.svg";
 import rockStamp from "@/app/icons/genre_stamp/ROCK-genreTag_container.svg";
 import { Icons } from "../icons/icons";
 import * as Stamps from "@/app/icons/stamps";
+import { SearchResult } from "../types/types";
 
 type RatingStampOptions = {
   empty?: boolean;
@@ -126,7 +127,7 @@ export function genreBadge({
 
 export function generateRatingStamp(
   rating: number,
-  { empty = true, outTen = false }: RatingStampOptions = {}
+  { empty = true, outTen = false }: RatingStampOptions = {},
 ) {
   if (empty) {
     return emptyRatingBadgeMap[rating];
@@ -136,34 +137,62 @@ export function generateRatingStamp(
   }
   return ratingBadgeMap[rating];
 }
+import { DateTime } from "luxon";
+
 export const getTimeAgo = (time: string) => {
-  const now = new Date();
-  const past = new Date(time);
-  const diffInMs = now.getTime() - past.getTime();
+  const dt = DateTime.fromISO(time);
+  if (!dt.isValid) return "unknown time";
 
-  // Convert to different time units
-  const diffInSeconds = Math.floor(diffInMs / 1000);
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  const diffInDays = Math.floor(diffInHours / 24);
-  const diffInWeeks = Math.floor(diffInDays / 7);
-  const diffInMonths = Math.floor(diffInDays / 30);
-  const diffInYears = Math.floor(diffInDays / 365);
+  const now = DateTime.now();
+  const diff = now
+    .diff(dt, [
+      "years",
+      "months",
+      "weeks",
+      "days",
+      "hours",
+      "minutes",
+      "seconds",
+    ])
+    .toObject();
 
-  // Return appropriate time format
-  if (diffInSeconds < 60) {
-    return diffInSeconds <= 1 ? "just now" : `${diffInSeconds}s ago`;
-  } else if (diffInMinutes < 60) {
-    return diffInMinutes === 1 ? "1 min ago" : `${diffInMinutes} min ago`;
-  } else if (diffInHours < 24) {
-    return diffInHours === 1 ? "1 hour ago" : `${diffInHours} hours ago`;
-  } else if (diffInDays < 7) {
-    return diffInDays === 1 ? "1 day ago" : `${diffInDays} days ago`;
-  } else if (diffInWeeks < 4) {
-    return diffInWeeks === 1 ? "1 week ago" : `${diffInWeeks} weeks ago`;
-  } else if (diffInMonths < 12) {
-    return diffInMonths === 1 ? "1 month ago" : `${diffInMonths} months ago`;
-  } else {
-    return diffInYears === 1 ? "1 year ago" : `${diffInYears} years ago`;
-  }
+  if (diff.years && diff.years >= 1) return `${Math.floor(diff.years)}y ago`;
+  if (diff.months && diff.months >= 1)
+    return `${Math.floor(diff.months)}mo ago`;
+  if (diff.weeks && diff.weeks >= 1) return `${Math.floor(diff.weeks)}w ago`;
+  if (diff.days && diff.days >= 1) return `${Math.floor(diff.days)}d ago`;
+  if (diff.hours && diff.hours >= 1) return `${Math.floor(diff.hours)}h ago`;
+  if (diff.minutes && diff.minutes >= 1)
+    return `${Math.floor(diff.minutes)}m ago`;
+  return "just now";
+};
+
+export const getArtistsFromAlbums = (
+  albums: SearchResult[],
+  searchQuery: string,
+) => {
+  const artistMap = new Map<string, string>();
+  console.log("querying: ", albums);
+  albums.forEach((album) => {
+    if (!album.artist) return;
+    if (
+      !artistMap.has(album.artist) ||
+      (!artistMap.get(album.artist) && album.artist_photo_url)
+    ) {
+      artistMap.set(album.artist, album.artist_photo_url || "");
+    }
+  });
+
+  const artists = Array.from(artistMap.entries()).map(([name, photo]) => ({
+    artist_name: name,
+    artist_photo: photo,
+  }));
+
+  return artists.sort((a, b) => {
+    const aMatch = a.artist_name.toLowerCase() === searchQuery.toLowerCase();
+    const bMatch = b.artist_name.toLowerCase() === searchQuery.toLowerCase();
+    if (aMatch && !bMatch) return -1;
+    if (!aMatch && bMatch) return 1;
+    return 0;
+  });
 };

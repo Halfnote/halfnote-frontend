@@ -109,7 +109,6 @@ export const EditProfileModal = ({ setOpen }: ModalType) => {
               <button
                 type="button"
                 onClick={() => {
-                  console.log("clicked");
                   document.getElementById("avatar-upload")?.click();
                 }}
                 className="absolute bottom-0 right-4 bg-white border rounded-full p-1 shadow-sm hover:bg-gray-50 cursor-pointer"

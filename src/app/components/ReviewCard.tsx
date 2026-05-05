@@ -29,7 +29,7 @@ export default function ReviewCard({
       {/* Album Cover */}
       <div className="relative flex-shrink-0 w-[150px] h-[150px] border-[1px] border-black">
         <Image
-          src={review.album_cover}
+          src={review.album_cover || "/default-album-cover.png"}
           alt={`${review.album_title} cover`}
           fill
           className="object-cover"

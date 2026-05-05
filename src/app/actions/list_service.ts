@@ -1,7 +1,8 @@
+"use server";
 import { verifySession } from "./dal";
 
 const BASE_URL =
-  process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
+  (process.env.BASE_URL || "https://halfnote-backend.vercel.app") + "/api";
 
 export const CreateList = async (
   name: string,
@@ -27,5 +28,4 @@ export const CreateList = async (
     const error = await response.json();
     throw new Error(error.message || "Create Album List failed");
   }
-
 };

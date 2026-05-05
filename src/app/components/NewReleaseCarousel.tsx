@@ -2,15 +2,19 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow } from "swiper/modules";
-import { NewReleases } from "../types/types";
 import Image from "next/image";
 import Clairo from "../../../public/sample_images/813adHqElhL.jpg";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 
+type NewRelease = {
+  albumName: string;
+  artistName: string;
+};
+
 type ListCarouselProps = {
-  items: NewReleases[];
+  items: NewRelease[];
 };
 
 export const NewReleasesCarousel = ({ items }: ListCarouselProps) => {
