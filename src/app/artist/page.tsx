@@ -1,6 +1,6 @@
 import { getSafeSession } from "@/app/actions/dal";
 import { redirect } from "next/navigation";
-import { SearchResultPage } from "../components/ClientSidePages/searchResultClient";
+import ArtistDetailsClient from "@/app/components/ClientSidePages/artistDetailsClient";
 export default async function Page() {
   const session = await getSafeSession();
 
@@ -8,5 +8,5 @@ export default async function Page() {
     redirect("/");
   }
 
-  return <SearchResultPage />;
+  return <ArtistDetailsClient />;
 }

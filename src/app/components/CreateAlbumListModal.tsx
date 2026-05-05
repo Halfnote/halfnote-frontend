@@ -33,7 +33,6 @@ export const CreateAlbumListModal = ({ setOpen }: ModalType) => {
     }
 
     try {
-      console.log("Calling CreateList...");
       await CreateList(listName, description, isPublic);
       setOpen(false);
     } catch {
