@@ -44,7 +44,7 @@ export const ProperReviewCard = ({
           {/* avatar */}
           <div className="flex items-start justify-start">
             <Image
-              src={review.user_avatar}
+              src={review.user_avatar || "/default-avatar.png"}
               alt={review.username}
               width={48}
               height={48}

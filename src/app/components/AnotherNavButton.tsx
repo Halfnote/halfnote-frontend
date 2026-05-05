@@ -42,13 +42,19 @@ export const AnotherNavButton = (props: AnotherNavButtonsProps) => {
       disabled={disabled}
       className={`another-heading4 font-bold rounded-full
                  border border-black flex items-center
-                 justify-center h-10 px-4 hover:cursor-pointer hover:bg-gray-200
+                 justify-center h-10 px-4
                  ${
                    active
-                     ? "bg-black text-white hover:bg-black"
+                     ? "bg-black text-white"
                      : "bg-white text-black"
                  }
-                 ${disabled ? "opacity-50 cursor-pointer" : ""}`}
+                 ${
+                   disabled
+                     ? "opacity-50 cursor-not-allowed"
+                     : active
+                     ? "hover:cursor-pointer hover:bg-gray-800"
+                     : "hover:cursor-pointer hover:bg-gray-200"
+                 }`}
     >
       {label}
     </button>
