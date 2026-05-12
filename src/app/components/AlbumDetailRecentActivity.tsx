@@ -26,7 +26,7 @@ export const AlbumDetailRecentActivity = ({
       {/* Left section: avatar + text */}
       <div className="flex flex-row gap-3 flex-1">
         <Image
-          src={activity.user_avatar}
+          src={activity.user_avatar || "/default-avatar.png"}
           alt={activity.username}
           width={48}
           height={48}

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
 export const SkeletonNavBar = () => (
-  <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full animate-pulse">
+  <nav className="rounded-full outline-solid outline-2 outline-black grid grid-cols-3 items-center bg-white p-4 w-full mb-4 animate-pulse">
     {/* Logo skeleton */}
     {/* Logo */}
     <Image

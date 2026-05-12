@@ -1,6 +1,8 @@
+"use server";
 import { verifySession } from "./dal";
-const BASE_URL =
-  process.env.BASE_URL || `https://halfnote-backend.vercel.app/api`;
+const BASE_URL = (
+  process.env.BASE_URL || "https://halfnote-backend.vercel.app/api"
+).replace(/\/$/, "");
 
 export const createReview = async (
   discogsID: string,
@@ -33,7 +35,9 @@ export const createReview = async (
     return await response.json();
   } catch (error: unknown) {
     console.error("Review creation failed:", error);
-    throw new Error(error instanceof Error ? error.message : "Failed to create review");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to create review"
+    );
   }
 };
 
@@ -65,7 +69,9 @@ export const editReview = async (
     return await response.json();
   } catch (error: unknown) {
     console.error("Review edit failed:", error);
-    throw new Error(error instanceof Error ? error.message : "Failed to edit review");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to edit review"
+    );
   }
 };
 

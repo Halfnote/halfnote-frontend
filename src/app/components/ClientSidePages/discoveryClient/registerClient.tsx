@@ -1,4 +1,5 @@
 "use client";
+import { EyeClosed, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -6,8 +7,8 @@ import { RegisterUser } from "@/app/actions/account_management_service";
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-// ✅ Validation Schema
 const RegisterSchema = Yup.object().shape({
   username: Yup.string()
     .matches(
@@ -36,10 +37,9 @@ const RegisterSchema = Yup.object().shape({
 });
 
 export default function RegisterForm() {
+  const qc = useQueryClient();
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  // 👁️ Password visibility toggles
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -81,10 +81,16 @@ export default function RegisterForm() {
                 values.password,
                 values.bio
               );
-              router.push("/discovery");
+              await qc.invalidateQueries({ queryKey: ["user"] });
+              router.replace("/discovery");
+              router.refresh();
             } catch (err) {
               console.error(err);
-              setSubmitError("Registration failed. Please try again.");
+              const errorMessage =
+                err instanceof Error
+                  ? err.message
+                  : "Registration failed. Please try again.";
+              setSubmitError(errorMessage);
             } finally {
               setSubmitting(false);
             }
@@ -128,23 +134,25 @@ export default function RegisterForm() {
               </div>
 
               {/* Password */}
-              <div className="relative">
+              <div>
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   Password
                 </label>
-                <Field
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a strong password"
-                  className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </button>
+                <div className="flex items-center border border-gray-300 rounded-lg">
+                  <Field
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a strong password"
+                    className="flex-1 p-3 bg-transparent focus:outline-none placeholder-gray-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="px-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+                  >
+                    {showPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 <ErrorMessage
                   name="password"
                   component="div"
@@ -153,23 +161,25 @@ export default function RegisterForm() {
               </div>
 
               {/* Confirm Password */}
-              <div className="relative">
+              <div>
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   Confirm Password
                 </label>
-                <Field
-                  name="confirmPassword"
-                  type={showConfirm ? "text" : "password"}
-                  placeholder="Confirm your password"
-                  className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-10 text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirm ? "🙈" : "👁️"}
-                </button>
+                <div className="flex items-center border border-gray-300 rounded-lg">
+                  <Field
+                    name="confirmPassword"
+                    type={showConfirm ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    className="flex-1 p-3 bg-transparent focus:outline-none placeholder-gray-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="px-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+                  >
+                    {showConfirm ? <EyeClosed size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 <ErrorMessage
                   name="confirmPassword"
                   component="div"

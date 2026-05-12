@@ -8,7 +8,7 @@ import { AlbumCard } from "@/app/components/AlbumCard";
 import { AnotherNavButton } from "@/app/components/AnotherNavButton";
 import ReviewCard from "@/app/components/ReviewCard";
 import { useUser, useUserActivity, useUserReviews } from "@/app/hooks";
-import { Genre, Review } from "@/app/types/types";
+import { Activity, Genre, Review } from "@/app/types/types";
 import { generateBadge, getVinylIcon } from "@/app/utils/calculations";
 import Black from "../../../../public/sample_images/black.jpeg";
 import { RecentActivityCard } from "../RecentActivityCard";
@@ -17,6 +17,7 @@ import { SkeletonReviewCard } from "../skeletons/SkeletonReviewCard";
 import { SkeletonRecentActivityCard } from "../skeletons/SkeletonRecentActivityCard";
 import { ProfilePageSkeleton } from "../skeletons/SkeletonProfilePage";
 import { EditProfileModal } from "./editProfileModal";
+import { ExpandedReviewModal } from "./expandedReviewModal";
 
 type ProfilePageProps = {
   user: {
@@ -52,6 +53,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
     useUserActivity(user.username);
   const [filter, setFilter] = useState<"reviewed" | "liked">("reviewed");
   const [editProfileModal, setEditProfileModal] = useState(false);
+  const [openReview, setOpenReview] = useState(false);
+  const [chosenReview, setChosenReview] = useState<
+    Review | Activity | undefined
+  >(undefined);
 
   const reviewedActivity = useMemo(
     () =>
@@ -76,21 +81,23 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   if (isPendingUser) return <ProfilePageSkeleton />;
 
   return (
-    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-scroll pb-10 max-h-[800px]">
-      <div className="w-full h-60 relative z-0">
-        <Image
-          src={Black}
-          alt="banner-image"
-          className="w-full h-full object-cover"
-        />
-      </div>
+    <div className="flex flex-col border-black border-2 bg-white rounded-xl overflow-hidden w-full max-h-[calc(100vh-160px)]">
+      <div className="overflow-y-auto flex-1 relative">
+        {/* Banner — absolute inside the scrollable container */}
+        <div className="absolute top-0 left-0 w-full h-60">
+          <Image
+            src={Black}
+            alt="banner-image"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-      {/* Content */}
-      <div className="grid grid-cols-8 flex-grow relative">
+        {/* Content — sits below the banner via mt-60 (adjust to control gap) */}
+        <div className="grid grid-cols-8 relative mt-60 pr-2 pb-10">
         {/* Profile Info Sidebar */}
         <div className="col-span-2 flex flex-col items-center px-50">
           {/* Profile Picture */}
-          <div className="w-[250px] h-[250px] -mt-30 border-2 border-black bg-white z-10 overflow-hidden relative flex-shrink-0 rounded-full">
+          <div className="w-[250px] h-[250px] -mt-30 border-2 border-black bg-white overflow-hidden relative flex-shrink-0 rounded-full">
             <Image
               src={userData?.avatar || "/default-avatar.png"}
               alt="profile"
@@ -271,48 +278,82 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 <SkeletonRecentActivityCard key={index} />
               ))
             ) : filter === "reviewed" && reviewedActivity.length ? (
-              reviewedActivity.map((activity) => (
-                <div className="mb-2" key={activity.id}>
-                  <RecentActivityCard
+              reviewedActivity.map((activity) =>
+                activity.review_details ? (
+                  <div
+                    className={`mb-2 ${activity.review_details.content.length > 0 &&
+                      "cursor-pointer"
+                      }`}
                     key={activity.id}
-                    albumCover={activity.review_details.album.cover_url}
-                    albumTitle={
-                      activity?.review_details?.album?.title ?? "Unknown"
-                    }
-                    artistName={
-                      activity?.review_details?.album?.artist ?? "Unknown"
-                    }
-                    rating={activity.review_details.rating}
-                    hasReview={true}
-                    time={activity.created_at}
-                  />
-                </div>
-              ))
+                    onClick={() => {
+                      if (activity.review_details && activity.review_details.content.length > 0) {
+                        setChosenReview(activity);
+                        setOpenReview(true);
+                      }
+                    }}
+                  >
+                    <RecentActivityCard
+                      key={activity.id}
+                      albumCover={activity.review_details.album.cover_url || ""}
+                      albumTitle={
+                        activity.review_details.album.title ?? "Unknown"
+                      }
+                      artistName={
+                        activity.review_details.album.artist ?? "Unknown"
+                      }
+                      rating={activity.review_details.rating}
+                      hasReview={activity.review_details.content.length > 0}
+                      time={activity.created_at}
+                    />
+                  </div>
+                ) : null
+              )
             ) : filter === "liked" && likedActivity.length ? (
-              likedActivity.map((activity) => (
-                <div className="mb-2" key={activity.id}>
-                  <RecentActivityCard
+              likedActivity.map((activity) =>
+                activity.review_details ? (
+                  <div
+                    className={`mb-2 ${activity.review_details.content.length > 0 &&
+                      "cursor-pointer"
+                      }`}
                     key={activity.id}
-                    albumCover={activity.review_details.album.cover_url}
-                    albumTitle={
-                      activity?.review_details?.album?.title ?? "Unknown"
-                    }
-                    artistName={
-                      activity?.review_details?.album?.artist ?? "Unknown"
-                    }
-                    rating={activity.review_details.rating}
-                    hasReview={true}
-                    time={activity.created_at}
-                  />
-                </div>
-              ))
+                    onClick={() => {
+                      if (activity.review_details && activity.review_details.content.length > 0) {
+                        setChosenReview(activity);
+                        setOpenReview(true);
+                      }
+                    }}
+                  >
+                    <RecentActivityCard
+                      key={activity.id}
+                      albumCover={activity.review_details.album.cover_url || ""}
+                      albumTitle={
+                        activity.review_details.album.title ?? "Unknown"
+                      }
+                      artistName={
+                        activity.review_details.album.artist ?? "Unknown"
+                      }
+                      rating={activity.review_details.rating}
+                      hasReview={activity.review_details.content.length > 0}
+                      time={activity.created_at}
+                    />
+                  </div>
+                ) : null
+              )
             ) : (
               <p className="text-gray-500 italic">No recent activity yet.</p>
             )}
           </div>
         </div>
       </div>
+    </div>
       {editProfileModal && <EditProfileModal setOpen={setEditProfileModal} />}
+      {openReview && (
+        <ExpandedReviewModal
+          review={chosenReview}
+          setSelected={setChosenReview}
+          setOpen={setOpenReview}
+        />
+      )}
     </div>
   );
 }

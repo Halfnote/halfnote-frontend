@@ -6,8 +6,8 @@ import Image from "next/image";
 import ReviewModal from "../ReviewModal";
 import { Icons } from "../../icons/icons";
 import { AlbumDetailRecentActivity } from "../AlbumDetailRecentActivity";
-import { Review } from "@/app/types/types";
-import Lorde from "../../../../public/sample_images/lorde.jpeg";
+import { Activity, Review } from "@/app/types/types";
+import Default from "../../../../public/sample_images/lorde.jpeg";
 import { ProperReviewCard } from "./ProperReviewCard";
 import { CreateAlbumListModal } from "../CreateAlbumListModal";
 import useEmblaCarousel from "embla-carousel-react";
@@ -17,7 +17,6 @@ import { generateRatingStamp } from "@/app/utils/calculations";
 type AlbumDetailsProps = {
   user: {
     username: string;
-    access_token: string;
   };
 };
 const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
@@ -31,7 +30,9 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
   const [albumListModal, setAddAlbumListModal] = useState(false);
   const [writeReviewModal, setWriteReviewModal] = useState(false);
   const [expandModal, setExpandModal] = useState<boolean>(false);
-  const [selectedReview, setSelectedReview] = useState<Review>();
+  const [selectedReview, setSelectedReview] = useState<
+    Review | Activity | undefined
+  >(undefined);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -65,19 +66,16 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
 
   // lowercase as backend retrieves usernames as lowercase
   const alreadyReviewed = albumDetails.reviews.find(
-    (review: Review) => review.username === user.username.toLowerCase()
+    (review: Review) => review.username === user.username.toLowerCase(),
   );
 
-  const imageSrc =
-    albumDetails.album.cover_url || albumDetails.album.cover_image;
+  const imageSrc = albumDetails.album.cover_url;
 
   return (
     <>
       <div className="grid grid-cols-1 gap-5 mb-5 lg:grid-cols-4 lg:w-[100%]">
-        {/* left side */}
-        <div className="flex flex-col space-y-0 max-h-screen lg:col-span-1">
-          {/* white box */}
-          <div className="border-1 border-black rounded-xl bg-white max-w-sm overflow-hidden">
+        <div className="flex flex-col space-y-0 lg:col-span-1">
+          <div className="border-1 border-black rounded-xl bg-white max-w-sm overflow-hidden h-screen">
             {typeof imageSrc === "string" && (
               <Image
                 src={imageSrc}
@@ -131,29 +129,37 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
               <span className="flex flex-col items-center">
                 <p className="font-bold another-heading5">avg.score</p>
                 {/* defaulting to 1 for now, need to change */}
-                <Image
-                  width={80}
-                  height={80}
-                  src={generateRatingStamp(albumDetails.average_rating ?? 1, {
-                    empty: false,
-                    outTen: true,
-                  })}
-                  alt="Badge"
-                />
+                {(() => {
+                  const ratingStampSrc = generateRatingStamp(
+                    albumDetails.average_rating ?? 0,
+                    {
+                      empty: false,
+                      outTen: true,
+                    },
+                  );
+                  return (
+                    ratingStampSrc && (
+                      <Image
+                        width={80}
+                        height={80}
+                        src={ratingStampSrc}
+                        alt="Badge"
+                      />
+                    )
+                  );
+                })()}
               </span>
             </div>
             <hr className="mt-5" />
-
-            {/* Tracklist inside white box */}
             {albumDetails.album.tracklist && (
-              <div className="px-4 pb-4 flex flex-col min-h-0">
+              <div className="px-4 flex flex-col">
                 <div className="flex justify-between items-center mb-3 flex-shrink-0">
                   <h3 className="another-heading2 font-bold">Tracklist</h3>
                   <span className="another-heading6 text-gray-500">
                     {albumDetails.album.tracklist?.length} songs
                   </span>
                 </div>
-                <div className="space-y-1 overflow-y-auto flex-1 max-h-48 =">
+                <div className="space-y-1 overflow-y-auto flex-1 max-h-48 pb-4">
                   {albumDetails.album.tracklist?.map((track, index) => (
                     <div
                       key={`${track.position}-${track.title}-${index}`}
@@ -173,14 +179,13 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
               </div>
             )}
           </div>
-          {/* white box end*/}
         </div>
 
         <div className="space-y-5 pl-0 flex flex-row h-screen lg:col-span-3 gap-4">
           {/* Top Notes */}
           <div className="flex flex-col gap-4 w-[70%] h-full overflow-hidden">
             <div className="bg-white rounded-xl border-1 border-black p-5 min-h-[350px] ">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-2">
                 <Image
                   src={Icons.trophy}
                   alt="Pin Icon"
@@ -203,7 +208,9 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                             review={review}
                             username={user.username}
                             setOpen={setExpandModal}
-                            setSelected={setSelectedReview}
+                            setSelected={(review) =>
+                              setSelectedReview(review as Review | undefined)
+                            }
                           />
                         </div>
                       ))}
@@ -256,7 +263,12 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
 
           <div className="flex flex-col gap-4 h-screen w-[30%]">
             <div className="bg-white rounded-xl border-1 border-black p-5 h-[50%] w-full relative overflow-hidden">
-              <Image src={Lorde} alt="Lorde" fill className="object-cover" />
+              <Image
+                src={albumDetails.album.artist_photo_url || Default}
+                alt={albumDetails.album.artist || "Artist"}
+                fill
+                className="object-cover"
+              />
             </div>
 
             <div className="bg-white rounded-xl border-1 border-black p-5 h-full flex flex-col items-center relative">
@@ -296,7 +308,6 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
           setSelected={setSelectedReview}
           setOpen={setExpandModal}
           review={selectedReview}
-          username={user.username}
         />
       )}
     </>
