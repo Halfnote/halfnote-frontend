@@ -7,8 +7,10 @@ import { useSearchParams } from "next/navigation";
 import { useArtistDetails } from "@/app/hooks";
 import { AlbumCard } from "../AlbumCard";
 import { ArtistAlbum } from "@/app/types/types";
+import { useRouter } from "next/navigation";
 
 const ArtistDetailsClient = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const artistName = searchParams.get("name");
   const {
@@ -27,30 +29,32 @@ const ArtistDetailsClient = () => {
       </p>
     );
 
-  // Placeholder data for now as requested
-  const albums = [
-    { title: "Ö", artist: "Fcukers", cover: "/sample_images/lorde.jpeg" },
-    {
-      title: "I Like It Like That",
-      artist: "Fcukers",
-      cover: "/sample_images/lorde.jpeg",
-    },
-    { title: "Play Me", artist: "Fcukers", cover: "/sample_images/lorde.jpeg" },
-    { title: "Mothers", artist: "Fcukers", cover: "/sample_images/lorde.jpeg" },
-    { title: "Bon Bon", artist: "Fcukers", cover: "/sample_images/lorde.jpeg" },
-  ];
   if (artistDetails) {
     return (
       <div className="flex flex-col w-full max-w-7xl mx-auto px-4 gap-8 pb-20">
-        {/* Hero Section */}
+        {/* Hero Section: image left, name + about stacked on the right */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          <div className="flex-1">
-            <h1 className="another-heading1 text-[120px] leading-tight mb-8">
+          {/* Artist Image */}
+          <div className="w-full lg:w-[320px] shrink-0 aspect-square relative border-2 border-black rounded-3xl overflow-hidden">
+            <Image
+              src={
+                artistDetails.image ??
+                "https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+              }
+              alt={artistDetails.name}
+              className="object-cover"
+              fill
+            />
+          </div>
+
+          {/* Name + About */}
+          <div className="flex-1 flex flex-col gap-6 w-full">
+            <h1 className="another-heading1 text-[100px] leading-none">
               {artistName}
             </h1>
 
             {/* About Box */}
-            <div className="border border-black rounded-2xl p-6 bg-[#f9f9f9] max-w-md shadow-sm">
+            <div className="border border-black rounded-2xl p-6 bg-[#f9f9f9] shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-black p-1 rounded-sm size-8 flex items-center justify-center">
                   <Image
@@ -62,26 +66,13 @@ const ArtistDetailsClient = () => {
                   />
                 </div>
                 <h2 className="another-heading2 text-2xl font-bold italic">
-                  About
+                  About {artistName}
                 </h2>
               </div>
               <p className="another-body text-gray-800 leading-relaxed italic text-base">
                 {artistDetails.bio ?? "No bio available"}
               </p>
             </div>
-          </div>
-
-          {/* Artist Image */}
-          <div className="w-full lg:w-[450px] aspect-square relative border-2 border-black rounded-sm overflow-hidden mt-10">
-            <Image
-              src={
-                artistDetails.image ??
-                "https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              }
-              alt={artistDetails.name}
-              className="object-cover"
-              fill
-            />
           </div>
         </div>
 
@@ -106,12 +97,17 @@ const ArtistDetailsClient = () => {
 
           <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
             {artistDetails.albums.map((album: ArtistAlbum, idx: number) => (
-              <AlbumCard
-                key={idx}
-                albumCover={album.cover_url ?? ""}
-                albumName={album.title}
-                artistName={album.artist}
-              />
+              <div
+                onClick={() => router.push(`/albums?query=${album.discogs_id}`)}
+                className="cursor-pointer"
+              >
+                <AlbumCard
+                  key={idx}
+                  albumCover={album.cover_url ?? ""}
+                  albumName={album.title}
+                  artistName={album.artist}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -121,8 +117,8 @@ const ArtistDetailsClient = () => {
           <h2 className="another-heading1 text-4xl mb-8 uppercase tracking-widest italic">
             Top Takes
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[1, 2].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
               <div
                 key={i}
                 className="border border-gray-300 rounded-2xl p-6 flex flex-col gap-6 shadow-sm hover:border-black transition-colors"

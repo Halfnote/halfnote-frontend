@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Icons } from "../icons/icons";
 import { useRecentSearches } from "../hooks/useRecentSearches";
 import { useAutocomplete } from "../hooks/useAutocomplete";
-import { SearchResult } from "../types/types";
+import { ArtistSearchResult, SearchResult, UserResult } from "../types/types";
 import SplitCard from "./splitCard";
 import { useRouter } from "next/navigation";
 
@@ -19,16 +19,47 @@ export const SearchDropdown = ({
   setSearchQuery: (query: string) => void;
 }) => {
   const { recentSearches, removeSearch, addSearch } = useRecentSearches();
-  const { suggestions, newReleases, popularAlbums, isFetching, hasQuery, debouncedQuery } =
+  const { suggestions, artists, users, newReleases, popularAlbums, isFetching, hasQuery, debouncedQuery } =
     useAutocomplete(query);
   const router = useRouter();
 
-  const handleSearch = (searchTerm: string) => {
-    addSearch(searchTerm);
+  const navigateAndClose = (term: string, path: string) => {
+    addSearch(term);
     onClose();
     setSearchQuery("");
-    router.push(`/search?query=${encodeURIComponent(searchTerm)}`);
+    router.push(path);
   };
+
+  const handleSearch = (searchTerm: string) =>
+    navigateAndClose(
+      searchTerm,
+      `/search?query=${encodeURIComponent(searchTerm)}`,
+    );
+
+  const renderEntityRow = (
+    key: string,
+    display: string,
+    label: string,
+    onSelect: () => void,
+  ) => (
+    <div
+      key={key}
+      onClick={onSelect}
+      className="flex items-center gap-3 p-2 hover:bg-gray-200 cursor-pointer rounded-lg group"
+    >
+      <Image
+        src={Icons.search}
+        alt="Search"
+        width={20}
+        height={20}
+        className="opacity-60 group-hover:opacity-100"
+      />
+      <p className="another-heading4 text-black text-xl">{display}</p>
+      <span className="ml-auto text-xs text-gray-400 another-heading5">
+        {label}
+      </span>
+    </div>
+  );
 
   const renderSuggestionItem = (text: string, uniqueKey: string, isRaw = false) => {
     const prefix = !isRaw && text.toLowerCase().startsWith(debouncedQuery.toLowerCase())
@@ -115,7 +146,28 @@ export const SearchDropdown = ({
               {renderSuggestionItem(query, "raw-query", true)}
               {suggestions
                 .filter((item: SearchResult) => item.title.toLowerCase() !== query.toLowerCase())
-                .map((item: SearchResult) => renderSuggestionItem(item.title, item.id.toString()))}
+                .map((item: SearchResult) => renderSuggestionItem(item.title, `album-${item.id}`))}
+              {artists.slice(0, 3).map((artist: ArtistSearchResult) =>
+                renderEntityRow(
+                  `artist-${artist.id}`,
+                  artist.name,
+                  "Artist",
+                  () =>
+                    navigateAndClose(
+                      artist.name,
+                      `/artist?name=${encodeURIComponent(artist.name)}`,
+                    ),
+                ),
+              )}
+              {users.slice(0, 3).map((user: UserResult) =>
+                renderEntityRow(
+                  `user-${user.id}`,
+                  user.username,
+                  "Listener",
+                  () =>
+                    navigateAndClose(user.username, `/profile/${user.username}`),
+                ),
+              )}
             </>
           )}
         </div>

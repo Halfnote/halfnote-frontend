@@ -230,6 +230,7 @@ export const useSearchArtists = (query: string) => {
     queryFn: () => getSearchArtists(query),
     enabled: !!query && query.length > 0,
     staleTime: CACHE_TIMES.USER_SEARCH,
+    retry: false,
   });
 };
 

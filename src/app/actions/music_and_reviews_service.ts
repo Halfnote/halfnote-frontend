@@ -46,22 +46,19 @@ export const getSearch = async (discogsID: string) => {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || `Could not get albums for ${discogsID}`);
+      return { results: [], cached: false };
     }
     return await response.json();
   } catch (error: unknown) {
-    console.error("Album fetch failed:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to get album details",
-    );
+    console.error("Album search failed:", error);
+    return { results: [], cached: false };
   }
 };
 
 export const getSearchArtists = async (query: string) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/music/search/artists/?q=${encodeURIComponent(query)}`,
+      `${BASE_URL}/music/artists/search/?q=${encodeURIComponent(query)}`,
       {
         method: "GET",
         headers: {
@@ -73,17 +70,12 @@ export const getSearchArtists = async (query: string) => {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || `Could not get artists for ${query}`);
+      return { results: [], cached: false };
     }
     return await response.json();
   } catch (error: unknown) {
     console.error("Artist search failed:", error);
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Failed to get artist search results",
-    );
+    return { results: [], cached: false };
   }
 };
 
@@ -102,17 +94,12 @@ export const getSearchUsers = async (query: string) => {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || `Could not get users for ${query}`);
+      return { users: [] };
     }
     return await response.json();
   } catch (error: unknown) {
     console.error("User search failed:", error);
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Failed to get user search results",
-    );
+    return { users: [] };
   }
 };
 

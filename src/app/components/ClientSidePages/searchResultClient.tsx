@@ -3,9 +3,12 @@ import { useSearchAlbums, useSearchArtists, useSearchUsers } from "@/app/hooks";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { SmallAlbumCard } from "@/app/components/SmallAlbumCard";
-import { SearchResult, UserResult } from "@/app/types/types";
+import {
+  ArtistSearchResult,
+  SearchResult,
+  UserResult,
+} from "@/app/types/types";
 import { SmallUserCard } from "@/app/components/SmallUserCard";
-import { getArtistsFromAlbums } from "@/app/utils/calculations";
 import { SmallArtistCard } from "@/app/components/SmallArtistCard";
 
 export const SearchResultPage = () => {
@@ -29,18 +32,12 @@ export const SearchResultPage = () => {
     isError: artistError,
   } = useSearchArtists(query || "");
 
-  console.log(albumList);
-  console.log(artistList);
-  console.log(userList);
-
-  const isLoading = albumLoading || userLoading;
-  const isError = albumError || userError;
+  const isLoading = albumLoading || userLoading || artistLoading;
+  const isError = albumError || userError || artistError;
 
   const albums = albumList?.results || [];
-  const listeners = userList?.users || [];
-
-  const artists = getArtistsFromAlbums(albums, query || "");
-  console.log(artists);
+  const listeners = userList?.results || [];
+  const artists = artistList?.results || [];
   if (!query) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -68,10 +65,12 @@ export const SearchResultPage = () => {
     );
   }
 
-  const hasResults = albums.length > 0 || listeners.length > 0;
+  const hasResults =
+    albums.length > 0 || listeners.length > 0 || artists.length > 0;
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-screen scale-90 pb-20 mt-[-70px]">
+    // ponytail: origin-top pins the scale-90 top edge so the gap is static; navbar mb-4 (16px) + mt-1 (4px) = 20px below navbar
+    <div className="flex flex-col items-center min-h-screen w-screen scale-90 origin-top pb-20 mt-1">
       {!hasResults ? (
         <div className="flex flex-col items-center h-full mt-20">
           <p className="another-heading2 text-3xl">
@@ -79,7 +78,7 @@ export const SearchResultPage = () => {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col w-full max-w-screen">
+        <div className="flex flex-col w-full max-w-screen mt-6">
           <h1 className="text-5xl another-heading1 text-[#767676] mb-6">
             <span className="italic mr-3">Search results for</span>
             <span className="underline">{query}</span>
@@ -108,9 +107,15 @@ export const SearchResultPage = () => {
                 <h2 className="text-5xl another-heading1">Artists</h2>
               </div>
               {artists.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {artists.map((artist, index) => (
-                    <SmallArtistCard artist={artist} key={index} />
+                <div className="grid grid-cols-2 gap-3 h-8/12 overflow-y-scroll">
+                  {artists.map((artist: ArtistSearchResult) => (
+                    <SmallArtistCard
+                      key={artist.id}
+                      artist={{
+                        artist_name: artist.name,
+                        artist_photo: artist.photo_url,
+                      }}
+                    />
                   ))}
                 </div>
               ) : (
@@ -126,7 +131,7 @@ export const SearchResultPage = () => {
                 <h2 className="text-5xl another-heading1">Listeners</h2>
               </div>
               {listeners.length > 0 ? (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 h-8/12 overflow-y-scroll">
                   {listeners.map((user: UserResult) => (
                     <SmallUserCard user={user} key={user.id} />
                   ))}
