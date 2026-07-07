@@ -319,9 +319,10 @@ export interface ListLikesResponse {
 // ============= Search & Discovery Responses =============
 
 export interface ArtistSearchResult {
+  id: number;
   name: string;
-  discogs_id: number;
-  artist_photo_url: string;
+  photo_url: string;
+  thumb: string;
 }
 
 export interface SearchAlbumsResponse {

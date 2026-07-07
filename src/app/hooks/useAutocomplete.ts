@@ -5,6 +5,8 @@ import {
   getSearch,
   getNewReleases,
   getPopularAlbums,
+  getSearchArtists,
+  getSearchUsers,
 } from "@/app/actions/music_and_reviews_service";
 import { useDebounce } from "./useDebounce";
 
@@ -12,11 +14,28 @@ export function useAutocomplete(query: string) {
   const debouncedQuery = useDebounce(query, 300);
   const hasQuery = debouncedQuery.length >= 2;
 
-  const { data: suggestionData, isFetching } = useQuery({
+  const { data: suggestionData, isFetching: isFetchingAlbums } = useQuery({
     queryKey: queryKeys.searchAlbums(debouncedQuery),
     queryFn: () => getSearch(debouncedQuery),
     enabled: hasQuery,
     staleTime: CACHE_TIMES.SEARCH_RESULTS,
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: artistData, isFetching: isFetchingArtists } = useQuery({
+    queryKey: queryKeys.searchArtists(debouncedQuery),
+    queryFn: () => getSearchArtists(debouncedQuery),
+    enabled: hasQuery,
+    staleTime: CACHE_TIMES.SEARCH_RESULTS,
+    placeholderData: keepPreviousData,
+    retry: false,
+  });
+
+  const { data: userData, isFetching: isFetchingUsers } = useQuery({
+    queryKey: queryKeys.searchUsers(debouncedQuery),
+    queryFn: () => getSearchUsers(debouncedQuery),
+    enabled: hasQuery,
+    staleTime: CACHE_TIMES.USER_SEARCH,
     placeholderData: keepPreviousData,
   });
 
@@ -34,9 +53,11 @@ export function useAutocomplete(query: string) {
 
   return {
     suggestions: suggestionData?.results ?? [],
+    artists: artistData?.results ?? [],
+    users: userData?.users ?? [],
     newReleases: newReleasesData?.results ?? [],
     popularAlbums: popularAlbumsData?.results ?? [],
-    isFetching,
+    isFetching: isFetchingAlbums || isFetchingArtists || isFetchingUsers,
     hasQuery,
     debouncedQuery,
   };
