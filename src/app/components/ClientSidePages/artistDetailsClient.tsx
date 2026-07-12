@@ -98,11 +98,11 @@ const ArtistDetailsClient = () => {
           <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
             {artistDetails.albums.map((album: ArtistAlbum, idx: number) => (
               <div
+                key={idx}
                 onClick={() => router.push(`/albums?query=${album.discogs_id}`)}
                 className="cursor-pointer"
               >
                 <AlbumCard
-                  key={idx}
                   albumCover={album.cover_url ?? ""}
                   albumName={album.title}
                   artistName={album.artist}
