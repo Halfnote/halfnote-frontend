@@ -321,8 +321,7 @@ export interface ListLikesResponse {
 export interface ArtistSearchResult {
   id: number;
   name: string;
-  photo_url: string;
-  thumb: string;
+  primary_image_url: string;
 }
 
 export interface SearchAlbumsResponse {
@@ -337,7 +336,7 @@ export interface SearchArtistsResponse {
 }
 
 export interface SearchUsersResponse {
-  users: UserResult[];
+  results: UserResult[];
 }
 
 export interface GenreStatsResponse {

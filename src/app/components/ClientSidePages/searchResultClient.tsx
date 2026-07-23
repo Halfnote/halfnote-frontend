@@ -113,7 +113,7 @@ export const SearchResultPage = () => {
                       key={artist.id}
                       artist={{
                         artist_name: artist.name,
-                        artist_photo: artist.photo_url,
+                        artist_photo: artist.primary_image_url,
                       }}
                     />
                   ))}

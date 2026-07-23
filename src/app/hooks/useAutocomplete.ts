@@ -54,7 +54,7 @@ export function useAutocomplete(query: string) {
   return {
     suggestions: suggestionData?.results ?? [],
     artists: artistData?.results ?? [],
-    users: userData?.users ?? [],
+    users: userData?.results ?? [],
     newReleases: newReleasesData?.results ?? [],
     popularAlbums: popularAlbumsData?.results ?? [],
     isFetching: isFetchingAlbums || isFetchingArtists || isFetchingUsers,

@@ -95,12 +95,12 @@ export const getSearchUsers = async (query: string) => {
     );
 
     if (!response.ok) {
-      return { users: [] };
+      return { results: [] };
     }
     return await response.json();
   } catch (error: unknown) {
     console.error("User search failed:", error);
-    return { users: [] };
+    return { results: [] };
   }
 };
 
