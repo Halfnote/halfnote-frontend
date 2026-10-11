@@ -1,7 +1,6 @@
 import { colors, tw } from "@halfnote/ui";
 import { useCallback, useRef, useState } from "react";
-import { Alert, Linking, View } from "react-native";
-import Share, { Social } from "react-native-share";
+import { Alert, Linking, TurboModuleRegistry, View } from "react-native";
 import { captureRef } from "react-native-view-shot";
 import { StoryCard, type StoryContent } from "./StoryCard";
 
@@ -28,6 +27,12 @@ export function useShareToStory() {
       Alert.alert("Instagram sharing isn't set up", "EXPO_PUBLIC_META_APP_ID is missing from this build.");
       return;
     }
+    // Expo Go doesn't ship react-native-share; importing it there throws, hence the lazy import in onReady.
+    if (!TurboModuleRegistry.get("RNShare")) {
+      busy.current = false;
+      Alert.alert("Not available in Expo Go", "Sharing to Instagram needs a development build (npx expo run:ios).");
+      return;
+    }
     // react-native-share opens the URL without checking it and always resolves, so check up front.
     if (!(await Linking.canOpenURL("instagram-stories://share"))) {
       busy.current = false;
@@ -43,6 +48,7 @@ export function useShareToStory() {
     captured.current = true;
     try {
       const stickerImage = await captureRef(cardRef, { format: "png", result: "data-uri" });
+      const { default: Share, Social } = await import("react-native-share");
       await Share.shareSingle({
         social: Social.InstagramStories,
         appId: META_APP_ID,
