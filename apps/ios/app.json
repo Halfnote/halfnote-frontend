@@ -9,7 +9,12 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.halfnote.ios"
+      "bundleIdentifier": "app.halfnote.ios",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "instagram-stories"
+        ]
+      }
     },
     "plugins": [
       "expo-router",
