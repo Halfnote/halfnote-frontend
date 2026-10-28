@@ -2,7 +2,7 @@ import { createContext, use, useId, type ReactNode } from "react";
 import Svg, { Circle, Defs, Line, Pattern, Rect } from "react-native-svg";
 import { Image, Text, View, type StyleProp, type TextProps, type TextStyle, type ViewStyle } from "react-native";
 
-/** Family names registered with useFonts in app/_layout.tsx (they also work in Expo Go). */
+/** useFonts keys (Instrument in app/_layout.tsx, the display faces in app/share.tsx); unlike PostScript names they also work in Expo Go. */
 export const F = {
   serif: "InstrumentSerif_400Regular",
   serifItalic: "InstrumentSerifItalic",
