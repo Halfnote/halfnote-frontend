@@ -47,6 +47,8 @@ export function useShareToStory() {
     if (captured.current) return;
     captured.current = true;
     try {
+      // onReady can beat Fabric's native mount ("No view found with reactTag"); one frame lets it land.
+      await new Promise(requestAnimationFrame);
       const stickerImage = await captureRef(cardRef, { format: "png", result: "data-uri" });
       const { default: Share, Social } = await import("react-native-share");
       await Share.shareSingle({
@@ -56,7 +58,8 @@ export function useShareToStory() {
         backgroundTopColor: colors.lemon,
         backgroundBottomColor: colors.coral,
       });
-    } catch {
+    } catch (e) {
+      console.warn("Instagram story share failed", e);
       Alert.alert("Couldn't share to Instagram", "Try again.");
     } finally {
       busy.current = false;
