@@ -1,4 +1,5 @@
 import { createContext, use, type ReactNode } from "react";
+import Svg, { Circle } from "react-native-svg";
 import { Image, Text, View, type StyleProp, type TextProps, type TextStyle, type ViewStyle } from "react-native";
 
 /** Family names registered with useFonts in app/_layout.tsx (they also work in Expo Go). */
@@ -168,3 +169,70 @@ export const DARK_DOTS = "radial-gradient(rgba(17,17,17,0.2) 0.8px, transparent 
 export const LIGHT_DOTS = "radial-gradient(rgba(238,238,238,0.2) 0.8px, transparent 1px)";
 export const CREAM = "#F4F1EA";
 export const CREAM_SUB = "rgba(244,241,234,0.78)";
+
+/**
+ * A record: the design's `repeating-radial-gradient(circle, groove 0 1.6px, land 1.6px 3px)` drawn as SVG rings
+ * (RN gradients don't repeat), with the diagonal sheen and a centre label.
+ */
+export function Vinyl({
+  size,
+  groove,
+  land,
+  sheen,
+  label,
+  labelSize,
+  shadow,
+  children,
+}: {
+  size: number;
+  groove: string;
+  land: string;
+  sheen: number;
+  label: string;
+  labelSize: number;
+  shadow: string;
+  children?: ReactNode;
+}) {
+  const r = size / 2;
+  const rings = Array.from({ length: Math.floor(r / 3) }, (_, k) => k * 3 + 0.8);
+  return (
+    <View style={{ width: size, height: size, borderRadius: r, boxShadow: shadow }}>
+      <Svg width={size} height={size} style={{ position: "absolute" }}>
+        <Circle cx={r} cy={r} r={r} fill={land} />
+        {rings.map((rr) => (
+          <Circle key={rr} cx={r} cy={r} r={rr} stroke={groove} strokeWidth={1.6} fill="none" />
+        ))}
+      </Svg>
+      <View
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: r,
+          experimental_backgroundImage: `linear-gradient(120deg, transparent 38%, rgba(255,255,255,${sheen}) 48%, transparent 58%)`,
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: (size - labelSize) / 2,
+          top: (size - labelSize) / 2,
+          width: labelSize,
+          height: labelSize,
+          borderRadius: labelSize / 2,
+          backgroundColor: label,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {children}
+      </View>
+    </View>
+  );
+}
+
+/** Ten rating cells: full ones solid, a half point at half strength, the rest faint. */
+export const levels = (score: number, faint: number) => {
+  const full = Math.floor(score);
+  const half = score - full >= 0.5;
+  return Array.from({ length: 10 }, (_, k) => (k < full ? 1 : k === full && half ? 0.5 : faint));
+};
