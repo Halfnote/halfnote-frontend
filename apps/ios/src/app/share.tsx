@@ -37,7 +37,7 @@ const STEP_NAMES: Record<Step, string> = { elements: "Elements", snippet: "Snipp
 export default function ShareStory() {
   // Only ids travel in the route; the album and its reviews come from the album screen's query cache.
   const { discogsId, reviewId } = useLocalSearchParams<{ discogsId: string; reviewId?: string }>();
-  const { data } = useAlbumDetails(discogsId);
+  const { data, error } = useAlbumDetails(discogsId);
   // The story styles' display faces load here rather than at app start, which only needs Instrument (app/_layout.tsx).
   const [fontsLoaded, fontError] = useFonts({
     IBMPlexMono_400Regular,
@@ -51,10 +51,23 @@ export default function ShareStory() {
     PermanentMarker_400Regular,
     Yellowtail_400Regular,
   });
-  if (!data || (!fontsLoaded && !fontError)) return <ActivityIndicator style={{ flex: 1 }} />;
+  if (error) return <Fallback message={error.message} />;
+  if (!data || (!fontsLoaded && !fontError)) return <Fallback />;
   const review = reviewId ? data.reviews.find((r) => String(r.id) === reviewId) : undefined;
-  if (reviewId && !review) return <Text style={{ flex: 1, textAlign: "center", marginTop: 96 }}>Review not found</Text>;
+  if (reviewId && !review) return <Fallback message="Review not found" />;
   return <ShareFlow source={review ? { album: data.album, review } : { album: data.album, rating: data.average_rating ?? undefined }} />;
+}
+
+/** Loading or failed: full-screen modals don't swipe away, so there's always a way out. */
+function Fallback({ message }: { message?: string }) {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 16 }}>
+      {message ? <Text style={[font(F.sans, 15), { color: INK }]}>{message}</Text> : <ActivityIndicator />}
+      <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={8}>
+        <Text style={[font(F.sans500, 14), { color: INK }]}>Close</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 function ShareFlow({ source }: { source: Source }) {
