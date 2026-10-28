@@ -1,4 +1,5 @@
 import type { GenreKey } from "../../storyDraft";
+import { beer } from "./beer";
 import { billboard } from "./billboard";
 import { editorial } from "./editorial";
 import { graffiti } from "./graffiti";
@@ -25,6 +26,7 @@ const BUILT: Partial<Record<GenreKey, StyleDef>> = {
   postcard,
   tattoo,
   graffiti,
+  beer,
 };
 
 export const styleFor = (k: GenreKey): StyleDef => BUILT[k] ?? billboard;
