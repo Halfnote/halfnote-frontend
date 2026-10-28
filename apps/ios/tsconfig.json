@@ -2,5 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
-  }
+  },
+  // Tests run under node:test, not Metro (npm test); replaces the base exclude list, so it's repeated here.
+  "exclude": ["node_modules", "ios", "android", "src/**/*.test.ts"]
 }
