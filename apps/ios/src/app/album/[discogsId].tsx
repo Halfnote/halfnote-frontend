@@ -1,17 +1,15 @@
 import { useAlbumDetails, useToggleReview } from "@halfnote/data/react";
 import type { Review } from "@halfnote/data";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { AlbumCard, RatingBadge } from "@halfnote/ui";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSession } from "../../session";
-import { useShareToStory } from "../../useShareToStory";
 
 export default function AlbumDetails() {
   const { discogsId } = useLocalSearchParams<{ discogsId: string }>();
   const username = useSession()?.username ?? "";
   const { data, error, isLoading } = useAlbumDetails(discogsId);
   const { toggleLikeMutation } = useToggleReview(username, discogsId);
-  const story = useShareToStory();
 
   if (isLoading) return <ActivityIndicator style={styles.center} />;
   if (error || !data) return <Text style={[styles.center, styles.error]}>{error?.message ?? "Album not found"}</Text>;
@@ -19,39 +17,36 @@ export default function AlbumDetails() {
   const { album, reviews, average_rating, review_count } = data;
   const rating = average_rating != null ? Math.round(average_rating) : undefined;
   return (
-    <>
-      <FlatList
-        style={styles.screen}
-        contentContainerStyle={styles.content}
-        data={reviews}
-        keyExtractor={(r) => String(r.id)}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Stack.Screen options={{ title: album.title }} />
-            <AlbumCard albumCover={album.cover_url ?? ""} albumName={album.title} artistName={album.artist} size={240} />
-            <Text style={styles.muted}>
-              {album.year ? `${album.year} · ` : ""}
-              {review_count} reviews
-            </Text>
-            {rating != null && <RatingBadge rating={rating} />}
-            <ShareButton onPress={story.sharing ? undefined : () => story.share({ album, rating })} />
-          </View>
-        }
-        renderItem={({ item }) => (
-          <ReviewRow
-            review={item}
-            onLike={() => toggleLikeMutation.mutate(item.id)}
-            onShare={story.sharing ? undefined : () => story.share({ album, review: item })}
-          />
-        )}
-        ListEmptyComponent={<Text style={styles.muted}>No reviews yet</Text>}
-      />
-      {story.card}
-    </>
+    <FlatList
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      data={reviews}
+      keyExtractor={(r) => String(r.id)}
+      ListHeaderComponent={
+        <View style={styles.header}>
+          <Stack.Screen options={{ title: album.title }} />
+          <AlbumCard albumCover={album.cover_url ?? ""} albumName={album.title} artistName={album.artist} size={240} />
+          <Text style={styles.muted}>
+            {album.year ? `${album.year} · ` : ""}
+            {review_count} reviews
+          </Text>
+          {rating != null && <RatingBadge rating={rating} />}
+          <ShareButton onPress={() => router.push({ pathname: "/share", params: { discogsId } })} />
+        </View>
+      }
+      renderItem={({ item }) => (
+        <ReviewRow
+          review={item}
+          onLike={() => toggleLikeMutation.mutate(item.id)}
+          onShare={() => router.push({ pathname: "/share", params: { discogsId, reviewId: item.id } })}
+        />
+      )}
+      ListEmptyComponent={<Text style={styles.muted}>No reviews yet</Text>}
+    />
   );
 }
 
-function ReviewRow({ review, onLike, onShare }: { review: Review; onLike: () => void; onShare?: () => void }) {
+function ReviewRow({ review, onLike, onShare }: { review: Review; onLike: () => void; onShare: () => void }) {
   return (
     <View style={styles.review}>
       <View style={styles.reviewHeader}>
@@ -69,11 +64,10 @@ function ReviewRow({ review, onLike, onShare }: { review: Review; onLike: () => 
   );
 }
 
-/** Disabled without an onPress, e.g. while another share is being prepared. */
-function ShareButton({ onPress }: { onPress?: () => void }) {
+function ShareButton({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} disabled={!onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel="Share to Instagram Story">
-      <Text style={[styles.muted, !onPress && styles.disabled]}>Share to Story</Text>
+    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel="Share to Story">
+      <Text style={styles.muted}>Share to Story</Text>
     </Pressable>
   );
 }
@@ -89,5 +83,4 @@ const styles = StyleSheet.create({
   reviewHeader: { flexDirection: "row", alignItems: "center", gap: 8 },
   reviewer: { fontWeight: "600" },
   liked: { color: "#d22" },
-  disabled: { opacity: 0.4 },
 });
