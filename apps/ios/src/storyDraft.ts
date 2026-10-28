@@ -80,7 +80,7 @@ export function splitReview(content: string): { head: string; paras: string[] } 
   return { head, paras };
 }
 
-const textOf = (s: Source) => ("review" in s ? splitReview(s.review.content) : { head: "", paras: [] });
+export const textOf = (s: Source) => ("review" in s ? splitReview(s.review.content) : { head: "", paras: [] });
 const ratingOf = (s: Source) => ("review" in s ? s.review.rating : s.rating);
 
 /** The element toggles this source offers, in display order. */
@@ -139,7 +139,7 @@ export function activeStyle(s: Source, d: Draft): { genre: GenreKey; variant: nu
   return { genre, variant: d.variant[genre] ?? 0 };
 }
 
-const selected = (s: Source, d: Draft) => d.snip.filter((i) => i < textOf(s).paras.length);
+export const selected = (s: Source, d: Draft) => d.snip.filter((i) => i < textOf(s).paras.length);
 
 /** One paragraph, or two when they fit together. The first pick is always allowed, so an overlong paragraph still gets on. */
 export function snippetBlocked(sel: number[], i: number, paras: string[]): boolean {

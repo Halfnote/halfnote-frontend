@@ -7,18 +7,8 @@ import Svg, { Path } from "react-native-svg";
 import { useSession } from "../session";
 import { F, font } from "../story/kit";
 import { STORY_H, STORY_W, Story } from "../story/Story";
-import { ElementsStep, FILL, INK, PrimaryButton } from "../story/steps";
-import {
-  activeStyle,
-  currentStep,
-  elements,
-  initialDraft,
-  nextBlocked,
-  steps,
-  storyContent,
-  type Source,
-  type Step,
-} from "../storyDraft";
+import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep } from "../story/steps";
+import { activeStyle, currentStep, elements, initialDraft, nextBlocked, steps, storyContent, type Source, type Step } from "../storyDraft";
 
 const STEP_NAMES: Record<Step, string> = { elements: "Elements", snippet: "Snippet", style: "Style" };
 
@@ -127,6 +117,7 @@ export default function ShareStory() {
         </View>
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
           {step === "elements" && <ElementsStep source={source} draft={draft} setDraft={setDraft} />}
+          {step === "snippet" && <SnippetStep source={source} draft={draft} setDraft={setDraft} />}
         </ScrollView>
         <View style={{ flexDirection: "row", gap: 8 }}>
           {index > 0 && (

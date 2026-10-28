@@ -1,7 +1,18 @@
 import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { elements, elementsNote, type Draft, type Element, type Source } from "../storyDraft";
+import {
+  elements,
+  elementsNote,
+  selected,
+  snippetBlocked,
+  SNIPPET_LIMIT,
+  textOf,
+  toggleSnippet,
+  type Draft,
+  type Element,
+  type Source,
+} from "../storyDraft";
 import { F, font } from "./kit";
 
 export const INK = "#111111";
@@ -102,5 +113,90 @@ export function PrimaryButton({
       <Text style={[font(F.sans500, 14), { color: "#EEEEEE" }]}>{label}</Text>
       {trail}
     </Pressable>
+  );
+}
+
+export function SnippetStep({ source, draft, setDraft }: StepProps) {
+  const { paras } = textOf(source);
+  const sel = selected(source, draft);
+  const chars = sel.reduce((t, i) => t + paras[i].length, 0);
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={{ flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" }}>
+        <Heading>Pick a snippet</Heading>
+        <Text style={[font(F.sans, 12), { color: MUTED }]}>
+          {chars} / {SNIPPET_LIMIT}
+        </Text>
+      </View>
+      <View aria-hidden style={{ height: 4, borderRadius: 999, backgroundColor: "rgba(17,17,17,0.1)", overflow: "hidden" }}>
+        <View
+          style={{
+            height: "100%",
+            width: `${Math.min(100, Math.round((chars / SNIPPET_LIMIT) * 100))}%`,
+            backgroundColor: FILL,
+            borderRadius: 999,
+          }}
+        />
+      </View>
+      {paras.map((text, i) => {
+        const on = sel.includes(i);
+        const blocked = snippetBlocked(sel, i, paras);
+        return (
+          <Pressable
+            key={i}
+            onPress={() => setDraft((d) => ({ ...d, snip: toggleSnippet(sel, i, paras) }))}
+            disabled={blocked}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: on, disabled: blocked }}
+            style={{
+              flexDirection: "row",
+              gap: 12,
+              alignItems: "flex-start",
+              padding: 12,
+              borderRadius: 10,
+              backgroundColor: on ? "#F8F8F6" : "rgba(17,17,17,0.05)",
+              boxShadow: on ? "0 0 0 1.5px #111111" : undefined,
+              opacity: blocked ? 0.4 : 1,
+            }}
+          >
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                marginTop: 1,
+                borderRadius: 10,
+                borderWidth: 1.5,
+                borderColor: INK,
+                backgroundColor: on ? FILL : "transparent",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Svg
+                width={10}
+                height={8}
+                viewBox="0 0 10 8"
+                fill="none"
+                stroke="#EEEEEE"
+                strokeWidth={1.6}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <Path d="M1 4 L3.8 6.6 L9 1.2" />
+              </Svg>
+            </View>
+            <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
+              <Text numberOfLines={3} style={[font(F.sans, 13, 1.45), { color: INK }]}>
+                {text}
+              </Text>
+              <Text style={[font(F.sans, 11), { color: "#666666" }]}>
+                ¶{i + 1} · {text.length} characters
+              </Text>
+            </View>
+          </Pressable>
+        );
+      })}
+      <Text style={[font(F.sans, 12, 1.45), { color: MUTED }]}>One paragraph, or two when they fit together on a story.</Text>
+    </View>
   );
 }
