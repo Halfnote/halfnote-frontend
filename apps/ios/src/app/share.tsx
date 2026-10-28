@@ -5,11 +5,23 @@ import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from "rea
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { useSession } from "../session";
+import { usePlus } from "../usePlus";
 import { useShareToStory } from "../useShareToStory";
 import { F, font } from "../story/kit";
 import { STORY_H, STORY_W, Story } from "../story/Story";
-import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, StyleStep } from "../story/steps";
-import { activeStyle, currentStep, elements, initialDraft, nextBlocked, steps, storyContent, type Source, type Step } from "../storyDraft";
+import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, Star, StyleStep } from "../story/steps";
+import {
+  activeStyle,
+  currentStep,
+  elements,
+  GENRES,
+  initialDraft,
+  nextBlocked,
+  steps,
+  storyContent,
+  type Source,
+  type Step,
+} from "../storyDraft";
 
 const STEP_NAMES: Record<Step, string> = { elements: "Elements", snippet: "Snippet", style: "Style" };
 
@@ -44,6 +56,9 @@ function ShareFlow({ source }: { source: Source }) {
   const blocked = nextBlocked(source, draft);
   const kind = !("review" in source) ? "Album" : elements(source).includes("body") ? "Full review" : "Short take";
   const exporter = useShareToStory({ c, genre, variant }, flash);
+  const { plus, unlock } = usePlus();
+  const isPlus = !!GENRES[genre].plus;
+  const locked = isPlus && !plus;
   const go = (to: number) => setDraft((d) => ({ ...d, step: to }));
 
   return (
@@ -100,7 +115,7 @@ function ShareFlow({ source }: { source: Source }) {
         <View style={{ width: 44 }} />
       </View>
 
-      <Preview>
+      <Preview badge={isPlus}>
         <Story c={c} genre={genre} variant={variant} />
       </Preview>
       {exporter.capture}
@@ -132,7 +147,7 @@ function ShareFlow({ source }: { source: Source }) {
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
           {step === "elements" && <ElementsStep source={source} draft={draft} setDraft={setDraft} />}
           {step === "snippet" && <SnippetStep source={source} draft={draft} setDraft={setDraft} />}
-          {step === "style" && <StyleStep source={source} draft={draft} setDraft={setDraft} c={c} plus={false} />}
+          {step === "style" && <StyleStep source={source} draft={draft} setDraft={setDraft} c={c} plus={plus} />}
         </ScrollView>
         <View style={{ flexDirection: "row", gap: 8 }}>
           {index > 0 && (
@@ -167,7 +182,17 @@ function ShareFlow({ source }: { source: Source }) {
               }
             />
           )}
-          {index === all.length - 1 && (
+          {index === all.length - 1 && locked && (
+            <PrimaryButton
+              label="Unlock halfnote Plus"
+              onPress={() => {
+                void unlock();
+                flash("halfnote Plus unlocked");
+              }}
+              icon={<Star size={12} color="#EEEEEE" />}
+            />
+          )}
+          {index === all.length - 1 && !locked && (
             <>
               <Pressable
                 onPress={exporter.save}
@@ -249,7 +274,7 @@ function ShareFlow({ source }: { source: Source }) {
 }
 
 /** Scales the 360×640 story to fit the space above the sheet, with the design's rounded frame. */
-function Preview({ children }: { children: ReactNode }) {
+function Preview({ children, badge }: { children: ReactNode; badge: boolean }) {
   const [box, setBox] = useState({ w: 0, h: 0 });
   const scale = Math.min((box.h - 8) / STORY_H, (box.w - 32) / STORY_W);
   return (
@@ -269,6 +294,25 @@ function Preview({ children }: { children: ReactNode }) {
           <View style={{ flex: 1, borderRadius: 12, overflow: "hidden" }}>
             <View style={{ transform: [{ scale }], transformOrigin: "top left" }}>{children}</View>
           </View>
+          {badge && (
+            <View
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 5,
+                paddingVertical: 4,
+                paddingHorizontal: 9,
+                borderRadius: 999,
+                backgroundColor: "rgba(17,17,17,0.82)",
+              }}
+            >
+              <Star size={10} color="#EEEEEE" />
+              <Text style={[font(F.sans600, 11, undefined, 0.04), { color: "#EEEEEE" }]}>PLUS</Text>
+            </View>
+          )}
         </View>
       )}
     </View>
