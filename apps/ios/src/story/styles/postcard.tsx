@@ -2,7 +2,7 @@ import { use, useId } from "react";
 import { View } from "react-native";
 import Svg, { Defs, Image, LinearGradient, Path, Pattern, Stop, Text } from "react-native-svg";
 import type { StoryContent } from "../../storyDraft";
-import { Art, ArtSettled, DARK_DOTS, F, font, LIGHT_DOTS, T } from "../kit";
+import { Art, ArtSettled, DARK_DOTS, svgId, F, font, LIGHT_DOTS, T } from "../kit";
 import type { StyleDef, Variant } from "./types";
 
 type V = Variant & {
@@ -83,7 +83,7 @@ const INNER = 292;
 /** "Greetings from" word, filled with the cover (CSS background-clip: text) or the variant's gradient, outlined and offset-shadowed. */
 function Word({ c, v, top, size, height }: { c: StoryContent; v: V; top: number; size: number; height: number }) {
   const settled = use(ArtSettled);
-  const id = useId();
+  const id = svgId(useId());
   const word = c.title.split(" ")[0].toUpperCase().slice(0, 8);
   const cover = c.show.art && c.art;
   const text = (dx: number, fill: string) => (

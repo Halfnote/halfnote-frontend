@@ -237,12 +237,15 @@ export const levels = (score: number, faint: number) => {
   return Array.from({ length: 10 }, (_, k) => (k < full ? 1 : k === full && half ? 0.5 : faint));
 };
 
+/** React ids carry punctuation that SVG `url(#…)` references don't survive. */
+export const svgId = (reactId: string) => "s" + reactId.replace(/[^a-zA-Z0-9]/g, "");
+
 /**
  * Fills its parent with an SVG pattern tile, standing in for CSS `repeating-*-gradient`s, which RN lacks.
  * `children` draw one `w`×`h` tile.
  */
 export function Tile({ w, h, children, style }: { w: number; h: number; children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  const id = useId();
+  const id = svgId(useId());
   return (
     <Svg pointerEvents="none" style={[{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }, style]} width="100%" height="100%">
       <Defs>
