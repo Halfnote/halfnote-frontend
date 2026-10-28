@@ -1,10 +1,11 @@
 import { useAlbumDetails } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { useSession } from "../session";
+import { useShareToStory } from "../useShareToStory";
 import { F, font } from "../story/kit";
 import { STORY_H, STORY_W, Story } from "../story/Story";
 import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, StyleStep } from "../story/steps";
@@ -14,23 +15,35 @@ const STEP_NAMES: Record<Step, string> = { elements: "Elements", snippet: "Snipp
 
 /** Full-screen "Share to Story" flow: a live story preview over a stepped sheet. Opened from the album screen. */
 export default function ShareStory() {
+  // Only ids travel in the route; the album and its reviews come from the album screen's query cache.
   const { discogsId, reviewId } = useLocalSearchParams<{ discogsId: string; reviewId?: string }>();
   const { data } = useAlbumDetails(discogsId);
-  const viewer = useSession()?.username ?? "";
-  const [draft, setDraft] = useState(initialDraft);
-  const insets = useSafeAreaInsets();
-
   if (!data) return <ActivityIndicator style={{ flex: 1 }} />;
   const review = reviewId ? data.reviews.find((r) => String(r.id) === reviewId) : undefined;
   if (reviewId && !review) return <Text style={{ flex: 1, textAlign: "center", marginTop: 96 }}>Review not found</Text>;
-  const source: Source = review ? { album: data.album, review } : { album: data.album, rating: data.average_rating ?? undefined };
+  return <ShareFlow source={review ? { album: data.album, review } : { album: data.album, rating: data.average_rating ?? undefined }} />;
+}
+
+function ShareFlow({ source }: { source: Source }) {
+  const viewer = useSession()?.username ?? "";
+  const [draft, setDraft] = useState(initialDraft);
+  const insets = useSafeAreaInsets();
+  const [toast, setToast] = useState("");
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const flash = useCallback((message: string) => {
+    clearTimeout(toastTimer.current);
+    setToast(message);
+    toastTimer.current = setTimeout(() => setToast(""), 1800);
+  }, []);
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
 
   const c = storyContent(source, draft, viewer);
   const { genre, variant } = activeStyle(source, draft);
   const { index, step } = currentStep(source, draft);
   const all = steps(source, draft);
   const blocked = nextBlocked(source, draft);
-  const kind = !review ? "Album" : elements(source).includes("body") ? "Full review" : "Short take";
+  const kind = !("review" in source) ? "Album" : elements(source).includes("body") ? "Full review" : "Short take";
+  const exporter = useShareToStory({ c, genre, variant }, flash);
   const go = (to: number) => setDraft((d) => ({ ...d, step: to }));
 
   return (
@@ -90,6 +103,7 @@ export default function ShareStory() {
       <Preview>
         <Story c={c} genre={genre} variant={variant} />
       </Preview>
+      {exporter.capture}
 
       <View
         style={{
@@ -153,8 +167,83 @@ export default function ShareStory() {
               }
             />
           )}
+          {index === all.length - 1 && (
+            <>
+              <Pressable
+                onPress={exporter.save}
+                accessibilityRole="button"
+                style={{
+                  minHeight: 48,
+                  paddingHorizontal: 18,
+                  borderWidth: 1,
+                  borderColor: INK,
+                  borderRadius: 999,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                <Svg
+                  width={14}
+                  height={14}
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  stroke={INK}
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <Path d="M7 1.5 V9 M4 6 L7 9 L10 6 M2 12.5 H12" />
+                </Svg>
+                <Text style={[font(F.sans500, 14), { color: INK }]}>Save</Text>
+              </Pressable>
+              <PrimaryButton
+                label="Share to Story"
+                onPress={exporter.share}
+                icon={
+                  <Svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="#EEEEEE" strokeWidth={1.5}>
+                    <Rect x={2} y={2} width={12} height={12} rx={3.5} />
+                    <Circle cx={8} cy={8} r={2.8} />
+                  </Svg>
+                }
+              />
+            </>
+          )}
         </View>
       </View>
+      {!!toast && (
+        <View
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+          style={{
+            position: "absolute",
+            alignSelf: "center",
+            bottom: 368 + insets.bottom + 16,
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            borderRadius: 999,
+            backgroundColor: FILL,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            boxShadow: "0 12px 24px -12px rgba(0,0,0,0.6)",
+          }}
+        >
+          <Svg
+            width={12}
+            height={10}
+            viewBox="0 0 12 10"
+            fill="none"
+            stroke="#EEEEEE"
+            strokeWidth={1.6}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <Path d="M1 5 L4.5 8.5 L11 1.5" />
+          </Svg>
+          <Text style={[font(F.sans500, 13), { color: "#EEEEEE" }]}>{toast}</Text>
+        </View>
+      )}
     </View>
   );
 }

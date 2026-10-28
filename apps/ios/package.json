@@ -21,6 +21,7 @@
     "expo-dev-client": "~57.0.19",
     "expo-font": "~57.0.4",
     "expo-linking": "~57.0.11",
+    "expo-media-library": "~57.0.5",
     "expo-router": "~57.0.23",
     "expo-secure-store": "~57.0.4",
     "expo-status-bar": "~57.0.1",

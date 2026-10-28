@@ -19,6 +19,12 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Allow halfnote to save your story images to Photos."
+        }
+      ],
       "./plugins/with-scene-lifecycle",
       "./plugins/with-no-script-sandbox",
       [
