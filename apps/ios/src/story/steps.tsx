@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import {
+  activeStyle,
   elements,
   elementsNote,
+  GENRES,
+  genresFor,
+  modeOf,
   selected,
   snippetBlocked,
   SNIPPET_LIMIT,
@@ -11,9 +15,13 @@ import {
   toggleSnippet,
   type Draft,
   type Element,
+  type GenreKey,
   type Source,
+  type StoryContent,
 } from "../storyDraft";
-import { F, font } from "./kit";
+import { F, font, Ink } from "./kit";
+import { styleFor } from "./styles";
+import type { Variant } from "./styles/types";
 
 export const INK = "#111111";
 export const FILL = "#1d1d1d";
@@ -197,6 +205,131 @@ export function SnippetStep({ source, draft, setDraft }: StepProps) {
         );
       })}
       <Text style={[font(F.sans, 12, 1.45), { color: MUTED }]}>One paragraph, or two when they fit together on a story.</Text>
+    </View>
+  );
+}
+
+export const Star = ({ size, color }: { size: number; color: string }) => (
+  <Svg width={size} height={size} viewBox="0 0 10 10" fill={color}>
+    <Path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8 Z" />
+  </Svg>
+);
+
+export function StyleStep({ source, draft, setDraft, c, plus }: StepProps & { c: StoryContent; plus: boolean }) {
+  const mode = modeOf(source, draft);
+  const { std, plus: plusKeys } = genresFor(mode);
+  const { genre, variant } = activeStyle(source, draft);
+  const { variants, Mini = GlyphMini } = styleFor(genre);
+  const pill = (k: GenreKey) => {
+    const on = k === genre;
+    const { name, plus: isPlus } = GENRES[k];
+    return (
+      <Pressable
+        key={k}
+        onPress={() => setDraft((d) => ({ ...d, genre: { ...d.genre, [mode]: k } }))}
+        accessibilityRole="button"
+        accessibilityLabel={name + (isPlus ? ", Plus style" : "")}
+        accessibilityState={{ selected: on }}
+        style={{
+          minHeight: 34,
+          paddingHorizontal: 14,
+          borderRadius: 999,
+          backgroundColor: on ? FILL : "rgba(17,17,17,0.06)",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
+        <Text style={[font(F.sans500, 12), { color: on ? "#EEEEEE" : INK }]}>{name}</Text>
+        {isPlus && <Star size={9} color={on ? "#EEEEEE" : INK} />}
+      </Pressable>
+    );
+  };
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={{ flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" }}>
+        <Heading>Choose a style</Heading>
+        <Text style={[font(F.sans, 12), { color: MUTED }]}>{mode === "long" ? "Full-review styles" : "Short-take styles"}</Text>
+      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ marginHorizontal: -16 }}
+        contentContainerStyle={{ gap: 6, paddingHorizontal: 16, paddingVertical: 2 }}
+      >
+        {std.map(pill)}
+        <View style={{ justifyContent: "center", paddingLeft: 6, paddingRight: 4, borderLeftWidth: 1, borderColor: "rgba(17,17,17,0.15)" }}>
+          <Text style={[font(F.sans600, 11, undefined, 0.08), { color: MUTED }]}>PLUS</Text>
+        </View>
+        {plusKeys.map(pill)}
+      </ScrollView>
+      <View style={{ flexDirection: "row", gap: 8, paddingTop: 2 }}>
+        {variants(c).map((x, i) => {
+          const on = i === variant;
+          return (
+            <Pressable
+              key={x.name}
+              onPress={() => setDraft((d) => ({ ...d, variant: { ...d.variant, [genre]: i } }))}
+              accessibilityRole="button"
+              accessibilityLabel={`${GENRES[genre].name}, ${x.name}`}
+              accessibilityState={{ selected: on }}
+              style={{ flex: 1, gap: 5 }}
+            >
+              <View
+                style={{
+                  height: 62,
+                  borderRadius: 8,
+                  boxShadow: on ? "0 0 0 2px #EEEEEE, 0 0 0 4px #111111" : "0 0 0 1px rgba(17,17,17,0.12)",
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    backgroundColor: x.mini?.bg ? "transparent" : x.bg,
+                    experimental_backgroundImage: x.mini?.bg ?? x.img,
+                    experimental_backgroundSize: x.mini?.bg ? undefined : (x.size ?? "3px 3px"),
+                  }}
+                >
+                  <Ink value={{ ink: x.ink, sub: x.sub }}>
+                    <Mini c={c} i={i} v={x} />
+                  </Ink>
+                </View>
+              </View>
+              <Text style={[font(F.sans500, 12), { color: on ? INK : "#666666" }]}>{x.name}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {GENRES[genre].plus && !plus && (
+        <Text style={[font(F.sans, 12, 1.45), { color: MUTED }]}>
+          {GENRES[genre].name} is a Plus style. Preview it free, unlock to save or share.
+        </Text>
+      )}
+    </View>
+  );
+}
+
+/** Plus swatches: a glyph over an optional shape, from each variant's `mini`. */
+function GlyphMini({ v }: { v: Variant }) {
+  const { glyph = "", font: family = F.sans, size = 14, ink = v.ink, sh } = v.mini ?? {};
+  return (
+    <View style={{ position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
+      {sh && (
+        <View
+          style={{
+            position: "absolute",
+            width: sh[0],
+            height: sh[1],
+            borderRadius: sh[2],
+            backgroundColor: sh[3].includes("gradient") ? undefined : sh[3],
+            experimental_backgroundImage: sh[3].includes("gradient") ? sh[3] : undefined,
+            boxShadow: "0 4px 8px -4px rgba(0,0,0,0.5)",
+          }}
+        />
+      )}
+      {!!glyph && <Text style={[font(family, size, 1), { color: ink }]}>{glyph}</Text>}
     </View>
   );
 }

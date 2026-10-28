@@ -21,5 +21,5 @@ export interface StyleDef {
   /** Draws variant `i` inside the 360×640 story, above the background and under the footer. */
   Layout: ComponentType<{ c: StoryContent; i: number }>;
   /** The picker swatch; Plus styles fall back to the shared glyph swatch. */
-  Mini?: ComponentType<{ c: StoryContent; i: number }>;
+  Mini?: ComponentType<{ c: StoryContent; i: number; v: Variant }>;
 }
