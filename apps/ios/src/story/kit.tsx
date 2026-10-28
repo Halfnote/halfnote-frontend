@@ -1,5 +1,5 @@
-import { createContext, use, type ReactNode } from "react";
-import Svg, { Circle } from "react-native-svg";
+import { createContext, use, useId, type ReactNode } from "react";
+import Svg, { Circle, Defs, Line, Pattern, Rect } from "react-native-svg";
 import { Image, Text, View, type StyleProp, type TextProps, type TextStyle, type ViewStyle } from "react-native";
 
 /** Family names registered with useFonts in app/_layout.tsx (they also work in Expo Go). */
@@ -236,3 +236,35 @@ export const levels = (score: number, faint: number) => {
   const half = score - full >= 0.5;
   return Array.from({ length: 10 }, (_, k) => (k < full ? 1 : k === full && half ? 0.5 : faint));
 };
+
+/**
+ * Fills its parent with an SVG pattern tile, standing in for CSS `repeating-*-gradient`s, which RN lacks.
+ * `children` draw one `w`×`h` tile.
+ */
+export function Tile({ w, h, children, style }: { w: number; h: number; children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  const id = useId();
+  return (
+    <Svg pointerEvents="none" style={[{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }, style]} width="100%" height="100%">
+      <Defs>
+        <Pattern id={id} width={w} height={h} patternUnits="userSpaceOnUse">
+          {children}
+        </Pattern>
+      </Defs>
+      <Rect width="100%" height="100%" fill={`url(#${id})`} />
+    </Svg>
+  );
+}
+
+/** Horizontal lines `thickness` tall every `period`, starting at `offset`: `repeating-linear-gradient(to bottom, …)`. */
+export const Lines = ({ color, period, offset, thickness = 1 }: { color: string; period: number; offset: number; thickness?: number }) => (
+  <Tile w={period} h={period}>
+    <Rect x={0} y={offset} width={period} height={thickness} fill={color} />
+  </Tile>
+);
+
+/** A dashed rule; iOS only dashes uniform borders, so it's an SVG line. */
+export const Dash = ({ color, width = 1.5, opacity = 1 }: { color: string; width?: number; opacity?: number }) => (
+  <Svg height={width} width="100%" style={{ opacity }}>
+    <Line x1={0} y1={width / 2} x2="100%" y2={width / 2} stroke={color} strokeWidth={width} strokeDasharray={[4, 3]} />
+  </Svg>
+);
