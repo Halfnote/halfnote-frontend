@@ -5,6 +5,7 @@ import { editorial } from "./editorial";
 import { graffiti } from "./graffiti";
 import { heatmap } from "./heatmap";
 import { liner } from "./liner";
+import { matchbook } from "./matchbook";
 import { postcard } from "./postcard";
 import { receipt } from "./receipt";
 import { score } from "./score";
@@ -29,6 +30,7 @@ const BUILT: Partial<Record<GenreKey, StyleDef>> = {
   graffiti,
   beer,
   heatmap,
+  matchbook,
 };
 
 export const styleFor = (k: GenreKey): StyleDef => BUILT[k] ?? billboard;
