@@ -1,6 +1,6 @@
 import { View, type FlexStyle, type TextStyle } from "react-native";
 import type { StoryContent } from "../../storyDraft";
-import { ArtistTitle, bySize, Cover, CREAM, CREAM_SUB, F, font, levels, T, Vinyl } from "../kit";
+import { ArtistTitle, bySize, Cover, CREAM, CREAM_SUB, Eyebrow, F, font, levels, T, Vinyl } from "../kit";
 import type { StyleDef, Variant } from "./types";
 
 type V = Variant & { ta: TextStyle["textAlign"]; jc: FlexStyle["justifyContent"] };
@@ -22,9 +22,7 @@ function Layout({ c, i }: { c: StoryContent; i: number }) {
     <View style={{ position: "absolute", inset: 0, paddingTop: 30, paddingHorizontal: 28, paddingBottom: 80, gap: 16 }}>
       {giant && (
         <View style={{ gap: 8 }}>
-          <T sub style={[font(F.sans600, 12, undefined, 0.08), { textTransform: "uppercase" }]}>
-            Rated
-          </T>
+          <Eyebrow>Rated</Eyebrow>
           <T style={[font(F.serif, 196, 0.78, -0.045), { marginLeft: -6 }]}>{c.scoreText}</T>
         </View>
       )}
