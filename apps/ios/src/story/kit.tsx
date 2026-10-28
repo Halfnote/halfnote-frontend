@@ -9,6 +9,7 @@ export const F = {
   sans: "InstrumentSans_400Regular",
   sans500: "InstrumentSans_500Medium",
   sans600: "InstrumentSans_600SemiBold",
+  sans700: "InstrumentSans_700Bold",
   mono: "IBMPlexMono_400Regular",
   mono500: "IBMPlexMono_500Medium",
   mono600: "IBMPlexMono_600SemiBold",
