@@ -40,7 +40,17 @@
             "../../node_modules/@expo-google-fonts/instrument-sans/600SemiBold/InstrumentSans_600SemiBold.ttf",
             "../../node_modules/@expo-google-fonts/instrument-sans/600SemiBold_Italic/InstrumentSans_600SemiBold_Italic.ttf",
             "../../node_modules/@expo-google-fonts/instrument-sans/700Bold/InstrumentSans_700Bold.ttf",
-            "../../node_modules/@expo-google-fonts/instrument-sans/700Bold_Italic/InstrumentSans_700Bold_Italic.ttf"
+            "../../node_modules/@expo-google-fonts/instrument-sans/700Bold_Italic/InstrumentSans_700Bold_Italic.ttf",
+            "../../node_modules/@expo-google-fonts/ibm-plex-mono/400Regular/IBMPlexMono_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/ibm-plex-mono/500Medium/IBMPlexMono_500Medium.ttf",
+            "../../node_modules/@expo-google-fonts/ibm-plex-mono/600SemiBold/IBMPlexMono_600SemiBold.ttf",
+            "../../node_modules/@expo-google-fonts/pacifico/400Regular/Pacifico_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/caveat/500Medium/Caveat_500Medium.ttf",
+            "../../node_modules/@expo-google-fonts/caveat/700Bold/Caveat_700Bold.ttf",
+            "../../node_modules/@expo-google-fonts/alfa-slab-one/400Regular/AlfaSlabOne_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/pirata-one/400Regular/PirataOne_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/permanent-marker/400Regular/PermanentMarker_400Regular.ttf",
+            "../../node_modules/@expo-google-fonts/yellowtail/400Regular/Yellowtail_400Regular.ttf"
           ]
         }
       ]

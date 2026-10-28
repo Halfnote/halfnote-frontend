@@ -1,4 +1,12 @@
+import { AlfaSlabOne_400Regular } from "@expo-google-fonts/alfa-slab-one";
+import { Caveat_500Medium, Caveat_700Bold } from "@expo-google-fonts/caveat";
+import { IBMPlexMono_400Regular, IBMPlexMono_500Medium, IBMPlexMono_600SemiBold } from "@expo-google-fonts/ibm-plex-mono";
+import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
+import { PermanentMarker_400Regular } from "@expo-google-fonts/permanent-marker";
+import { PirataOne_400Regular } from "@expo-google-fonts/pirata-one";
+import { Yellowtail_400Regular } from "@expo-google-fonts/yellowtail";
 import { useAlbumDetails } from "@halfnote/data/react";
+import { useFonts } from "expo-font";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from "react-native";
@@ -30,7 +38,20 @@ export default function ShareStory() {
   // Only ids travel in the route; the album and its reviews come from the album screen's query cache.
   const { discogsId, reviewId } = useLocalSearchParams<{ discogsId: string; reviewId?: string }>();
   const { data } = useAlbumDetails(discogsId);
-  if (!data) return <ActivityIndicator style={{ flex: 1 }} />;
+  // The story styles' display faces load here rather than at app start, which only needs Instrument (app/_layout.tsx).
+  const [fontsLoaded, fontError] = useFonts({
+    IBMPlexMono_400Regular,
+    IBMPlexMono_500Medium,
+    IBMPlexMono_600SemiBold,
+    Pacifico_400Regular,
+    Caveat_500Medium,
+    Caveat_700Bold,
+    AlfaSlabOne_400Regular,
+    PirataOne_400Regular,
+    PermanentMarker_400Regular,
+    Yellowtail_400Regular,
+  });
+  if (!data || (!fontsLoaded && !fontError)) return <ActivityIndicator style={{ flex: 1 }} />;
   const review = reviewId ? data.reviews.find((r) => String(r.id) === reviewId) : undefined;
   if (reviewId && !review) return <Text style={{ flex: 1, textAlign: "center", marginTop: 96 }}>Review not found</Text>;
   return <ShareFlow source={review ? { album: data.album, review } : { album: data.album, rating: data.average_rating ?? undefined }} />;

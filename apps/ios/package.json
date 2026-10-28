@@ -11,8 +11,15 @@
     "test": "node --test src/*.test.ts"
   },
   "dependencies": {
+    "@expo-google-fonts/alfa-slab-one": "^0.4.1",
+    "@expo-google-fonts/caveat": "^0.4.2",
+    "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
     "@expo-google-fonts/instrument-sans": "^0.4.2",
     "@expo-google-fonts/instrument-serif": "^0.4.1",
+    "@expo-google-fonts/pacifico": "^0.4.1",
+    "@expo-google-fonts/permanent-marker": "^0.4.0",
+    "@expo-google-fonts/pirata-one": "^0.4.1",
+    "@expo-google-fonts/yellowtail": "^0.4.1",
     "@halfnote/data": "*",
     "@halfnote/ui": "*",
     "@tanstack/react-query": "^5.80.7",
