@@ -20,7 +20,7 @@ import {
   type StoryContent,
 } from "../storyDraft";
 import { F, font, Ink } from "./kit";
-import { styleFor } from "./styles";
+import { STYLES } from "./styles";
 import type { Variant } from "./styles/types";
 
 export const INK = "#111111";
@@ -219,7 +219,7 @@ export function StyleStep({ source, draft, setDraft, c, plus }: StepProps & { c:
   const mode = modeOf(source, draft);
   const { std, plus: plusKeys } = genresFor(mode);
   const { genre, variant } = activeStyle(source, draft);
-  const { variants, Mini = GlyphMini } = styleFor(genre);
+  const { variants, Mini = GlyphMini } = STYLES[genre];
   const pill = (k: GenreKey) => {
     const on = k === genre;
     const { name, plus: isPlus } = GENRES[k];

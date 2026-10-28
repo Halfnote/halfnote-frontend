@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import type { GenreKey, StoryContent } from "../storyDraft";
 import { ArtSettled, F, Ink, T, font } from "./kit";
-import { styleFor } from "./styles";
+import { STYLES } from "./styles";
 
 export const STORY_W = 360;
 export const STORY_H = 640;
@@ -18,7 +18,7 @@ interface StoryProps {
 
 /** The 9:16 story at 360×640 points; captured at 3× for the 1080×1920 image. */
 export function Story({ c, genre, variant, ref, onArtSettled = () => {} }: StoryProps) {
-  const { Layout, variants } = styleFor(genre);
+  const { Layout, variants } = STYLES[genre];
   const v = variants(c)[variant];
   const allOff = !Object.values(c.show).some(Boolean);
   return (

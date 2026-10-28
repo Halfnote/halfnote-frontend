@@ -14,16 +14,20 @@ import { sleeve } from "./sleeve";
 import { system } from "./system";
 import { tattoo } from "./tattoo";
 import { terminal } from "./terminal";
+import { ticket } from "./ticket";
 import type { StyleDef } from "./types";
 
-// ponytail: styles not built yet render as Billboard; this becomes a full Record once every layout lands.
-const BUILT: Partial<Record<GenreKey, StyleDef>> = {
+/** Each style's look; names, fit and Plus live with the draft model in GENRES. */
+export const STYLES: Record<GenreKey, StyleDef> = {
   billboard,
   sleeve,
   score,
-  system,
   editorial,
   liner,
+  system,
+  matchbook,
+  cassette,
+  ticket,
   terminal,
   receipt,
   postcard,
@@ -31,8 +35,4 @@ const BUILT: Partial<Record<GenreKey, StyleDef>> = {
   graffiti,
   beer,
   heatmap,
-  matchbook,
-  cassette,
 };
-
-export const styleFor = (k: GenreKey): StyleDef => BUILT[k] ?? billboard;
