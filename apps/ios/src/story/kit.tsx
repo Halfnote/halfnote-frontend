@@ -22,13 +22,21 @@ export const F = {
   yellowtail: "Yellowtail_400Regular",
 };
 
+// These faces draw 1.22–1.76em tall (hhea), so the design's tight leading leaves glyphs outside the line box,
+// and iOS clips a Text to its box. Bleed padding, cancelled by equal negative margins, keeps the ink and the layout.
+const NATURAL = 1.8;
+
 /** CSS-style type: `lh` is a line-height multiple, `ls` letter-spacing in em. */
-export const font = (fontFamily: string, fontSize: number, lh?: number, ls?: number): TextStyle => ({
-  fontFamily,
-  fontSize,
-  lineHeight: lh == null ? undefined : fontSize * lh,
-  letterSpacing: ls == null ? undefined : fontSize * ls,
-});
+export function font(fontFamily: string, fontSize: number, lh?: number, ls?: number): TextStyle {
+  const bleed = lh == null ? 0 : Math.max(0, (fontSize * (NATURAL - lh)) / 2);
+  return {
+    fontFamily,
+    fontSize,
+    lineHeight: lh == null ? undefined : fontSize * lh,
+    letterSpacing: ls == null ? undefined : fontSize * ls,
+    ...(bleed > 0 && { paddingVertical: bleed, marginVertical: -bleed }),
+  };
+}
 
 /** RN has no colour inheritance across Views, so the design's `color` and `--sub` travel by context. */
 export const Ink = createContext({ ink: "#111111", sub: "#5A5A5A" });
