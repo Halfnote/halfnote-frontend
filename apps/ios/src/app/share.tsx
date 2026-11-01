@@ -85,7 +85,7 @@ function ShareFlow({ source }: { source: Source }) {
 
   const c = storyContent(source, draft, viewer);
   const { genre, variant } = activeStyle(source, draft);
-  const { index, step } = currentStep(source, draft);
+  const { index, step, last } = currentStep(source, draft);
   const all = steps(source, draft);
   const blocked = nextBlocked(source, draft);
   const kind = !("review" in source) ? "Album" : elements(source).includes("body") ? "Full review" : "Short take";
@@ -204,7 +204,7 @@ function ShareFlow({ source }: { source: Source }) {
               </Svg>
             </Pressable>
           )}
-          {index < all.length - 1 && (
+          {!last && (
             <PrimaryButton
               label={`Next: ${STEP_NAMES[all[index + 1]]}`}
               disabled={blocked}
@@ -216,7 +216,7 @@ function ShareFlow({ source }: { source: Source }) {
               }
             />
           )}
-          {index === all.length - 1 && locked && (
+          {last && locked && (
             <PrimaryButton
               label="Unlock halfnote Plus"
               onPress={() => {
@@ -226,7 +226,7 @@ function ShareFlow({ source }: { source: Source }) {
               icon={<Star size={12} color="#EEEEEE" />}
             />
           )}
-          {index === all.length - 1 && !locked && (
+          {last && !locked && (
             <>
               <Pressable
                 onPress={exporter.save}
