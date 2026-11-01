@@ -96,7 +96,7 @@ export function elements(s: Source): Element[] {
   return all.filter(([, ok]) => ok).map(([k]) => k);
 }
 
-export function resolveShow(s: Source, d: Draft): Record<Element, boolean> {
+function resolveShow(s: Source, d: Draft): Record<Element, boolean> {
   const offered = elements(s);
   const on = (k: Element) => offered.includes(k) && d.show[k];
   return { art: on("art"), head: on("head"), body: on("body"), artist: on("artist"), rating: on("rating") };

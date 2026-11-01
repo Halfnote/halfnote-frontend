@@ -25,7 +25,7 @@ import type { Variant } from "./styles/types";
 
 export const INK = "#111111";
 export const FILL = "#1d1d1d";
-export const MUTED = "#555555";
+const MUTED = "#555555";
 
 const TOGGLES: Record<Element, [label: string, icon: string]> = {
   art: ["Art", "M3 3h14v14H3z M3 13l4-4 3 3 3-3 4 4"],
@@ -35,7 +35,7 @@ const TOGGLES: Record<Element, [label: string, icon: string]> = {
   rating: ["Rating", "M10 2.8l2.2 4.4 4.8.7-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8L3 7.9l4.8-.7z"],
 };
 
-export const Heading = ({ children }: { children: string }) => <Text style={[font(F.serif, 26, 1), { color: INK }]}>{children}</Text>;
+const Heading = ({ children }: { children: string }) => <Text style={[font(F.serif, 26, 1), { color: INK }]}>{children}</Text>;
 
 type StepProps = { source: Source; draft: Draft; setDraft: (f: (d: Draft) => Draft) => void };
 

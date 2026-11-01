@@ -43,7 +43,7 @@ const variants = (): [V, V, V] => [
 ];
 
 /** `[#########+.]`: a hash per point, `+` for a half. */
-export function asciiBar(score: number) {
+function asciiBar(score: number) {
   const full = Math.floor(score);
   const half = score - full >= 0.5 ? 1 : 0;
   return "#".repeat(full) + (half ? "+" : "") + ".".repeat(Math.max(0, 10 - full - half));
