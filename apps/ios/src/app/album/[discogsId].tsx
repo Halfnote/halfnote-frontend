@@ -15,7 +15,6 @@ export default function AlbumDetails() {
   if (error || !data) return <Text style={[styles.center, styles.error]}>{error?.message ?? "Album not found"}</Text>;
 
   const { album, reviews, average_rating, review_count } = data;
-  const rating = average_rating != null ? Math.round(average_rating) : undefined;
   return (
     <FlatList
       style={styles.screen}
@@ -30,7 +29,7 @@ export default function AlbumDetails() {
             {album.year ? `${album.year} · ` : ""}
             {review_count} reviews
           </Text>
-          {rating != null && <RatingBadge rating={rating} />}
+          {average_rating != null && <RatingBadge rating={Math.round(average_rating)} />}
           <ShareButton onPress={() => router.push({ pathname: "/share", params: { discogsId } })} />
         </View>
       }
