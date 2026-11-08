@@ -2,5 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
-  }
+  },
+  // The tests need Node types, which the app leaves out. An exclude here replaces the base list, so it is copied in full.
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "android",
+    "ios",
+    "src/**/*.test.ts"
+  ]
 }
