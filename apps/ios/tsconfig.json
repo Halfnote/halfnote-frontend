@@ -3,6 +3,14 @@
   "compilerOptions": {
     "strict": true
   },
-  // Tests run under node:test, not Metro (npm test); replaces the base exclude list, so it's repeated here.
-  "exclude": ["node_modules", "ios", "android", "src/**/*.test.ts"]
+  // The tests need Node types, which the app leaves out. An exclude here replaces the base list, so it is copied in full.
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "android",
+    "ios",
+    "src/**/*.test.ts"
+  ]
 }

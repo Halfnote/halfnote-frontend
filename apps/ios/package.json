@@ -8,7 +8,7 @@
     "ios": "expo run:ios",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "test": "node --test src/*.test.ts"
+    "test": "node --import tsx --experimental-test-module-mocks --test src/*.test.ts"
   },
   "dependencies": {
     "@expo-google-fonts/alfa-slab-one": "^0.4.1",
@@ -43,6 +43,7 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "eslint-config-expo": "~57.0.2",
+    "tsx": "^4",
     "typescript": "~6.0.3"
   }
 }
