@@ -68,12 +68,11 @@ async function refresh(current: Session): Promise<string | null> {
     await save({ ...current, ...tokens });
     return tokens.access;
   } catch (err) {
-    // Only a server rejection ends the session; offline should not sign the user out.
-    if (err instanceof ApiError) {
+    if (err instanceof ApiError && (err.status === 400 || err.status === 401)) {
       await logout();
       return null;
     }
-    throw err;
+    return session?.access ?? null;
   }
 }
 
