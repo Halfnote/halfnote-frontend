@@ -22,13 +22,13 @@ afterEach(() => {
 test("JSON body: sends serialized json with a JSON content type", async () => {
   stubFetch(201, { id: 7 });
   const client = createHalfnoteClient({ baseUrl: "https://api.test/api" });
-  const review = await client.createReview({ discogsId: "42", rating: 8, content: "good", genres: ["rock"] });
+  const review = await client.createReview({ discogsId: "42", rating: null, headline: "good", body: "" });
 
   assert.deepEqual(review, { id: 7 });
   assert.equal(calls[0].url, "https://api.test/api/music/albums/42/review/");
   assert.equal(calls[0].init.method, "POST");
   assert.equal(calls[0].init.headers["Content-Type"], "application/json");
-  assert.deepEqual(JSON.parse(calls[0].init.body as string), { rating: 8, content: "good", genres: ["rock"] });
+  assert.deepEqual(JSON.parse(calls[0].init.body as string), { rating: null, headline: "good", body: "" }, "genres left out when unset");
 });
 
 test("FormData body: sends multipart fields and files, no hand-set content type", async () => {

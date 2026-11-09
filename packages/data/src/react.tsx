@@ -8,11 +8,12 @@ import {
 } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, type ReactNode } from "react";
 import { ApiError, type HalfnoteClient } from "./client";
-import type { CreateListInput, EditProfileInput } from "./endpoints";
+import type { CreateListInput, EditProfileInput, EditReviewInput, ReviewInput } from "./endpoints";
 import type {
   Activity,
   ActivityFilterType,
   AlbumDetailData,
+  Genre,
   Review,
   User,
 } from "./types";
@@ -302,167 +303,36 @@ export const useAlbumDetails = (discogsID: string) => {
     staleTime: CACHE_TIMES.ALBUM_DETAILS,
   });
 };
+export const useRecentlyViewed = () => {
+  const client = useClient();
+  return useQuery({
+    queryKey: queryKeys.recentlyViewed(),
+    queryFn: () => client.recentlyViewed(),
+  });
+};
+
+export const useRecordView = () => {
+  const client = useClient();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["recordView"],
+    mutationFn: (discogsId: string) => client.recordView(discogsId),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.recentlyViewed() }),
+  });
+};
+
 export const useCreateReview = (username: string) => {
   const client = useClient();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationKey: ["createReview"],
-    mutationFn: async ({
-      discogsId,
-      ratingNumber,
-      description,
-      genres,
-    }: {
-      discogsId: string;
-      ratingNumber: number;
-      description: string;
-      genres: string[];
-    }) =>
-      await client.createReview({
-        discogsId,
-        rating: ratingNumber,
-        content: description,
-        genres,
-      }),
-
-    onMutate: async (review) => {
-      await Promise.all([
-        queryClient.cancelQueries({
-          queryKey: queryKeys.reviewsByUser(username),
-        }),
-        queryClient.cancelQueries({
-          queryKey: queryKeys.activityByUser(username),
-        }),
-        queryClient.cancelQueries({
-          queryKey: queryKeys.albumDetails(review.discogsId),
-        }),
-      ]);
-
-      const snapshots = {
-        reviews: queryClient.getQueryData(queryKeys.reviewsByUser(username)),
-        activity: queryClient.getQueryData(queryKeys.activityByUser(username)),
-        album: queryClient.getQueryData<AlbumDetailData>(
-          queryKeys.albumDetails(review.discogsId),
-        ),
-      };
-
-      // Get user data for avatar
-      const userData = queryClient.getQueryData<User>(queryKeys.user());
-
-      // Create optimistic review with temporary ID
-      const tempReview: Review = {
-        id: -Date.now(),
-        rating: review.ratingNumber,
-        content: review.description,
-        album_discogs_id: review.discogsId,
-        is_liked_by_user: false,
-        likes_count: 0,
-        comments_count: 0,
-        username: username.toLowerCase(),
-        user_avatar: userData?.avatar || null,
-        user_is_staff: userData?.is_staff || false,
-        created_at: new Date().toISOString(),
-        album_title: snapshots.album?.album.title || "",
-        album_artist: snapshots.album?.album.artist || "",
-        album_cover: snapshots.album?.album.cover_url || null,
-        album_artist_photo: snapshots.album?.album.artist_photo_url || null,
-        album_year: snapshots.album?.album.year,
-        is_pinned: false,
-        user_genres: review.genres.map((name) => ({ id: 0, name })), // Temporary ID, will be replaced by server
-      };
-
-      // Optimistically add to albumDetails
-      queryClient.setQueryData<AlbumDetailData>(
-        queryKeys.albumDetails(review.discogsId),
-        (old) => {
-          if (!old) return old;
-          const newReviewCount = old.review_count + 1;
-          const newAverageRating =
-            old.review_count > 0
-              ? parseFloat(
-                  (
-                    ((old.average_rating ?? 0) * old.review_count +
-                      review.ratingNumber) /
-                    newReviewCount
-                  ).toFixed(2),
-                )
-              : review.ratingNumber;
-
-          return {
-            ...old,
-            reviews: [tempReview, ...old.reviews],
-            review_count: newReviewCount,
-            average_rating: newAverageRating,
-          };
-        },
-      );
-
-      // Optimistically add to reviews list
-      queryClient.setQueryData<Review[]>(
-        queryKeys.reviewsByUser(username),
-        (old) => [tempReview, ...(old || [])],
-      );
-
-      return snapshots;
-    },
-
-    onSuccess: (serverData, variables) => {
-      // Update with real server data
-      queryClient.setQueryData<AlbumDetailData>(
-        queryKeys.albumDetails(variables.discogsId),
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            reviews: old.reviews.map((r) =>
-              r.id < 0 && r.rating === serverData.rating ? serverData : r,
-            ),
-          };
-        },
-      );
-
-      queryClient.setQueryData<Review[]>(
-        queryKeys.reviewsByUser(username),
-        (old) =>
-          old
-            ? old.map((r) =>
-                r.id < 0 && r.rating === serverData.rating ? serverData : r,
-              )
-            : old,
-      );
-
-      // Invalidate to ensure fresh data
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reviewsByUser(username),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.activityByUser(username),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.albumDetails(variables.discogsId),
-      });
-    },
-    onError: (error, variables, context) => {
-      // Rollback optimistic updates
-      if (context?.album) {
-        queryClient.setQueryData(
-          queryKeys.albumDetails(variables.discogsId),
-          context.album,
-        );
-      }
-      if (context?.reviews) {
-        queryClient.setQueryData(
-          queryKeys.reviewsByUser(username),
-          context.reviews,
-        );
-      }
-      if (context?.activity) {
-        queryClient.setQueryData(
-          queryKeys.activityByUser(username),
-          context.activity,
-        );
-      }
-    },
+    mutationFn: (input: ReviewInput) => client.createReview(input),
+    onSettled: (_data, _err, { discogsId }) =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.albumDetails(discogsId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.reviewsByUser(username) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.activityByUser(username) }),
+      ]),
   });
   return {
     isSuccess: mutation.isSuccess,
@@ -472,30 +342,17 @@ export const useCreateReview = (username: string) => {
   };
 };
 
+/** The review text as the server returns it in `content`. */
+const contentOf = (headline: string, body: string) => (body ? `${headline}\n\n${body}` : headline);
+
 export const useEditReview = (username: string) => {
   const client = useClient();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationKey: ["editReview"],
-    mutationFn: async ({
-      reviewId,
-      ratingNumber,
-      description,
-      genres,
-    }: {
-      reviewId: number;
-      discogsId: string;
-      ratingNumber: number;
-      description: string;
-      genres: string[];
-    }) =>
-      await client.editReview({
-        reviewId,
-        rating: ratingNumber,
-        content: description,
-        genres,
-      }),
+    mutationFn: ({ discogsId: _discogsId, ...input }: EditReviewInput & { discogsId: string }) =>
+      client.editReview(input),
 
     onMutate: async (vars) => {
       await Promise.all([
@@ -516,90 +373,46 @@ export const useEditReview = (username: string) => {
         album: queryClient.getQueryData(queryKeys.albumDetails(vars.discogsId)),
       };
 
-      // Optimistic: albumDetails
+      const text = {
+        rating: vars.rating,
+        headline: vars.headline,
+        body: vars.body,
+        content: contentOf(vars.headline, vars.body),
+      };
+      const genres = (old: Genre[]) => vars.genres?.map((name) => ({ id: 0, name })) ?? old;
+
+      // ponytail: the average is left to the refetch; it now counts each user's latest rated review.
       queryClient.setQueryData<AlbumDetailData>(
         queryKeys.albumDetails(vars.discogsId),
-        (old) => {
-          if (!old) return old;
-          const updatedReviews = old.reviews.map((r) =>
-            r.id === vars.reviewId
-              ? {
-                  ...r,
-                  rating: vars.ratingNumber,
-                  content: vars.description,
-                  user_genres: vars.genres.map((name) => ({
-                    id: 0,
-                    name,
-                  })),
-                  is_liked_by_user: r.is_liked_by_user,
-                }
-              : r,
-          );
-          const n = old.review_count;
-          const oldReview = old.reviews.find((r) => r.id === vars.reviewId);
-          const oldRating = oldReview?.rating ?? 0;
-          const updatedAverageRating =
-            n > 0
-              ? parseFloat(
-                  (
-                    (old.average_rating ?? 0) +
-                    (vars.ratingNumber - oldRating) / n
-                  ).toFixed(2),
-                )
-              : vars.ratingNumber;
-          return {
+        (old) =>
+          old && {
             ...old,
-            reviews: updatedReviews,
-            average_rating: updatedAverageRating,
-          };
-        },
+            reviews: old.reviews.map((r) =>
+              r.id === vars.reviewId ? { ...r, ...text, user_genres: genres(r.user_genres) } : r,
+            ),
+          },
       );
 
-      // Optimistic: reviews
-      queryClient.setQueryData<Review[]>(
-        queryKeys.reviewsByUser(username),
-        (old) =>
-          old
-            ? old.map((r) =>
-                r.id === vars.reviewId
-                  ? {
-                      ...r,
-                      rating: vars.ratingNumber,
-                      content: vars.description,
-                      user_genres: vars.genres.map((name) => ({
-                        id: 0,
-                        name,
-                      })),
-                      is_liked_by_user: r.is_liked_by_user,
-                    }
-                  : r,
-              )
-            : old,
+      queryClient.setQueryData<Review[]>(queryKeys.reviewsByUser(username), (old) =>
+        old?.map((r) => (r.id === vars.reviewId ? { ...r, ...text, user_genres: genres(r.user_genres) } : r)),
       );
 
-      // Optimistic: activity
-      queryClient.setQueryData<Activity[]>(
-        queryKeys.activityByUser(username),
-        (old) =>
-          old
-            ? old.map((a) =>
-                a.review_details && a.review_details.id === vars.reviewId
-                  ? {
-                      ...a,
-                      review_details: {
-                        ...a.review_details,
-                        rating: vars.ratingNumber,
-                        content: vars.description,
-                        user_genres: vars.genres.map((name) => ({
-                          id: 0,
-                          name,
-                        })),
-                        is_liked_by_user: a.review_details.is_liked_by_user,
-                      },
-                    }
-                  : a,
-              )
-            : old,
+      // ponytail: activity rating stays as it was; ReviewActivityDetails.rating is typed non-null.
+      queryClient.setQueryData<Activity[]>(queryKeys.activityByUser(username), (old) =>
+        old?.map((a) =>
+          a.review_details?.id === vars.reviewId
+            ? {
+                ...a,
+                review_details: {
+                  ...a.review_details,
+                  headline: text.headline,
+                  body: text.body,
+                  content: text.content,
+                  user_genres: genres(a.review_details.user_genres),
+                },
+              }
+            : a,
+        ),
       );
 
       return snapshots;

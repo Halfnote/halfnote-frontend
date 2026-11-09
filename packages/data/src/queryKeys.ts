@@ -37,6 +37,7 @@ export const queryKeys = {
   searchAlbums: (query: string) => ["searchAlbum", query] as const,
   searchUsers: (query: string) => ["searchUsers", query] as const,
   searchArtists: (query: string) => ["searchArtists", query] as const,
+  recentlyViewed: () => ["recentlyViewed"] as const,
   // Discovery
   discovery: () => ["discovery"],
   newReleases: (limit: number) => ["newReleases", limit] as const,
