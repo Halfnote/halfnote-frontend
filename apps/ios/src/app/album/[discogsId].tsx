@@ -1,6 +1,6 @@
 import { useAlbumDetails, useToggleReview } from "@halfnote/data/react";
 import type { Review } from "@halfnote/data";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { AlbumCard, RatingBadge } from "@halfnote/ui";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSession } from "../../session";
@@ -30,15 +30,22 @@ export default function AlbumDetails() {
             {review_count} reviews
           </Text>
           {average_rating != null && <RatingBadge rating={Math.round(average_rating)} />}
+          <ShareButton onPress={() => router.push({ pathname: "/share", params: { discogsId } })} />
         </View>
       }
-      renderItem={({ item }) => <ReviewRow review={item} onLike={() => toggleLikeMutation.mutate(item.id)} />}
+      renderItem={({ item }) => (
+        <ReviewRow
+          review={item}
+          onLike={() => toggleLikeMutation.mutate(item.id)}
+          onShare={() => router.push({ pathname: "/share", params: { discogsId, reviewId: item.id } })}
+        />
+      )}
       ListEmptyComponent={<Text style={styles.muted}>No reviews yet</Text>}
     />
   );
 }
 
-function ReviewRow({ review, onLike }: { review: Review; onLike: () => void }) {
+function ReviewRow({ review, onLike, onShare }: { review: Review; onLike: () => void; onShare: () => void }) {
   return (
     <View style={styles.review}>
       <View style={styles.reviewHeader}>
@@ -51,7 +58,16 @@ function ReviewRow({ review, onLike }: { review: Review; onLike: () => void }) {
           {review.is_liked_by_user ? "♥" : "♡"} {review.likes_count}
         </Text>
       </Pressable>
+      <ShareButton onPress={onShare} />
     </View>
+  );
+}
+
+function ShareButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel="Share to Story">
+      <Text style={styles.muted}>Share to Story</Text>
+    </Pressable>
   );
 }
 

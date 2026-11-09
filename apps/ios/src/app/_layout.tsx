@@ -39,6 +39,7 @@ function Routes() {
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="index" />
         <Stack.Screen name="album/[discogsId]" />
+        <Stack.Screen name="share" options={{ presentation: "fullScreenModal", headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!session}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
