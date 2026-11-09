@@ -12,8 +12,8 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { client, loadSession, useSession } from "../session";
 
-// Deep links to an album still get the search screen underneath, so Back works.
-export const unstable_settings = { anchor: "index" };
+// Deep links (album, dev/search) still get the tabs underneath, so Back works.
+export const unstable_settings = { anchor: "(tabs)" };
 
 const queryClient = new QueryClient({ defaultOptions: queryClientDefaults });
 void loadSession();
@@ -37,9 +37,11 @@ function Routes() {
       }}
     >
       <Stack.Protected guard={!!session}>
-        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="dev/search" />
         <Stack.Screen name="album/[discogsId]" />
         <Stack.Screen name="share" options={{ presentation: "fullScreenModal", headerShown: false }} />
+        <Stack.Screen name="write" options={{ presentation: "fullScreenModal", headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!session}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
