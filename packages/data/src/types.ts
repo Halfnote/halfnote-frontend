@@ -61,7 +61,7 @@ export interface Album {
   created_at?: string; // ISO datetime
   updated_at?: string; // ISO datetime
   user_review_id?: number; // If user has reviewed this album
-  user_rating?: number; // User's rating (1-10)
+  user_rating?: number | null; // User's rating (1-10), null when unrated
 }
 
 export interface Review {
@@ -69,8 +69,10 @@ export interface Review {
   username: string;
   user_avatar: string | null;
   user_is_staff: boolean;
-  rating: number;
-  content: string;
+  rating: number | null;
+  headline: string;
+  body: string;
+  content: string; // Read-only: headline + "\n\n" + body, or just headline when body is empty
   created_at: string;
   album_title: string;
   album_artist: string;
@@ -161,6 +163,8 @@ export interface Activity {
 export interface ReviewActivityDetails {
   id: number;
   rating: number;
+  headline: string;
+  body: string;
   content: string; // Truncated to 100 chars
   is_liked_by_user: boolean;
   likes_count: number;
@@ -322,6 +326,10 @@ export interface ArtistSearchResult {
   name: string;
   discogs_id: number;
   artist_photo_url: string;
+}
+
+export interface RecentlyViewedResponse {
+  results: (SearchResult & { viewed_at: string })[];
 }
 
 export interface SearchAlbumsResponse {

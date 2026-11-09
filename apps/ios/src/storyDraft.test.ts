@@ -63,6 +63,9 @@ test("album shares offer art, album and rating only, and are short", () => {
   assert.deepEqual(elements({ album }), ["art", "artist"], "no rating without one");
   assert.deepEqual(elements(short), ["art", "head", "artist", "rating"]);
   assert.deepEqual(elements(long), ["art", "head", "body", "artist", "rating"]);
+  const unrated: Source = { album, review: { username: "priya", rating: null, content: "Just a quip." } as Review };
+  assert.deepEqual(elements(unrated), ["art", "head", "artist"], "an unrated review offers no rating toggle");
+  assert.equal(storyContent(unrated, initialDraft, "odi").show.rating, false, "and never shows one");
   assert.equal(modeOf(albumOnly, initialDraft), "short");
   const c = storyContent(albumOnly, initialDraft, "viewer");
   assert.equal(c.handle, "viewer");

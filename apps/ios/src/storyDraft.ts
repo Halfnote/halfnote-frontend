@@ -167,6 +167,9 @@ function fnv(seed: string): number {
   return h;
 }
 
+/** The album's label colour, `L` in the design: also the composer's Posted background. */
+export const labelColor = (discogsId: string) => LABELS[fnv(discogsId) % LABELS.length];
+
 /** Everything a story layout draws, already filtered by the draft. */
 export interface StoryContent {
   art?: string;
@@ -206,7 +209,7 @@ export function storyContent(s: Source, d: Draft, viewer: string): StoryContent 
     handle,
     show: resolveShow(s, d),
     mode: modeOf(s, d),
-    label: LABELS[fnv(s.album.discogs_id) % LABELS.length],
+    label: labelColor(s.album.discogs_id),
     pixels: Array.from({ length: 25 }, (_, i) => {
       const r = Math.floor(i / 5);
       const c = i % 5;

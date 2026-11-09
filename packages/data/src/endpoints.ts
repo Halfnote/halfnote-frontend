@@ -4,6 +4,7 @@ import type {
   ActivityFilterType,
   AlbumDetailData,
   ArtistDetails,
+  RecentlyViewedResponse,
   Review,
   ReviewLikeResponse,
   SearchAlbumsResponse,
@@ -40,15 +41,17 @@ export interface RegisterInput extends Credentials {
 }
 export interface ReviewInput {
   discogsId: string;
-  rating: number;
-  content: string;
-  genres: string[];
+  rating: number | null;
+  headline: string;
+  body: string;
+  genres?: string[];
 }
 export interface EditReviewInput {
   reviewId: number;
-  rating: number;
-  content: string;
-  genres: string[];
+  rating: number | null;
+  headline: string;
+  body: string;
+  genres?: string[];
 }
 export interface EditProfileInput {
   name?: string;
@@ -141,14 +144,26 @@ export const endpoints = {
   createReview: (input: ReviewInput): Endpoint<Review> => ({
     method: "POST",
     path: `/music/albums/${seg(input.discogsId)}/review/`,
-    json: { rating: input.rating, content: input.content, genres: input.genres },
+    // JSON.stringify drops an undefined key, so genres is sent only when set.
+    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres },
     parse: cast,
   }),
   editReview: (input: EditReviewInput): Endpoint<Review> => ({
     method: "PUT",
     path: `/music/reviews/${input.reviewId}/`,
-    json: { rating: input.rating, content: input.content, genres: input.genres },
+    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres },
     parse: cast,
+  }),
+  recentlyViewed: (): Endpoint<RecentlyViewedResponse> => ({
+    method: "GET",
+    path: "/music/recently-viewed/",
+    parse: cast,
+  }),
+  recordView: (discogsId: string): Endpoint<void> => ({
+    method: "POST",
+    path: "/music/recently-viewed/",
+    json: { discogs_id: discogsId },
+    parse: () => undefined,
   }),
   /** Django returns {action, like_count} (music/views.py toggle like), not a Review. */
   toggleLike: (reviewId: number): Endpoint<ReviewLikeResponse> => ({

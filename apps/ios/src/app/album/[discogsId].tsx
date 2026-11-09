@@ -49,7 +49,7 @@ function ReviewRow({ review, onLike, onShare }: { review: Review; onLike: () => 
   return (
     <View style={styles.review}>
       <View style={styles.reviewHeader}>
-        <RatingBadge rating={review.rating} />
+        {review.rating != null && <RatingBadge rating={review.rating} />}
         <Text style={styles.reviewer}>{review.username}</Text>
       </View>
       {!!review.content && <Text>{review.content}</Text>}
