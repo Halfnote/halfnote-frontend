@@ -4,7 +4,7 @@ import { SmallAlbumCard, SmallArtistCard, SmallUserCard, tw } from "@halfnote/ui
 import { router, Stack } from "expo-router";
 import { useState, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { logout } from "../session";
+import { logout } from "../../session";
 
 export default function Search() {
   const [text, setText] = useState("");
