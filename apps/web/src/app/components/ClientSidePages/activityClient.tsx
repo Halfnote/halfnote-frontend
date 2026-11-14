@@ -114,7 +114,6 @@ export default function ActivityPage({ user }: ActivityPageProps) {
               <ProperReviewCard
                 key={activity.id}
                 review={review}
-                username={activity.user.username}
                 setOpen={() => {}}
               />
             );
