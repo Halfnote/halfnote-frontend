@@ -5,9 +5,11 @@ import {
   useQuery,
   useQueryClient,
   type DefaultOptions,
+  type QueryClient,
 } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { ApiError, type HalfnoteClient } from "./client";
+import { createLikeSync, patchLike, type LikeSync } from "./likeSync";
 import type { CreateListInput, EditProfileInput, EditReviewInput, ReviewInput } from "./endpoints";
 import type {
   Activity,
@@ -23,7 +25,28 @@ import { useDebounce } from "./useDebounce";
 
 export { useDebounce };
 
-const ClientContext = createContext<HalfnoteClient | null>(null);
+interface HalfnoteContext {
+  client: HalfnoteClient;
+  likes: LikeSync;
+  likeFailed: Set<() => void>;
+}
+
+const Context = createContext<HalfnoteContext | null>(null);
+
+// Every cache that can hold a review with a like on it.
+const LIKE_CACHES = [
+  queryKeys.reviews(),
+  queryKeys.activity(),
+  ["other"],
+  ["albumDetails"],
+  queryKeys.feed(),
+];
+
+function patchCachedLike(queryClient: QueryClient, reviewId: number, liked: boolean, likesCount?: number) {
+  for (const queryKey of LIKE_CACHES) {
+    queryClient.setQueriesData({ queryKey }, (old: unknown) => patchLike(old, reviewId, liked, likesCount));
+  }
+}
 
 /** Mount inside QueryClientProvider. `client` must be stable (module scope or useState). */
 export function HalfnoteProvider({
@@ -33,13 +56,30 @@ export function HalfnoteProvider({
   client: HalfnoteClient;
   children: ReactNode;
 }) {
-  return <ClientContext.Provider value={client}>{children}</ClientContext.Provider>;
+  const queryClient = useQueryClient();
+  const [value] = useState<HalfnoteContext>(() => {
+    const likeFailed = new Set<() => void>();
+    const likes = createLikeSync({
+      send: (id, liked) => client.setLike(id, liked),
+      onConfirmed: (id, r) => patchCachedLike(queryClient, id, r.liked, r.likes_count),
+      onFailed: (id, liked) => {
+        patchCachedLike(queryClient, id, liked);
+        likeFailed.forEach((fn) => fn());
+      },
+    });
+    return { client, likes, likeFailed };
+  });
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+}
+
+function useHalfnote(): HalfnoteContext {
+  const value = useContext(Context);
+  if (!value) throw new Error("Halfnote hooks must be used inside <HalfnoteProvider>");
+  return value;
 }
 
 function useClient(): HalfnoteClient {
-  const client = useContext(ClientContext);
-  if (!client) throw new Error("Halfnote hooks must be used inside <HalfnoteProvider>");
-  return client;
+  return useHalfnote().client;
 }
 
 export const queryClientDefaults: DefaultOptions = {
@@ -55,7 +95,7 @@ export const queryClientDefaults: DefaultOptions = {
       failureCount < 1,
   },
   mutations: {
-    // Mutations are not idempotent: a retried like toggles twice.
+    // Creates and edits are not idempotent.
     retry: 0,
   },
 };
@@ -83,164 +123,34 @@ export const useUserReviews = (username: string) => {
   });
 };
 
-export const useToggleReview = (username: string, discogsId?: string) => {
-  const client = useClient();
+/** Like or unlike a review. Flips every cached copy now; the network side is debounced in likeSync. */
+export function useSetLike(): (reviewId: number, liked: boolean) => void {
+  const { likes } = useHalfnote();
   const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationKey: ["toggleLike"],
-    mutationFn: (reviewId: number) => client.toggleLike(reviewId),
-
-    onMutate: async (reviewId) => {
-      await Promise.all([
-        queryClient.cancelQueries({
-          queryKey: queryKeys.reviewsByUser(username),
-        }),
-        queryClient.cancelQueries({
-          queryKey: queryKeys.activityByUser(username),
-        }),
-        discogsId &&
-          queryClient.cancelQueries({
-            queryKey: queryKeys.albumDetails(discogsId),
-          }),
-      ]);
-
-      const snapshots = {
-        reviews: queryClient.getQueryData(queryKeys.reviewsByUser(username)),
-        activity: queryClient.getQueryData(queryKeys.activityByUser(username)),
-        album: discogsId
-          ? queryClient.getQueryData(queryKeys.albumDetails(discogsId))
-          : undefined,
-      };
-
-      // Optimistic update: reviews
-      queryClient.setQueryData<Review[]>(
-        queryKeys.reviewsByUser(username),
-        (old = []) =>
-          old.map((r) =>
-            r.id === reviewId
-              ? {
-                  ...r,
-                  is_liked_by_user: !r.is_liked_by_user,
-                  likes_count: r.likes_count + (r.is_liked_by_user ? -1 : 1),
-                }
-              : r,
-          ),
-      );
-
-      // Optimistic update: activity
-      queryClient.setQueryData<Activity[]>(
-        queryKeys.activityByUser(username),
-        (old = []) =>
-          old.map((a) =>
-            a.review_details && a.review_details.id === reviewId
-              ? {
-                  ...a,
-                  review_details: {
-                    ...a.review_details,
-                    is_liked_by_user: !a.review_details.is_liked_by_user,
-                    likes_count:
-                      (a.review_details.likes_count ?? 0) +
-                      (a.review_details.is_liked_by_user ? -1 : 1),
-                  },
-                }
-              : a,
-          ),
-      );
-
-      // Optimistic update: albumDetails
-      if (discogsId) {
-        queryClient.setQueryData<AlbumDetailData>(
-          queryKeys.albumDetails(discogsId),
-          (old) =>
-            old
-              ? {
-                  ...old,
-                  reviews: old.reviews.map((r) =>
-                    r.id === reviewId
-                      ? {
-                          ...r,
-                          is_liked_by_user: !r.is_liked_by_user,
-                          likes_count:
-                            r.likes_count + (r.is_liked_by_user ? -1 : 1),
-                        }
-                      : r,
-                  ),
-                }
-              : old,
-        );
-      }
-
-      return snapshots;
+  return useCallback(
+    (reviewId, liked) => {
+      patchCachedLike(queryClient, reviewId, liked);
+      likes.set(reviewId, liked);
     },
+    [likes, queryClient],
+  );
+}
 
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.reviews) {
-        queryClient.setQueryData(
-          queryKeys.reviewsByUser(username),
-          ctx.reviews,
-        );
-      }
-      if (ctx?.activity) {
-        queryClient.setQueryData(
-          queryKeys.activityByUser(username),
-          ctx.activity,
-        );
-      }
-      if (discogsId && ctx?.album) {
-        queryClient.setQueryData(queryKeys.albumDetails(discogsId), ctx.album);
-      }
-    },
+/** Send pending likes now. Call when the app goes to the background. */
+export function useFlushLikes(): () => void {
+  return useHalfnote().likes.flush;
+}
 
-    onSuccess: ({ action, like_count }, reviewId) => {
-      // The server returns {action, like_count}; write that truth over the optimistic guess.
-      const truth = { is_liked_by_user: action === "liked", likes_count: like_count };
-      queryClient.setQueryData<Review[]>(queryKeys.reviewsByUser(username), (old) =>
-        old?.map((r) => (r.id === reviewId ? { ...r, ...truth } : r)),
-      );
-      queryClient.setQueryData<Activity[]>(queryKeys.activityByUser(username), (old) =>
-        old?.map((a) =>
-          a.review_details?.id === reviewId
-            ? { ...a, review_details: { ...a.review_details, ...truth } }
-            : a,
-        ),
-      );
-      if (discogsId) {
-        queryClient.setQueryData<AlbumDetailData>(
-          queryKeys.albumDetails(discogsId),
-          (old) =>
-            old
-              ? {
-                  ...old,
-                  reviews: old.reviews.map((r) =>
-                    r.id === reviewId ? { ...r, ...truth } : r,
-                  ),
-                }
-              : old,
-        );
-      }
-
-      // Invalidate queries to ensure fresh data on next mount/focus
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reviewsByUser(username),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.activityByUser(username),
-      });
-      if (discogsId) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.albumDetails(discogsId),
-        });
-      }
-    },
-  });
-
-  return {
-    toggleLikeMutation: mutation,
-    isPending: mutation.isPending,
-    isError: mutation.isError,
-  };
-};
+/** Runs `onFailed` whenever a like request fails (the heart has already been reverted). */
+export function useLikeFailed(onFailed: () => void) {
+  const { likeFailed } = useHalfnote();
+  useEffect(() => {
+    likeFailed.add(onFailed);
+    return () => {
+      likeFailed.delete(onFailed);
+    };
+  }, [likeFailed, onFailed]);
+}
 
 export const useUserActivity = (username: string) => {
   const client = useClient();

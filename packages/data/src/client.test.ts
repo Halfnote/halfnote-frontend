@@ -64,7 +64,7 @@ test("non-401 errors do not call onUnauthorized and normalize message|error", as
   stubFetch(400, { error: "bad rating" });
   let unauthorized = 0;
   const client = createHalfnoteClient({ baseUrl: "/x", onUnauthorized: () => unauthorized++ });
-  await assert.rejects(client.toggleLike(1), { name: "ApiError", status: 400, message: "bad rating" });
+  await assert.rejects(client.setLike(1, true), { name: "ApiError", status: 400, message: "bad rating" });
   assert.equal(unauthorized, 0);
 });
 

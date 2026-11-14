@@ -206,7 +206,6 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
                         <div className="embla__slide px-2" key={index}>
                           <ProperReviewCard
                             review={review}
-                            username={user.username}
                             setOpen={setExpandModal}
                             setSelected={(review) =>
                               setSelectedReview(review as Review | undefined)
@@ -248,7 +247,6 @@ const AlbumDetailsClient = ({ user }: AlbumDetailsProps) => {
               {albumDetails.reviews.length > 0 ? (
                 albumDetails.reviews.map((activity) => (
                   <AlbumDetailRecentActivity
-                    username={user.username}
                     activity={activity}
                     key={activity.id}
                   />

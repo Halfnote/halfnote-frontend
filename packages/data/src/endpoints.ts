@@ -165,9 +165,9 @@ export const endpoints = {
     json: { discogs_id: discogsId },
     parse: () => undefined,
   }),
-  /** Django returns {action, like_count} (music/views.py toggle like), not a Review. */
-  toggleLike: (reviewId: number): Endpoint<ReviewLikeResponse> => ({
-    method: "POST",
+  /** PUT likes, DELETE unlikes; both idempotent. */
+  setLike: (reviewId: number, liked: boolean): Endpoint<ReviewLikeResponse> => ({
+    method: liked ? "PUT" : "DELETE",
     path: `/music/reviews/${reviewId}/like/`,
     parse: cast,
   }),

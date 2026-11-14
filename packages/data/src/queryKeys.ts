@@ -28,6 +28,9 @@ export const queryKeys = {
   othersActivity: (username: string, type: ActivityFilterType) =>
     ["other", username, type] as const,
 
+  // Activity screen: one card per review
+  feed: () => ["feed"] as const,
+
   // Albums & album details
   albums: () => ["albums"],
   albumDetails: (discogsId: string) => ["albumDetails", discogsId] as const,

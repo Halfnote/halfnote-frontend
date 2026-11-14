@@ -1,15 +1,13 @@
-import { useAlbumDetails, useToggleReview } from "@halfnote/data/react";
+import { useAlbumDetails, useSetLike } from "@halfnote/data/react";
 import type { Review } from "@halfnote/data";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { AlbumCard, RatingBadge } from "@halfnote/ui";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSession } from "../../session";
 
 export default function AlbumDetails() {
   const { discogsId } = useLocalSearchParams<{ discogsId: string }>();
-  const username = useSession()?.username ?? "";
   const { data, error, isLoading } = useAlbumDetails(discogsId);
-  const { toggleLikeMutation } = useToggleReview(username, discogsId);
+  const setLike = useSetLike();
 
   if (isLoading) return <ActivityIndicator style={styles.center} />;
   if (error || !data) return <Text style={[styles.center, styles.error]}>{error?.message ?? "Album not found"}</Text>;
@@ -36,7 +34,7 @@ export default function AlbumDetails() {
       renderItem={({ item }) => (
         <ReviewRow
           review={item}
-          onLike={() => toggleLikeMutation.mutate(item.id)}
+          onLike={() => setLike(item.id, !item.is_liked_by_user)}
           onShare={() => router.push({ pathname: "/share", params: { discogsId, reviewId: item.id } })}
         />
       )}

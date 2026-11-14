@@ -1,4 +1,4 @@
-import { useToggleReview } from "@halfnote/data/react";
+import { useSetLike } from "@halfnote/data/react";
 import { Review } from "@halfnote/data";
 import Image from "next/image";
 import { Icons } from "@/app/icons/icons";
@@ -6,14 +6,12 @@ import { generateRatingStamp, getTimeAgo } from "@/app/utils/calculations";
 import { Dispatch, SetStateAction, useRef } from "react";
 type ProperReviewCardProps = {
   review: Review;
-  username: string;
   className?: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
   setSelected?: Dispatch<SetStateAction<Review | undefined>>;
 };
 export const ProperReviewCard = ({
   review,
-  username,
   setOpen,
   setSelected,
 }: ProperReviewCardProps) => {
@@ -23,10 +21,7 @@ export const ProperReviewCard = ({
       return element.scrollHeight > element.clientHeight;
     }
   };
-  const { toggleLikeMutation, isPending } = useToggleReview(
-    username,
-    review.album_discogs_id
-  );
+  const setLike = useSetLike();
 
   const handleOpen = () => {
     setOpen(true);
@@ -73,13 +68,8 @@ export const ProperReviewCard = ({
 
             <div className="mt-auto flex flex-row gap-2">
               <button
-                disabled={isPending}
-                onClick={() => toggleLikeMutation.mutate(review.id)}
-                className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 transition-opacity duration-200 ${
-                  isPending
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:cursor-pointer"
-                }`}
+                onClick={() => setLike(review.id, !review.is_liked_by_user)}
+                className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 transition-opacity duration-200 hover:cursor-pointer`}
               >
                 <Image
                   src={
@@ -98,7 +88,6 @@ export const ProperReviewCard = ({
               </button>
               {isOverFlowing(textRef.current) && (
                 <button
-                  disabled={isPending}
                   onClick={handleOpen}
                   className="flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-auto h-7 transition-opacity duration-200 px-2 cursor-pointer"
                 >
