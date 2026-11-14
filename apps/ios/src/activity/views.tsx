@@ -1,7 +1,7 @@
 // The Activity screen's three views of one feed: Feed (cards), Cover Flow (a record carousel) and Grid.
 import type { FeedCard } from "@halfnote/data";
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import { Animated, FlatList, PanResponder, Pressable, Text, View, type RefreshControlProps } from "react-native";
+import { Animated, Easing, FlatList, PanResponder, Pressable, Text, View, type RefreshControlProps } from "react-native";
 import { NAVBAR_CLEARANCE } from "../Navbar";
 import { Art, Vinyl, font } from "../story/kit";
 import { ArrowRight, Byline, F, Heart, INK, Reason, Stamp, SUB, dotWindow, firstName, ago, isFullReview, label, withYear } from "./parts";
@@ -101,6 +101,12 @@ export function GridList({ cards, open, onEndReached, refreshControl }: ListProp
 }
 
 const COVER = 216;
+// One card per 112px of drag: the gap between the focused card and its neighbour, so the stage tracks the finger 1:1.
+const STEP = 112;
+// Per-ms velocity decay for a fling. A fling coasts v·k/(1−k): about 2 cards for a normal flick. Raise toward 0.998
+// (iOS scroll views) for longer single flicks. Long runs come from stacking flicks, as on iOS.
+const DECEL = 0.995;
+const SPRING = { useNativeDriver: true, damping: 22, stiffness: 160 } as const;
 
 /** Cover Flow: the focused record faces you with its vinyl slid out; its neighbours turn away on either side. */
 export function CoverFlow({
@@ -119,68 +125,92 @@ export function CoverFlow({
   like: (c: FeedCard) => void;
 }) {
   const [pos] = useState(() => new Animated.Value(index));
+  // The card nearest the live position: it is drawn on top and its details show below, mid-drag included.
+  const [near, setNear] = useState(index);
+  // The live position, mirrored synchronously. stopAnimation's callback is async on the native driver, so a drag that
+  // waited for it would start from a stale position and jump for a frame.
+  const live = useRef(index);
   useEffect(() => {
-    Animated.spring(pos, { toValue: index, useNativeDriver: true, damping: 22, stiffness: 160 }).start();
+    const id = pos.addListener(({ value }) => {
+      live.current = value;
+      setNear(Math.round(value));
+    });
+    return () => pos.removeListener(id);
+  }, [pos]);
+  // Taps and outside index changes spring here; a swipe animates itself (to keep its velocity) and marks its target.
+  const settled = useRef(index);
+  useEffect(() => {
+    if (index === settled.current) return;
+    settled.current = index;
+    Animated.spring(pos, { ...SPRING, toValue: index }).start();
   }, [index, pos]);
 
-  const go = (i: number) => setIndex(Math.max(0, Math.min(cards.length - 1, i)));
-  // The responder is created once; it reads the latest index through this ref.
-  const latest = useRef({ go, index });
+  const last = cards.length - 1;
+  const go = (i: number) => setIndex(Math.max(0, Math.min(last, i)));
+  // The responder is created once; it reads the latest values through this ref.
+  const latest = useRef({ setIndex, last, settled, live });
   useEffect(() => {
-    latest.current = { go, index };
+    latest.current = { setIndex, last, settled, live };
   });
-  // eslint-disable-next-line react-hooks/refs -- the handler reads `latest` during a gesture, never during render
-  const [swipe] = useState(() =>
-    PanResponder.create({
+  // eslint-disable-next-line react-hooks/refs -- the handlers read `latest` during a gesture, never during render
+  const [swipe] = useState(() => {
+    let start = 0;
+    let at = 0;
+    // The coast in flight, so a flick that catches it can add its leftover speed (cards/ms, signed).
+    let coast = { t0: 0, ms: 0, v: 0 };
+    let carry = 0;
+    const end = (vx: number) => {
+      const { setIndex, last, settled } = latest.current;
+      let v = -vx / STEP; // finger px/ms → cards/ms
+      if (carry && Math.sign(carry) === Math.sign(v)) v += carry; // flick again the same way: it speeds up
+      carry = 0;
+      const target = Math.max(0, Math.min(last, Math.round(at + (v * DECEL) / (1 - DECEL))));
+      const dist = target - at;
+      settled.current = target;
+      setIndex(target);
+      if (Math.abs(v) < 0.002 || Math.abs(dist) < 0.5 || Math.sign(dist) !== Math.sign(v)) {
+        coast = { t0: 0, ms: 0, v: 0 };
+        Animated.spring(pos, { ...SPRING, toValue: target, velocity: v * 1000 }).start();
+        return;
+      }
+      // Ease out cubic starts at 3·dist/ms, so this duration starts the coast at the finger's speed, then slows smoothly
+      // onto the card. No spring here: a spring over many cards overshoots and bounces back.
+      const ms = Math.max(250, Math.min(1600, (3 * Math.abs(dist)) / Math.abs(v)));
+      coast = { t0: Date.now(), ms, v: (3 * dist) / ms };
+      Animated.timing(pos, { toValue: target, duration: ms, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    };
+    return PanResponder.create({
       onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderRelease: (_, g) => {
-        if (Math.abs(g.dx) > 40) latest.current.go(latest.current.index + (g.dx < 0 ? 1 : -1));
+      onPanResponderGrant: () => {
+        // A touch catches a coast where it is, like a scroll view. Its speed at that moment is the carry.
+        const u = coast.ms ? 1 - (Date.now() - coast.t0) / coast.ms : 0;
+        carry = u > 0 ? coast.v * u * u : 0;
+        start = at = latest.current.live.current;
+        pos.stopAnimation();
       },
-    }),
-  );
+      onPanResponderMove: (_, g) => {
+        const { last } = latest.current;
+        const raw = start - g.dx / STEP;
+        // Past either end the stage resists: a third of the drag.
+        at = raw < 0 ? raw / 3 : raw > last ? last + (raw - last) / 3 : raw;
+        pos.setValue(at);
+      },
+      onPanResponderRelease: (_, g) => end(g.vx),
+      onPanResponderTerminate: (_, g) => end(g.vx),
+      onPanResponderTerminationRequest: () => false,
+    });
+  });
 
-  const c = cards[index];
+  const focus = Math.max(0, Math.min(last, near));
+  const c = cards[focus];
   if (!c) return null;
   return (
     <View style={{ flex: 1 }}>
       <View {...swipe.panHandlers} style={{ height: 296, marginTop: 12 }}>
-        {cards.map((a, i) => {
-          if (Math.abs(i - index) > 4) return null; // ponytail: only near cards mount; the feed can be long
-          const d = pos.interpolate({ inputRange: [i - 4, i - 3, i - 2, i - 1, i, i + 1, i + 2, i + 3, i + 4], outputRange: [4, 3, 2, 1, 0, -1, -2, -3, -4], extrapolate: "clamp" });
-          // d > 0: the card sits right of focus. Matches the board: ±(112 + (|d|-1)·30) px, turned ∓58°.
-          const x = d.interpolate({ inputRange: [-4, -3, -2, -1, 0, 1, 2, 3, 4], outputRange: [-202, -172, -142, -112, 0, 112, 142, 172, 202] });
-          const rotateY = d.interpolate({ inputRange: [-1, 0, 1], outputRange: ["58deg", "0deg", "-58deg"], extrapolate: "clamp" });
-          const scale = d.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.86, 1.04, 0.86], extrapolate: "clamp" });
-          const vinylX = d.interpolate({ inputRange: [-1, 0, 1], outputRange: [9, 54, 9], extrapolate: "clamp" });
-          const focused = i === index;
-          return (
-            <Animated.View
-              key={a.review.id}
-              style={{
-                position: "absolute",
-                top: 34,
-                left: "50%",
-                marginLeft: -COVER / 2,
-                width: COVER,
-                height: COVER,
-                zIndex: 100 - Math.abs(i - index),
-                opacity: Math.abs(i - index) > 3 ? 0 : 1,
-                transform: [{ perspective: 900 }, { translateX: x }, { rotateY }, { scale }],
-              }}
-            >
-              <Animated.View style={{ position: "absolute", top: 9, transform: [{ translateX: vinylX }] }}>
-                <Vinyl size={198} groove="#151515" land="#2a2a2a" sheen={0} label={label(a)} labelSize={66} shadow="none" />
-              </Animated.View>
-              <Pressable
-                onPress={() => (focused ? open(a) : go(i))}
-                accessibilityLabel={focused ? `Open ${a.album.title} review` : `Show ${a.album.title} by ${a.album.artist}`}
-                style={{ position: "absolute", inset: 0 }}
-              >
-                <Art uri={a.album.cover_url ?? undefined} style={{ flex: 1, borderRadius: 3, boxShadow: "0 22px 34px -22px rgba(0,0,0,0.55)" }} />
-              </Pressable>
-            </Animated.View>
-          );
-        })}
+        {cards.map((a, i) =>
+          // ponytail: only near cards mount; the feed can be long
+          Math.abs(i - focus) > 4 ? null : <FlowCard key={a.review.id} card={a} i={i} pos={pos} away={Math.abs(i - focus)} onPress={() => (i === focus ? open(a) : go(i))} />,
+        )}
       </View>
 
       <View style={{ alignItems: "center", gap: 6, marginTop: 10, paddingHorizontal: 24 }}>
@@ -189,8 +219,8 @@ export function CoverFlow({
         </Text>
         <Text style={{ fontFamily: F.sans, fontSize: 13, color: "#666" }}>{withYear(c)}</Text>
         <View style={{ marginTop: 10, flexDirection: "row", alignItems: "center", gap: 5, height: 4 }}>
-          {dotWindow(cards.length, index).map((dot) => (
-            <View key={dot.i} style={{ width: dot.width, height: dot.height, borderRadius: 999, backgroundColor: dot.i === index ? INK : "#C2C2C2" }} />
+          {dotWindow(cards.length, focus).map((dot) => (
+            <View key={dot.i} style={{ width: dot.width, height: dot.height, borderRadius: 999, backgroundColor: dot.i === focus ? INK : "#C2C2C2" }} />
           ))}
         </View>
       </View>
@@ -223,5 +253,40 @@ export function CoverFlow({
         </View>
       </View>
     </View>
+  );
+}
+
+/**
+ * One record on the Cover Flow stage. Its own component so the compiler keeps its animated nodes per card (keyed on
+ * pos and i) instead of rebuilding them on every focus change mid-fling, which re-attaches the native graph and drops frames.
+ */
+function FlowCard({ card: a, i, pos, away, onPress }: { card: FeedCard; i: number; pos: Animated.Value; away: number; onPress: () => void }) {
+  const d = pos.interpolate({ inputRange: [i - 4, i - 3, i - 2, i - 1, i, i + 1, i + 2, i + 3, i + 4], outputRange: [4, 3, 2, 1, 0, -1, -2, -3, -4], extrapolate: "clamp" });
+  // d > 0: the card sits right of focus. Matches the board: ±(112 + (|d|-1)·30) px, turned ∓58°.
+  const x = d.interpolate({ inputRange: [-4, -3, -2, -1, 0, 1, 2, 3, 4], outputRange: [-202, -172, -142, -112, 0, 112, 142, 172, 202] });
+  const rotateY = d.interpolate({ inputRange: [-1, 0, 1], outputRange: ["58deg", "0deg", "-58deg"], extrapolate: "clamp" });
+  const scale = d.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.86, 1.04, 0.86], extrapolate: "clamp" });
+  const vinylX = d.interpolate({ inputRange: [-1, 0, 1], outputRange: [9, 54, 9], extrapolate: "clamp" });
+  const focused = away === 0;
+  return (
+    // Two layers on purpose. iOS depth-sorts sibling layers that carry 3D transforms, so a turned neighbour's near
+    // edge would poke through the focused card's vinyl whatever the zIndex. The outer layer only slides (2D), so
+    // zIndex decides the stacking; the inner layer turns, flattened into its own wrapper.
+    <Animated.View
+      style={{ position: "absolute", top: 34, left: "50%", marginLeft: -COVER / 2, width: COVER, height: COVER, zIndex: 100 - away, opacity: away > 3 ? 0 : 1, transform: [{ translateX: x }] }}
+    >
+      <Animated.View style={{ flex: 1, transform: [{ perspective: 900 }, { rotateY }, { scale }] }}>
+        <Animated.View style={{ position: "absolute", top: 9, transform: [{ translateX: vinylX }] }}>
+          <Vinyl size={198} groove="#151515" land="#2a2a2a" sheen={0} label={label(a)} labelSize={66} shadow="none" />
+        </Animated.View>
+        <Pressable
+          onPress={onPress}
+          accessibilityLabel={focused ? `Open ${a.album.title} review` : `Show ${a.album.title} by ${a.album.artist}`}
+          style={{ position: "absolute", inset: 0 }}
+        >
+          <Art uri={a.album.cover_url ?? undefined} style={{ flex: 1, borderRadius: 3, boxShadow: "0 22px 34px -22px rgba(0,0,0,0.55)" }} />
+        </Pressable>
+      </Animated.View>
+    </Animated.View>
   );
 }
