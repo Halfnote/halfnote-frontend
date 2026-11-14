@@ -41,6 +41,8 @@ export interface Album {
   id: string; // UUID
   title: string;
   artist: string;
+  /** Album page only, in album order: the favourite-song choices. */
+  songs?: Song[];
   year?: number;
   cover_url?: string;
   artist_photo_url?: string; // Artist photo from Discogs
@@ -85,6 +87,7 @@ export interface Review {
   is_liked_by_user: boolean;
   comments_count: number;
   user_genres: Genre[];
+  favorite_song: Song | null;
 }
 
 export interface AlbumDetailData {

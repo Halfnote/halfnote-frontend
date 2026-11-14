@@ -46,6 +46,8 @@ export interface ReviewInput {
   headline: string;
   body: string;
   genres?: string[];
+  /** A song on this album, or null for none. */
+  favoriteSongId?: number | null;
 }
 export interface EditReviewInput {
   reviewId: number;
@@ -53,6 +55,8 @@ export interface EditReviewInput {
   headline: string;
   body: string;
   genres?: string[];
+  /** Left out keeps the current favourite; null clears it. */
+  favoriteSongId?: number | null;
 }
 export interface EditProfileInput {
   name?: string;
@@ -145,14 +149,14 @@ export const endpoints = {
   createReview: (input: ReviewInput): Endpoint<Review> => ({
     method: "POST",
     path: `/music/albums/${seg(input.discogsId)}/review/`,
-    // JSON.stringify drops an undefined key, so genres is sent only when set.
-    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres },
+    // JSON.stringify drops an undefined key, so genres and the favourite song are sent only when set.
+    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres, favorite_song_id: input.favoriteSongId },
     parse: cast,
   }),
   editReview: (input: EditReviewInput): Endpoint<Review> => ({
     method: "PUT",
     path: `/music/reviews/${input.reviewId}/`,
-    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres },
+    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres, favorite_song_id: input.favoriteSongId },
     parse: cast,
   }),
   recentlyViewed: (): Endpoint<RecentlyViewedResponse> => ({

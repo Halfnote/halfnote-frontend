@@ -1,5 +1,5 @@
-import type { Review, SearchResult } from "@halfnote/data";
-import { useCreateReview, useDebounce, useRecentlyViewed, useRecordView, useSearchAlbums } from "@halfnote/data/react";
+import type { Review, SearchResult, Song } from "@halfnote/data";
+import { useAlbumDetails, useCreateReview, useDebounce, useRecentlyViewed, useRecordView, useSearchAlbums } from "@halfnote/data/react";
 import { router } from "expo-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
@@ -60,7 +60,10 @@ export default function Write() {
           setDraft={setDraft}
           rateOpen={rateOpen}
           setRateOpen={setRateOpen}
-          onRepick={() => setStep({ kind: "pick" })}
+          onRepick={() => {
+            setDraft((d) => ({ ...d, favoriteSongId: null }));
+            setStep({ kind: "pick" });
+          }}
           onPosted={(review) => setStep({ kind: "posted", review })}
         />
       );
@@ -190,7 +193,7 @@ function Composer({
   const post = () => {
     if (!postable) return;
     create.mutate(
-      { discogsId: String(album.id), rating: draft.rating, headline: draft.headline, body: draft.body },
+      { discogsId: String(album.id), rating: draft.rating, headline: draft.headline, body: draft.body, favoriteSongId: draft.favoriteSongId },
       { onSuccess: onPosted },
     );
   };
@@ -210,6 +213,12 @@ function Composer({
 
   const [rateOrigin, setRateOrigin] = useState("50% 40%");
   const clearRating = () => setDraft((d) => ({ ...d, rating: null }));
+
+  // Viewing the album imports it, which is what creates its songs.
+  const songs = useAlbumDetails(String(album.id)).data?.album.songs ?? [];
+  const song = songs.find((x) => x.id === draft.favoriteSongId);
+  const [songOrigin, setSongOrigin] = useState<string>();
+  const clearSong = () => setDraft((d) => ({ ...d, favoriteSongId: null }));
 
   const focusHeadEnd = () => {
     headRef.current?.focus();
@@ -283,6 +292,37 @@ function Composer({
           </Pressable>
         </SwipeToClear>
 
+        {songs.length > 0 && (
+          <SwipeToClear enabled={song != null} onClear={clearSong}>
+            <Pressable
+              role="button"
+              onPress={(e) => setSongOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`)}
+              accessibilityLabel={song ? `Favourite song: ${song.title}. Change favourite song` : "Add favourite song"}
+              accessibilityActions={song ? [{ name: "clear", label: "Clear favourite song" }] : undefined}
+              onAccessibilityAction={(e) => e.nativeEvent.actionName === "clear" && clearSong()}
+              style={s.rateRow}
+            >
+              {song ? (
+                <>
+                  <Text style={s.songPos}>{song.position}</Text>
+                  <Text style={s.rateLabel} numberOfLines={1}>
+                    {song.title}
+                  </Text>
+                  <Text style={s.rateChange}>Change</Text>
+                </>
+              ) : (
+                <>
+                  <Svg width={18} height={18} viewBox="0 0 18 18" fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round">
+                    <Path d="M9 3 V15 M3 9 H15" />
+                  </Svg>
+                  <Text style={s.rateLabel}>Add favourite song</Text>
+                  <Text style={s.optional}>Optional</Text>
+                </>
+              )}
+            </Pressable>
+          </SwipeToClear>
+        )}
+
         <View style={s.writing}>
           <View style={s.writingHead}>
             <Text style={s.writingLabel}>Your take</Text>
@@ -347,33 +387,51 @@ function Composer({
           onClose={() => setRateOpen(false)}
         />
       )}
+      {songOrigin && (
+        <SongSheet
+          title={album.title}
+          origin={songOrigin}
+          songs={songs}
+          songId={draft.favoriteSongId}
+          onPick={(favoriteSongId) => {
+            setDraft((d) => ({ ...d, favoriteSongId }));
+            setSongOrigin(undefined);
+          }}
+          onClose={() => setSongOrigin(undefined)}
+        />
+      )}
     </View>
   );
 }
 
-function RateSheet({
+type Close = (then: () => void, delay?: number) => void;
+
+/** A full-screen picker that grows from the tap that opened it and shrinks back to it. */
+function Sheet({
   title,
+  label,
   origin,
-  rating,
-  onPick,
+  cancellable,
   onClose,
+  children,
 }: {
   title: string;
-  /** Where the tap that opened it landed: the sheet grows from and shrinks back to it. */
+  label: string;
+  /** Where the tap that opened it landed. */
   origin: string;
-  rating: number | null;
-  onPick: (rating: number) => void;
+  /** Show Cancel: there is a current value to keep. */
+  cancellable: boolean;
   onClose: () => void;
+  children: (close: Close) => ReactNode;
 }) {
   const insets = useSafeAreaInsets();
   // 0 → 1 opens, 1 → 2 closes.
   const t = useAnimatedValue(0);
   const closing = useRef(false);
-  const [picked, setPicked] = useState(rating);
   useEffect(() => {
     Animated.timing(t, { toValue: 1, duration: ms(260), easing: EASE_OUT, useNativeDriver: true }).start();
   }, [t]);
-  const close = (then: () => void, delay = 0) => {
+  const close: Close = (then, delay = 0) => {
     if (closing.current) return;
     closing.current = true;
     Animated.timing(t, { toValue: 2, duration: ms(200), delay: ms(delay), easing: EASE_IN, useNativeDriver: true }).start(then);
@@ -387,7 +445,7 @@ function RateSheet({
     <Animated.View
       style={[StyleSheet.absoluteFill, s.screen, { paddingTop: insets.top, paddingBottom: insets.bottom }, sheet]}
       accessibilityViewIsModal
-      aria-label={`Rate ${title}`}
+      aria-label={label}
     >
       <View style={s.bar}>
         <Pressable role="button" onPress={() => close(onClose)} accessibilityLabel="Close" style={s.close}>
@@ -395,29 +453,12 @@ function RateSheet({
             <Path d="M2 2 L12 12 M12 2 L2 12" />
           </Svg>
         </Pressable>
-        <Text style={s.barTitle}>Rate</Text>
+        <Text style={s.barTitle}>{title}</Text>
         <View style={s.close} />
       </View>
-      <ScrollView contentContainerStyle={s.stamps} accessibilityLabel="Rating out of 10">
-        {STAMPS_ON.map((_, i) => 10 - i).map((n) => (
-          <Rise key={n} delay={(10 - n) * 30}>
-            <Pressable
-              role="button"
-              onPress={() => {
-                setPicked(n);
-                // A beat to see the stamp land before the sheet closes.
-                close(() => onPick(n), 280);
-              }}
-              accessibilityLabel={`Rate ${n} out of 10`}
-              accessibilityState={{ selected: n === picked }}
-              style={[s.stamp, n === picked && s.stampPicked]}
-            >
-              <SvgXml xml={(n === picked ? STAMPS_ON : STAMPS_OFF)[n - 1]} width={52} height={52} />
-            </Pressable>
-          </Rise>
-        ))}
-      </ScrollView>
-      {rating !== null && (
+      {/* eslint-disable-next-line react-hooks/refs -- close reads `closing` on press, never during render */}
+      {children(close)}
+      {cancellable && (
         <Rise delay={330} style={s.sheetFoot}>
           <Pressable role="button" onPress={() => close(onClose)} style={s.sheetCancel}>
             <Text style={s.sheetCancelText}>Cancel</Text>
@@ -425,6 +466,97 @@ function RateSheet({
         </Rise>
       )}
     </Animated.View>
+  );
+}
+
+function RateSheet({
+  title,
+  origin,
+  rating,
+  onPick,
+  onClose,
+}: {
+  title: string;
+  origin: string;
+  rating: number | null;
+  onPick: (rating: number) => void;
+  onClose: () => void;
+}) {
+  const [picked, setPicked] = useState(rating);
+  return (
+    <Sheet title="Rate" label={`Rate ${title}`} origin={origin} cancellable={rating !== null} onClose={onClose}>
+      {(close) => (
+        <ScrollView contentContainerStyle={s.stamps} accessibilityLabel="Rating out of 10">
+          {STAMPS_ON.map((_, i) => 10 - i).map((n) => (
+            <Rise key={n} delay={(10 - n) * 30}>
+              <Pressable
+                role="button"
+                onPress={() => {
+                  setPicked(n);
+                  // A beat to see the stamp land before the sheet closes.
+                  close(() => onPick(n), 280);
+                }}
+                accessibilityLabel={`Rate ${n} out of 10`}
+                accessibilityState={{ selected: n === picked }}
+                style={[s.stamp, n === picked && s.stampPicked]}
+              >
+                <SvgXml xml={(n === picked ? STAMPS_ON : STAMPS_OFF)[n - 1]} width={52} height={52} />
+              </Pressable>
+            </Rise>
+          ))}
+        </ScrollView>
+      )}
+    </Sheet>
+  );
+}
+
+const minutes = (sec: number | null) => (sec == null ? "" : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);
+
+/** The album's songs as the Activity tracklist draws them; the picked one is inverted. */
+function SongSheet({
+  title,
+  origin,
+  songs,
+  songId,
+  onPick,
+  onClose,
+}: {
+  title: string;
+  origin: string;
+  songs: Song[];
+  songId: number | null;
+  onPick: (songId: number) => void;
+  onClose: () => void;
+}) {
+  const [picked, setPicked] = useState(songId);
+  return (
+    <Sheet title="Favourite song" label={`Favourite song on ${title}`} origin={origin} cancellable={songId !== null} onClose={onClose}>
+      {(close) => (
+        <ScrollView contentContainerStyle={s.songs}>
+          {songs.map((song, i) => {
+            const on = song.id === picked;
+            const color = on ? BG : INK;
+            return (
+              <Rise key={song.id} delay={Math.min(i, 10) * 30}>
+                <Pressable
+                  role="button"
+                  onPress={() => {
+                    setPicked(song.id);
+                    close(() => onPick(song.id), 280);
+                  }}
+                  accessibilityState={{ selected: on }}
+                  style={[s.songRow, on && s.songRowPicked]}
+                >
+                  <Text style={[s.songPos, { color }]}>{song.position}</Text>
+                  <Text style={[s.songTitle, { color }]}>{song.title}</Text>
+                  <Text style={[s.songLen, { color }]}>{minutes(song.duration_seconds)}</Text>
+                </Pressable>
+              </Rise>
+            );
+          })}
+        </ScrollView>
+      )}
+    </Sheet>
   );
 }
 
@@ -628,6 +760,12 @@ const s = StyleSheet.create({
   stamp: { width: 52, height: 52 },
   stampPicked: { transform: [{ scale: 1.18 }] },
   sheetFoot: { paddingHorizontal: 20, paddingBottom: 28 },
+  songs: { paddingHorizontal: 20, paddingBottom: 20 },
+  songRow: { flexDirection: "row", alignItems: "center", minHeight: 40, paddingHorizontal: 10, borderRadius: 8 },
+  songRowPicked: { backgroundColor: "#1d1d1d" },
+  songPos: { width: 28, fontFamily: SANS, fontSize: 12, color: INK, opacity: 0.6 },
+  songTitle: { flex: 1, fontFamily: SANS, fontSize: 15 },
+  songLen: { width: 44, textAlign: "right", fontFamily: SANS, fontSize: 12, opacity: 0.6 },
   sheetCancel: { minHeight: 52, borderRadius: 10, backgroundColor: "#E2E2E2", alignItems: "center", justifyContent: "center" },
   sheetCancelText: { fontFamily: SANS_MEDIUM, fontSize: 16, color: INK },
 
