@@ -208,7 +208,6 @@ export function CoverFlow({
     <View style={{ flex: 1 }}>
       <View {...swipe.panHandlers} style={{ height: 296, marginTop: 12 }}>
         {cards.map((a, i) =>
-          // ponytail: only near cards mount; the feed can be long
           Math.abs(i - focus) > 4 ? null : <FlowCard key={a.review.id} card={a} i={i} pos={pos} away={Math.abs(i - focus)} onPress={() => (i === focus ? open(a) : go(i))} />,
         )}
       </View>

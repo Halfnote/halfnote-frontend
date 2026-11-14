@@ -19,7 +19,7 @@ const VIEWS: [View_, string][] = [
   ["grid", "Grid"],
 ];
 const VIEW_KEY = "halfnote.activityView";
-// ponytail: copy not decided yet (grilling 2026-11-14)
+// Placeholder until the copy is decided.
 const EMPTY_MESSAGE = "Message";
 
 export default function Activity() {
