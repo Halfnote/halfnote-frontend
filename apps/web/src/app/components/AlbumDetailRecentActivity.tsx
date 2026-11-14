@@ -1,22 +1,17 @@
 import { Review } from "@halfnote/data";
 import Image from "next/image";
 import { generateRatingStamp } from "../utils/calculations";
-import { useToggleReview } from "@halfnote/data/react";
+import { useSetLike } from "@halfnote/data/react";
 import { Icons } from "../icons/icons";
 import { getTimeAgo } from "../utils/calculations";
 
 interface AlbumDetailRecentActivityProps {
   activity: Review;
-  username: string;
 }
 export const AlbumDetailRecentActivity = ({
   activity,
-  username,
 }: AlbumDetailRecentActivityProps) => {
-  const { toggleLikeMutation, isPending } = useToggleReview(
-    username,
-    activity.album_discogs_id
-  );
+  const setLike = useSetLike();
 
   return (
     <div
@@ -45,13 +40,8 @@ export const AlbumDetailRecentActivity = ({
             {activity.content}
           </p>
           <button
-            disabled={isPending}
-            onClick={() => toggleLikeMutation.mutate(activity.id)}
-            className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 mt-2 transition-opacity duration-200 ${
-              isPending
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:cursor-pointer"
-            }`}
+            onClick={() => setLike(activity.id, !activity.is_liked_by_user)}
+            className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 mt-2 transition-opacity duration-200 hover:cursor-pointer`}
           >
             <Image
               src={

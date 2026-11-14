@@ -289,8 +289,8 @@ export interface FollowResponse {
 }
 
 export interface ReviewLikeResponse {
-  action: "liked" | "unliked";
-  like_count: number;
+  liked: boolean;
+  likes_count: number;
 }
 
 export interface ListLikeResponse {
