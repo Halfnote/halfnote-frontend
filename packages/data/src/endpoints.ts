@@ -3,6 +3,7 @@ import type {
   Activity,
   ActivityFilterType,
   AlbumDetailData,
+  FeedPage,
   ArtistDetails,
   RecentlyViewedResponse,
   Review,
@@ -164,6 +165,13 @@ export const endpoints = {
     path: "/music/recently-viewed/",
     json: { discogs_id: discogsId },
     parse: () => undefined,
+  }),
+  /** `cursor` is opaque: lifted from the previous page's `next`, never built. */
+  feed: (cursor?: string): Endpoint<FeedPage> => ({
+    method: "GET",
+    path: "/music/feed/",
+    query: cursor ? { cursor } : undefined,
+    parse: cast,
   }),
   /** PUT likes, DELETE unlikes; both idempotent. */
   setLike: (reviewId: number, liked: boolean): Endpoint<ReviewLikeResponse> => ({

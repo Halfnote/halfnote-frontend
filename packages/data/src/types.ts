@@ -383,3 +383,53 @@ export enum ActivityFilterType {
   FRIENDS = "friends",
   YOU = "you",
 }
+
+// ============= Activity feed (runbooks/activity-contract.md) =============
+
+export interface Person {
+  username: string;
+  /** May be "": fall back to username. */
+  name: string;
+  avatar: string | null;
+}
+
+export interface Song {
+  id: number;
+  position: string;
+  title: string;
+  duration_seconds: number | null;
+}
+
+export type FeedActivityType = "review_created" | "review_liked" | "comment_created";
+
+export interface FeedCard {
+  review: {
+    id: number;
+    rating: number | null;
+    headline: string;
+    /** "" is a short take, anything else a full review. */
+    body: string;
+    created_at: string;
+    likes_count: number;
+    comments_count: number;
+    is_liked: boolean;
+    favorite_song: Song | null;
+  };
+  author: Person;
+  album: {
+    discogs_id: string;
+    title: string;
+    artist: string;
+    year: number | null;
+    cover_url: string | null;
+    tracklist: Array<{ position: string; title: string; duration?: string }>;
+  };
+  /** Why the card sits where it does. */
+  latest_activity: { type: FeedActivityType; actor: Person; created_at: string };
+}
+
+export interface FeedPage {
+  next: string | null;
+  previous: string | null;
+  results: FeedCard[];
+}

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HalfnoteProvider, queryClientDefaults, useClearSession } from "@halfnote/data/react";
+import { HalfnoteProvider, queryClientDefaults, useClearSession, useFlushLikes } from "@halfnote/data/react";
 import {
   InstrumentSans_400Regular,
   InstrumentSans_500Medium,
@@ -10,6 +10,7 @@ import { InstrumentSerif_400Regular, InstrumentSerif_400Regular_Italic } from "@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
+import { AppState } from "react-native";
 import { client, loadSession, useSession } from "../session";
 
 // Deep links (album, dev/search) still get the tabs underneath, so Back works.
@@ -21,6 +22,15 @@ void loadSession();
 function Routes() {
   const session = useSession();
   const clearSession = useClearSession();
+  const flushLikes = useFlushLikes();
+
+  // A like tapped just before leaving the app would otherwise wait out its debounce and may never send.
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "background") flushLikes();
+    });
+    return () => sub.remove();
+  }, [flushLikes]);
 
   // Covers every logout path: the button, a 401, and a rejected refresh.
   useEffect(() => {

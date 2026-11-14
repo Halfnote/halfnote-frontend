@@ -1,6 +1,7 @@
 "use client";
 import {
   keepPreviousData,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -15,6 +16,7 @@ import type {
   Activity,
   ActivityFilterType,
   AlbumDetailData,
+  FeedCard,
   Genre,
   Review,
   User,
@@ -150,6 +152,45 @@ export function useLikeFailed(onFailed: () => void) {
       likeFailed.delete(onFailed);
     };
   }, [likeFailed, onFailed]);
+}
+
+// The cursor stays opaque: lifted out of `next` as-is (no URL global in this package's lib).
+const nextCursor = (next: string | null) => {
+  const m = next?.match(/[?&]cursor=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : undefined;
+};
+
+/**
+ * The Activity screen's cards, every loaded page flattened. A review can move between pages while
+ * someone scrolls, so a card whose review is already loaded is dropped. A broken cursor (404)
+ * restarts from the first page.
+ */
+export function useFeed() {
+  const client = useClient();
+  const queryClient = useQueryClient();
+  const query = useInfiniteQuery({
+    queryKey: queryKeys.feed(),
+    queryFn: ({ pageParam }) => client.feed(pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (page) => nextCursor(page.next),
+    select: (data) => {
+      const seen = new Set<number>();
+      const cards: FeedCard[] = [];
+      for (const page of data.pages) {
+        for (const card of page.results) {
+          if (seen.has(card.review.id)) continue;
+          seen.add(card.review.id);
+          cards.push(card);
+        }
+      }
+      return cards;
+    },
+  });
+  const badCursor = query.isFetchNextPageError && query.error instanceof ApiError && query.error.status === 404;
+  useEffect(() => {
+    if (badCursor) void queryClient.resetQueries({ queryKey: queryKeys.feed() });
+  }, [badCursor, queryClient]);
+  return query;
 }
 
 export const useUserActivity = (username: string) => {
