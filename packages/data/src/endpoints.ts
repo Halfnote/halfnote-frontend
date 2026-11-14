@@ -26,7 +26,7 @@ export type Endpoint<T> = Body & {
   /** Relative to baseUrl. Django paths end in "/". */
   path: `/${string}/`;
   query?: Record<string, string | number>;
-  /** Boundary parse. ponytail: a cast; add zod here if backend drift causes bugs. */
+  /** Boundary parse. */
   parse: (raw: unknown) => T;
 };
 

@@ -7,7 +7,6 @@ interface ToggleProps {
   setEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
-// ponytail: the web original slid the knob with a 300ms CSS transition; this snaps. Add Animated if it matters.
 export function Toggle({ enabled, setEnabled }: ToggleProps) {
   return (
     <Pressable

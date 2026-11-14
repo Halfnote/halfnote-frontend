@@ -69,7 +69,7 @@ export default function Search() {
             </Section>
             <Section title="Artists" count={artists.length} query={query}>
               {artists.map(([name, photo]) => (
-                // ponytail: no iOS artist screen yet; wire router.push once one exists.
+                // No iOS artist screen yet.
                 <SmallArtistCard key={name} name={name} photo={photo} onPress={() => {}} />
               ))}
             </Section>

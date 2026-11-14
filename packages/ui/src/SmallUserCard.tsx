@@ -20,7 +20,7 @@ export function SmallUserCard({ username, avatar }: SmallUserCardProps) {
         <Text numberOfLines={1} style={tw`another-heading5 leading-[24px] text-black shrink`}>
           {username}
         </Text>
-        {/* ponytail: Follow has no handler, same as the web original; add onFollow when following from search ships. */}
+        {/* Follow has no handler yet, same as the web original. */}
         <View role="button" style={tw`border border-[#8c8c8c] rounded-full px-5 py-2`}>
           <Text style={tw`another-heading6 leading-[14px] text-[#8c8c8c]`}>Follow</Text>
         </View>
