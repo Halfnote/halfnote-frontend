@@ -430,6 +430,5 @@ export interface FeedCard {
 
 export interface FeedPage {
   next: string | null;
-  previous: string | null;
   results: FeedCard[];
 }

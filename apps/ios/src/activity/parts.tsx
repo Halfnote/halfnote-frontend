@@ -1,13 +1,13 @@
 // Pieces the Activity screen's three views and its review sheet share, drawn from the
 // design board `Activity.dc.html` (Liner Notes).
 import type { FeedCard, Person } from "@halfnote/data";
-import { Image, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Image, Text, View } from "react-native";
 import Svg, { Path, Rect, SvgXml } from "react-native-svg";
 import { STAMPS_ON } from "../ratingStamps";
 import { F } from "../story/kit";
 import { labelColor } from "../storyDraft";
 
-export { F };
 export const BG = "#EEEEEE";
 export const INK = "#111";
 export const SUB = "#6A6A6A";
@@ -108,7 +108,8 @@ export function Reason({ card, me }: { card: FeedCard; me: string | undefined })
  * Cover Flow's position dots, at most nine, centred on the focused card. When more cards sit past
  * either end, the two outermost dots shrink to say so.
  */
-export function dotWindow(count: number, focused: number, max = 9) {
+export function dotWindow(count: number, focused: number) {
+  const max = 9;
   const start = Math.max(0, Math.min(focused - Math.floor(max / 2), count - max));
   const end = Math.min(count, start + max);
   const dots = [];
@@ -118,4 +119,34 @@ export function dotWindow(count: number, focused: number, max = 9) {
     dots.push({ i, width: i === focused ? 18 : size, height: size === 4 || i === focused ? 4 : size });
   }
   return dots;
+}
+
+/**
+ * An Animated.Value with a synchronous mirror (`live`) and the nearest whole step (`near`).
+ * stopAnimation's callback is async on the native driver; a drag waiting on it starts stale and jumps a frame.
+ */
+export function useLiveValue(initial: number) {
+  const [x] = useState(() => new Animated.Value(initial));
+  const [near, setNear] = useState(initial);
+  const live = useRef(initial);
+  useEffect(() => {
+    const id = x.addListener(({ value }) => {
+      live.current = value;
+      setNear(Math.round(value));
+    });
+    return () => x.removeListener(id);
+  }, [x]);
+  return { x, live, near };
+}
+
+/** A tracklist row as the board draws it; the favourite is inverted. */
+export function TrackRow({ position, title, length, on }: { position: string; title: string; length: string; on: boolean }) {
+  const color = on ? BG : INK;
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", minHeight: 40, paddingHorizontal: 10, borderRadius: 8, backgroundColor: on ? "#1d1d1d" : "transparent" }}>
+      <Text style={{ width: 28, fontFamily: F.sans, fontSize: 12, color, opacity: 0.6 }}>{position}</Text>
+      <Text style={{ flex: 1, fontFamily: F.sans, fontSize: 15, color }}>{title}</Text>
+      <Text style={{ width: 44, textAlign: "right", fontFamily: F.sans, fontSize: 12, color, opacity: 0.6 }}>{length}</Text>
+    </View>
+  );
 }

@@ -2,8 +2,8 @@ import { useFeed } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Art, font } from "../../story/kit";
-import { Avatar, F, INK, PixelBack, Stamp, SUB, firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { Art, F, font } from "../../story/kit";
+import { Avatar, INK, PixelBack, Stamp, SUB, TrackRow, firstName, isFullReview, label, yearOf } from "../../activity/parts";
 
 const PAPER = "#FAFAF8";
 
@@ -73,20 +73,9 @@ export default function Review() {
         {album.tracklist.length > 0 && (
           <>
             <Text style={{ marginTop: 34, marginBottom: 6, fontFamily: F.sans600, fontSize: 13, color: SUB }}>Tracklist</Text>
-            {album.tracklist.map((track, i) => {
-              const fav = track.position === favorite;
-              const color = fav ? "#EEEEEE" : INK;
-              return (
-                <View
-                  key={`${track.position}-${i}`}
-                  style={{ flexDirection: "row", alignItems: "center", minHeight: 40, paddingHorizontal: 10, borderRadius: 8, backgroundColor: fav ? "#1d1d1d" : "transparent" }}
-                >
-                  <Text style={{ width: 28, fontFamily: F.sans, fontSize: 12, color, opacity: 0.6 }}>{track.position}</Text>
-                  <Text style={{ flex: 1, fontFamily: F.sans, fontSize: 15, color }}>{track.title}</Text>
-                  <Text style={{ width: 44, textAlign: "right", fontFamily: F.sans, fontSize: 12, color, opacity: 0.6 }}>{track.duration ?? ""}</Text>
-                </View>
-              );
-            })}
+            {album.tracklist.map((track, i) => (
+              <TrackRow key={`${track.position}-${i}`} position={track.position} title={track.title} length={track.duration ?? ""} on={track.position === favorite} />
+            ))}
           </>
         )}
       </ScrollView>

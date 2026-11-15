@@ -1,15 +1,14 @@
 import type { FeedCard } from "@halfnote/data";
-import { queryKeys } from "@halfnote/data";
 import { useFeed, useLikeFailed, useSetLike } from "@halfnote/data/react";
-import { useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, PanResponder, Pressable, RefreshControl, Text, View } from "react-native";
-import { BG, F, INK } from "../../activity/parts";
+import { BG, INK, useLiveValue } from "../../activity/parts";
 import { CoverFlow, FeedList, GridList } from "../../activity/views";
 import { NAVBAR_CLEARANCE } from "../../Navbar";
 import { useSession } from "../../session";
+import { F } from "../../story/kit";
 
 type View_ = "feed" | "flow" | "grid";
 const VIEWS: [View_, string][] = [
@@ -26,7 +25,6 @@ export default function Activity() {
   const feed = useFeed();
   const cards = feed.data ?? [];
   const setLike = useSetLike();
-  const queryClient = useQueryClient();
 
   const [view, setView] = useState<View_>("flow");
   useEffect(() => {
@@ -62,15 +60,10 @@ export default function Activity() {
     if (view === "flow" && index >= cards.length - 5) more();
   });
 
-  // A refresh is a fresh first page: drop the later pages, then refetch.
-  const refresh = useCallback(() => {
-    queryClient.setQueryData<{ pages: unknown[]; pageParams: unknown[] }>(queryKeys.feed(), (d) => d && { pages: d.pages.slice(0, 1), pageParams: d.pageParams.slice(0, 1) });
-    return refetch();
-  }, [queryClient, refetch]);
   const [refreshing, setRefreshing] = useState(false);
   const pull = () => {
     setRefreshing(true);
-    void refresh().finally(() => setRefreshing(false));
+    void refetch().finally(() => setRefreshing(false));
   };
   // Cover Flow has no pull gesture (it would fight the swipe), so it refreshes on coming back to the tab.
   const viewRef = useRef(view);
@@ -80,9 +73,9 @@ export default function Activity() {
   const seen = useRef(false);
   useFocusEffect(
     useCallback(() => {
-      if (seen.current && viewRef.current === "flow") void refresh();
+      if (seen.current && viewRef.current === "flow") void refetch();
       seen.current = true;
-    }, [refresh]),
+    }, [refetch]),
   );
 
   const clampedIndex = Math.min(index, Math.max(0, cards.length - 1));
@@ -130,17 +123,7 @@ const settle = (x: Animated.Value, to: number) => Animated.spring(x, { toValue: 
 
 function Switcher({ view, pick }: { view: View_; pick: (v: View_) => void }) {
   const at = VIEWS.findIndex(([k]) => k === view);
-  const [x] = useState(() => new Animated.Value(at));
-  const [near, setNear] = useState(at);
-  // stopAnimation's callback is async on the native driver; a drag waiting on it starts stale and jumps a frame.
-  const live = useRef(at);
-  useEffect(() => {
-    const id = x.addListener(({ value }) => {
-      live.current = value;
-      setNear(Math.round(value));
-    });
-    return () => x.removeListener(id);
-  }, [x]);
+  const { x, live, near } = useLiveValue(at);
   useEffect(() => settle(x, at), [at, x]);
 
   const latest = useRef({ pick, at });

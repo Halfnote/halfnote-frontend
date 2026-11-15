@@ -2,8 +2,8 @@ import type { FeedCard } from "@halfnote/data";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { Animated, Easing, FlatList, PanResponder, Pressable, Text, View, type RefreshControlProps } from "react-native";
 import { NAVBAR_CLEARANCE } from "../Navbar";
-import { Art, Vinyl, font } from "../story/kit";
-import { ArrowRight, Byline, F, Heart, INK, Reason, Stamp, SUB, displayName, dotWindow, firstName, ago, isFullReview, label, withYear } from "./parts";
+import { Art, F, Vinyl, font } from "../story/kit";
+import { ArrowRight, Byline, Heart, INK, Reason, Stamp, SUB, displayName, dotWindow, firstName, ago, isFullReview, label, useLiveValue, withYear } from "./parts";
 
 interface ListProps {
   cards: FeedCard[];
@@ -119,17 +119,7 @@ export function CoverFlow({
   open: (c: FeedCard) => void;
   like: (c: FeedCard) => void;
 }) {
-  const [pos] = useState(() => new Animated.Value(index));
-  const [near, setNear] = useState(index);
-  // stopAnimation's callback is async on the native driver; a drag waiting on it starts stale and jumps a frame.
-  const live = useRef(index);
-  useEffect(() => {
-    const id = pos.addListener(({ value }) => {
-      live.current = value;
-      setNear(Math.round(value));
-    });
-    return () => pos.removeListener(id);
-  }, [pos]);
+  const { x: pos, live, near } = useLiveValue(index);
   const settled = useRef(index);
   useEffect(() => {
     if (index === settled.current) return;
