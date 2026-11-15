@@ -18,7 +18,7 @@ const VIEWS: [View_, string][] = [
 ];
 const VIEW_KEY = "halfnote.activityView";
 // Placeholder until the copy is decided.
-const EMPTY_MESSAGE = "Message";
+const EMPTY_MESSAGE = "Empty message what should this say";
 
 export default function Activity() {
   const me = useSession()?.username;
@@ -154,7 +154,7 @@ function Switcher({ view, pick }: { view: View_; pick: (v: View_) => void }) {
 
   return (
     <View style={{ height: 52, paddingHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-      <View {...drag.panHandlers} style={{ flexDirection: "row", padding: 3, gap: 2, borderRadius: 999, backgroundColor: "#E1E1E1" }}>
+      <View {...drag.panHandlers} style={{ flexDirection: "row", padding: 3, gap: 2, borderRadius: 999, backgroundColor: BG }}>
         <Animated.View
           style={{ position: "absolute", left: 3, top: 3, bottom: 3, width: KNOB, borderRadius: 999, backgroundColor: "#1d1d1d", transform: [{ translateX: x.interpolate({ inputRange: [0, LAST], outputRange: [0, SLOT * LAST] }) }] }}
         />
