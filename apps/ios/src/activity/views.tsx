@@ -1,10 +1,9 @@
-// The Activity screen's three views of one feed: Feed (cards), Cover Flow (a record carousel) and Grid.
 import type { FeedCard } from "@halfnote/data";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { Animated, Easing, FlatList, PanResponder, Pressable, Text, View, type RefreshControlProps } from "react-native";
 import { NAVBAR_CLEARANCE } from "../Navbar";
 import { Art, Vinyl, font } from "../story/kit";
-import { ArrowRight, Byline, F, Heart, INK, Reason, Stamp, SUB, dotWindow, firstName, ago, isFullReview, label, withYear } from "./parts";
+import { ArrowRight, Byline, F, Heart, INK, Reason, Stamp, SUB, displayName, dotWindow, firstName, ago, isFullReview, label, withYear } from "./parts";
 
 interface ListProps {
   cards: FeedCard[];
@@ -28,7 +27,7 @@ export function FeedList({ cards, me, open, onEndReached, refreshControl }: List
       renderItem={({ item: c }) => (
         <Pressable
           onPress={() => open(c)}
-          accessibilityLabel={`${c.author.name || c.author.username} on ${c.album.title}${c.review.rating ? `, rated ${c.review.rating} out of 10` : ""}`}
+          accessibilityLabel={`${displayName(c.author)} on ${c.album.title}${c.review.rating ? `, rated ${c.review.rating} out of 10` : ""}`}
           style={({ pressed }) => ({ padding: 16, borderRadius: 18, backgroundColor: "#FFFFFF", gap: 12, transform: [{ scale: pressed ? 0.98 : 1 }] })}
         >
           <Reason card={c} me={me} />

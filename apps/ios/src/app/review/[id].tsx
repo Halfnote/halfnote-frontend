@@ -3,11 +3,10 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Art, font } from "../../story/kit";
-import { Avatar, F, INK, PixelBack, Stamp, firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { Avatar, F, INK, PixelBack, Stamp, SUB, firstName, isFullReview, label, yearOf } from "../../activity/parts";
 
 const PAPER = "#FAFAF8";
 
-/** Board sizing: short headlines set large, long ones smaller. */
 const headSize = (n: number) => (n <= 70 ? 58 : n <= 110 ? 48 : 40);
 
 export default function Review() {
@@ -73,7 +72,7 @@ export default function Review() {
 
         {album.tracklist.length > 0 && (
           <>
-            <Text style={{ marginTop: 34, marginBottom: 6, fontFamily: F.sans600, fontSize: 13, color: "#6A6A6A" }}>Tracklist</Text>
+            <Text style={{ marginTop: 34, marginBottom: 6, fontFamily: F.sans600, fontSize: 13, color: SUB }}>Tracklist</Text>
             {album.tracklist.map((track, i) => {
               const fav = track.position === favorite;
               const color = fav ? "#EEEEEE" : INK;

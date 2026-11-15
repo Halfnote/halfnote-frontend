@@ -128,7 +128,6 @@ const SLOT = KNOB + 2;
 const LAST = VIEWS.length - 1;
 const settle = (x: Animated.Value, to: number) => Animated.spring(x, { toValue: to, useNativeDriver: true, damping: 20, stiffness: 220 }).start();
 
-/** Feed / Cover Flow / Grid. The dark knob follows a drag along the track and settles on the nearest view. */
 function Switcher({ view, pick }: { view: View_; pick: (v: View_) => void }) {
   const at = VIEWS.findIndex(([k]) => k === view);
   const [x] = useState(() => new Animated.Value(at));

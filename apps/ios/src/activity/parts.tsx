@@ -51,7 +51,6 @@ export function Avatar({ person, color, size }: { person: Person; color: string;
   );
 }
 
-/** The rating stamp; a review without a rating shows none. */
 export function Stamp({ rating, size }: { rating: number | null; size: number }) {
   if (rating == null) return null;
   return <SvgXml xml={STAMPS_ON[rating - 1]} width={size} height={size} />;
@@ -79,7 +78,6 @@ export const PixelBack = () => (
   </Svg>
 );
 
-/** Author row: avatar, name, "@handle · 2h". */
 export function Byline({ card, size }: { card: FeedCard; size: number }) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
