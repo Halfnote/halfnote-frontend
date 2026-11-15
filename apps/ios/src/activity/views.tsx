@@ -1,9 +1,20 @@
 import type { FeedCard } from "@halfnote/data";
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import { Animated, Easing, FlatList, PanResponder, Pressable, Text, View, type RefreshControlProps } from "react-native";
+import {
+  Animated,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  useWindowDimensions,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  type RefreshControlProps,
+} from "react-native";
 import { NAVBAR_CLEARANCE } from "../Navbar";
 import { Art, F, Vinyl, font } from "../story/kit";
-import { ArrowRight, Byline, Heart, INK, Reason, Stamp, SUB, displayName, dotWindow, firstName, ago, isFullReview, label, useLiveValue, withYear } from "./parts";
+import { ArrowRight, Byline, Heart, INK, Reason, Stamp, SUB, displayName, dotWindow, firstName, ago, isFullReview, label, withYear } from "./parts";
 
 interface ListProps {
   cards: FeedCard[];
@@ -101,8 +112,6 @@ export function GridList({ cards, open, onEndReached, refreshControl }: ListProp
 
 const COVER = 216;
 const STEP = 112;
-const DECEL = 0.995;
-const SPRING = { useNativeDriver: true, damping: 22, stiffness: 160 } as const;
 
 export function CoverFlow({
   cards,
@@ -119,75 +128,44 @@ export function CoverFlow({
   open: (c: FeedCard) => void;
   like: (c: FeedCard) => void;
 }) {
-  const { x: pos, live, near } = useLiveValue(index);
-  const settled = useRef(index);
-  useEffect(() => {
-    if (index === settled.current) return;
-    settled.current = index;
-    Animated.spring(pos, { ...SPRING, toValue: index }).start();
-  }, [index, pos]);
-
+  const { width } = useWindowDimensions();
+  const [scrollX] = useState(() => new Animated.Value(index * STEP));
+  const [pos] = useState(() => Animated.divide(scrollX, STEP));
+  const [near, setNear] = useState(index);
+  const scroller = useRef<ScrollView>(null);
   const last = cards.length - 1;
-  const go = (i: number) => setIndex(Math.max(0, Math.min(last, i)));
-  const latest = useRef({ setIndex, last, settled, live });
-  useEffect(() => {
-    latest.current = { setIndex, last, settled, live };
-  });
-  // eslint-disable-next-line react-hooks/refs -- the handlers read `latest` during a gesture, never during render
-  const [swipe] = useState(() => {
-    let start = 0;
-    let at = 0;
-    let coast = { t0: 0, ms: 0, v: 0 };
-    let carry = 0;
-    const end = (vx: number) => {
-      const { setIndex, last, settled } = latest.current;
-      let v = -vx / STEP;
-      if (carry && Math.sign(carry) === Math.sign(v)) v += carry;
-      carry = 0;
-      const target = Math.max(0, Math.min(last, Math.round(at + (v * DECEL) / (1 - DECEL))));
-      const dist = target - at;
-      settled.current = target;
-      setIndex(target);
-      if (Math.abs(v) < 0.002 || Math.abs(dist) < 0.5 || Math.sign(dist) !== Math.sign(v)) {
-        coast = { t0: 0, ms: 0, v: 0 };
-        Animated.spring(pos, { ...SPRING, toValue: target, velocity: v * 1000 }).start();
-        return;
-      }
-      // Ease-out cubic starts at 3·dist/ms, so this duration matches the finger's speed. A spring here overshoots.
-      const ms = Math.max(250, Math.min(1600, (3 * Math.abs(dist)) / Math.abs(v)));
-      coast = { t0: Date.now(), ms, v: (3 * dist) / ms };
-      Animated.timing(pos, { toValue: target, duration: ms, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-    };
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderGrant: () => {
-        const u = coast.ms ? 1 - (Date.now() - coast.t0) / coast.ms : 0;
-        carry = u > 0 ? coast.v * u * u : 0;
-        start = at = latest.current.live.current;
-        pos.stopAnimation();
-      },
-      onPanResponderMove: (_, g) => {
-        const { last } = latest.current;
-        const raw = start - g.dx / STEP;
-        at = raw < 0 ? raw / 3 : raw > last ? last + (raw - last) / 3 : raw;
-        pos.setValue(at);
-      },
-      onPanResponderRelease: (_, g) => end(g.vx),
-      onPanResponderTerminate: (_, g) => end(g.vx),
-      onPanResponderTerminationRequest: () => false,
-    });
-  });
-
   const focus = Math.max(0, Math.min(last, near));
+  useEffect(() => {
+    if (focus !== index) setIndex(focus);
+  }, [focus, index, setIndex]);
+  const go = (i: number) => scroller.current?.scrollTo({ x: i * STEP, animated: true });
+
   const c = cards[focus];
   if (!c) return null;
   return (
     <View style={{ flex: 1 }}>
-      <View {...swipe.panHandlers} style={{ height: 296, marginTop: 12 }}>
+      {/* iOS's own scroll view does the finger tracking, momentum, snapping and edge bounce; the cards just read its offset. */}
+      <Animated.ScrollView
+        ref={scroller}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={STEP}
+        decelerationRate={0.995}
+        contentOffset={{ x: index * STEP, y: 0 }}
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+          useNativeDriver: true,
+          listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => setNear(Math.round(e.nativeEvent.contentOffset.x / STEP)),
+        })}
+        style={{ height: 296, marginTop: 12, flexGrow: 0 }}
+        contentContainerStyle={{ width: width + last * STEP }}
+      >
         {cards.map((a, i) =>
-          Math.abs(i - focus) > 4 ? null : <FlowCard key={a.review.id} card={a} i={i} pos={pos} away={Math.abs(i - focus)} onPress={() => (i === focus ? open(a) : go(i))} />,
+          Math.abs(i - focus) > 4 ? null : (
+            <FlowCard key={a.review.id} card={a} i={i} left={width / 2 + i * STEP} pos={pos} away={Math.abs(i - focus)} onPress={() => (i === focus ? open(a) : go(i))} />
+          ),
         )}
-      </View>
+      </Animated.ScrollView>
 
       <View style={{ alignItems: "center", gap: 6, marginTop: 10, paddingHorizontal: 24 }}>
         <Text numberOfLines={1} style={[font(F.serif, 32, 1), { color: INK }]}>
@@ -233,9 +211,10 @@ export function CoverFlow({
 }
 
 // Its own component so the compiler keeps each card's animated nodes across focus changes; rebuilding them drops frames.
-function FlowCard({ card: a, i, pos, away, onPress }: { card: FeedCard; i: number; pos: Animated.Value; away: number; onPress: () => void }) {
+function FlowCard({ card: a, i, left, pos, away, onPress }: { card: FeedCard; i: number; left: number; pos: Animated.AnimatedInterpolation<number>; away: number; onPress: () => void }) {
   const d = pos.interpolate({ inputRange: [i - 4, i - 3, i - 2, i - 1, i, i + 1, i + 2, i + 3, i + 4], outputRange: [4, 3, 2, 1, 0, -1, -2, -3, -4], extrapolate: "clamp" });
-  const x = d.interpolate({ inputRange: [-4, -3, -2, -1, 0, 1, 2, 3, 4], outputRange: [-202, -172, -142, -112, 0, 112, 142, 172, 202] });
+  // Each card scrolls in a STEP-wide slot; this pulls it from its slot to the board's spacing, ±(112 + (|d|-1)·30).
+  const x = d.interpolate({ inputRange: [-4, -3, -2, -1, 0, 1, 2, 3, 4], outputRange: [246, 164, 82, 0, 0, 0, -82, -164, -246] });
   const rotateY = d.interpolate({ inputRange: [-1, 0, 1], outputRange: ["58deg", "0deg", "-58deg"], extrapolate: "clamp" });
   const scale = d.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.86, 1.04, 0.86], extrapolate: "clamp" });
   const vinylX = d.interpolate({ inputRange: [-1, 0, 1], outputRange: [9, 54, 9], extrapolate: "clamp" });
@@ -243,7 +222,7 @@ function FlowCard({ card: a, i, pos, away, onPress }: { card: FeedCard; i: numbe
   return (
     // iOS depth-sorts sibling layers with 3D transforms, ignoring zIndex. Siblings only slide; the turn is one layer in.
     <Animated.View
-      style={{ position: "absolute", top: 34, left: "50%", marginLeft: -COVER / 2, width: COVER, height: COVER, zIndex: 100 - away, opacity: away > 3 ? 0 : 1, transform: [{ translateX: x }] }}
+      style={{ position: "absolute", top: 34, left, marginLeft: -COVER / 2, width: COVER, height: COVER, zIndex: 100 - away, opacity: away > 3 ? 0 : 1, transform: [{ translateX: x }] }}
     >
       <Animated.View style={{ flex: 1, transform: [{ perspective: 900 }, { rotateY }, { scale }] }}>
         <Animated.View style={{ position: "absolute", top: 9, transform: [{ translateX: vinylX }] }}>
