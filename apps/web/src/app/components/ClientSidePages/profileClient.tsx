@@ -236,7 +236,6 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     key={review.id}
                     review={review}
                     avatar={userData?.avatar || "/default-avatar.png"}
-                    username={user.username}
                   />
                 ))}
               </div>
