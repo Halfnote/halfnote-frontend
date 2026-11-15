@@ -260,7 +260,7 @@ function Composer({
         <Pressable
           role="button"
           onPress={(e) => {
-            setRateOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`);
+            setRateOrigin(`${Math.round(e.nativeEvent.pageX)}px ${Math.round(e.nativeEvent.pageY)}px`);
             setRateOpen(true);
           }}
           accessibilityLabel={draft.rating ? `Rating: ${draft.rating} out of 10. Change rating` : "Add rating"}
@@ -288,7 +288,7 @@ function Composer({
         {songs.length > 0 && (
           <Pressable
             role="button"
-            onPress={(e) => setSongOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`)}
+            onPress={(e) => setSongOrigin(`${Math.round(e.nativeEvent.pageX)}px ${Math.round(e.nativeEvent.pageY)}px`)}
             accessibilityLabel={song ? `Favourite song: ${song.title}. Change favourite song` : "Add favourite song"}
             style={s.rateRow}
           >
