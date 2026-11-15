@@ -23,6 +23,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect, SvgXml } from "react-native-svg";
 import { STAMPS_OFF, STAMPS_ON } from "../ratingStamps";
+import { TrackRow } from "../activity/parts";
 import { canPost, emptyDraft, isFullReview, spill, type Draft, type Step } from "../reviewDraft";
 import { useSession } from "../session";
 import { labelColor } from "../storyDraft";
@@ -527,27 +528,20 @@ function SongSheet({
     <Sheet title="Favourite song" label={`Favourite song on ${title}`} origin={origin} cancellable={songId !== null} onClose={onClose}>
       {(close) => (
         <ScrollView contentContainerStyle={s.songs}>
-          {songs.map((song, i) => {
-            const on = song.id === picked;
-            const color = on ? BG : INK;
-            return (
-              <Rise key={song.id} delay={Math.min(i, 10) * 30}>
-                <Pressable
-                  role="button"
-                  onPress={() => {
-                    setPicked(song.id);
-                    close(() => onPick(song.id), 280);
-                  }}
-                  accessibilityState={{ selected: on }}
-                  style={[s.songRow, on && s.songRowPicked]}
-                >
-                  <Text style={[s.songPos, { color }]}>{song.position}</Text>
-                  <Text style={[s.songTitle, { color }]}>{song.title}</Text>
-                  <Text style={[s.songLen, { color }]}>{minutes(song.duration_seconds)}</Text>
-                </Pressable>
-              </Rise>
-            );
-          })}
+          {songs.map((song, i) => (
+            <Rise key={song.id} delay={Math.min(i, 10) * 30}>
+              <Pressable
+                role="button"
+                onPress={() => {
+                  setPicked(song.id);
+                  close(() => onPick(song.id), 280);
+                }}
+                accessibilityState={{ selected: song.id === picked }}
+              >
+                <TrackRow position={song.position} title={song.title} length={minutes(song.duration_seconds)} on={song.id === picked} />
+              </Pressable>
+            </Rise>
+          ))}
         </ScrollView>
       )}
     </Sheet>
@@ -754,11 +748,7 @@ const s = StyleSheet.create({
   stampPicked: { transform: [{ scale: 1.18 }] },
   sheetFoot: { paddingHorizontal: 20, paddingBottom: 28 },
   songs: { paddingHorizontal: 20, paddingBottom: 20 },
-  songRow: { flexDirection: "row", alignItems: "center", minHeight: 40, paddingHorizontal: 10, borderRadius: 8 },
-  songRowPicked: { backgroundColor: "#1d1d1d" },
   songPos: { width: 28, fontFamily: SANS, fontSize: 12, color: INK, opacity: 0.6 },
-  songTitle: { flex: 1, fontFamily: SANS, fontSize: 15 },
-  songLen: { width: 44, textAlign: "right", fontFamily: SANS, fontSize: 12, opacity: 0.6 },
   sheetCancel: { minHeight: 52, borderRadius: 10, backgroundColor: "#E2E2E2", alignItems: "center", justifyContent: "center" },
   sheetCancelText: { fontFamily: SANS_MEDIUM, fontSize: 16, color: INK },
 
