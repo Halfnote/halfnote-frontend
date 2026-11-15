@@ -6,7 +6,6 @@ import * as SecureStore from "expo-secure-store";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, Pressable, RefreshControl, Text, View } from "react-native";
-import { ReviewSheet } from "../../activity/ReviewSheet";
 import { BG, F, INK } from "../../activity/parts";
 import { CoverFlow, FeedList, GridList } from "../../activity/views";
 import { NAVBAR_CLEARANCE } from "../../Navbar";
@@ -41,8 +40,7 @@ export default function Activity() {
   };
 
   const [index, setIndex] = useState(0);
-  const [openId, setOpenId] = useState<number>();
-  const open = (c: FeedCard) => setOpenId(c.review.id);
+  const open = (c: FeedCard) => router.push(`/review/${c.review.id}`);
   const like = (c: FeedCard) => setLike(c.review.id, !c.review.is_liked);
 
   const [toast, setToast] = useState("");
@@ -116,7 +114,6 @@ export default function Activity() {
     <View style={{ flex: 1, backgroundColor: BG }}>
       <Switcher view={view} pick={pick} />
       {body}
-      <ReviewSheet card={cards.find((c) => c.review.id === openId)} onClose={() => setOpenId(undefined)} />
       {toast ? (
         <View pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, bottom: NAVBAR_CLEARANCE, alignItems: "center" }}>
           <Text style={{ fontFamily: F.sans500, fontSize: 13, color: BG, backgroundColor: INK, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, overflow: "hidden" }}>{toast}</Text>

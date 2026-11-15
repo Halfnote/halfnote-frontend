@@ -55,6 +55,7 @@ function Routes() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="dev/search" />
         <Stack.Screen name="album/[discogsId]" />
+        <Stack.Screen name="review/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="share" options={{ presentation: "fullScreenModal", headerShown: false }} />
         <Stack.Screen name="write" options={{ presentation: "fullScreenModal", headerShown: false }} />
       </Stack.Protected>
