@@ -1,42 +1,20 @@
-// React-free like state machine: debounces taps per review and keeps one request in flight,
-// so the server always ends on the last state the user picked (see runbooks/activity-contract.md).
-
-export interface LikeResult {
-  liked: boolean;
-  likes_count: number;
-}
-
-interface Entry {
-  confirmed: boolean;
-  desired: boolean;
-  timer?: ReturnType<typeof setTimeout>;
-  inFlight: boolean;
-}
-
-export interface LikeSyncOptions {
-  send: (reviewId: number, liked: boolean) => Promise<LikeResult>;
-  /** The server agrees with the user's last tap. */
-  onConfirmed: (reviewId: number, result: LikeResult) => void;
-  /** A request failed; `liked` is the server's last known state to revert to. */
-  onFailed: (reviewId: number, liked: boolean) => void;
-  delayMs?: number;
-}
+// Debounces like taps per review, then sends the last one. PUT and DELETE are idempotent, so the only
+// hazard is two requests for one review arriving out of order: each waits for the one before it.
 
 export interface LikeSync {
-  /** Record the user's tap. Every caller flips the heart, so the server state is `!liked` until we know better. */
   set: (reviewId: number, liked: boolean) => void;
-  /** Send every pending change now (app going to the background). */
+  /** Send every pending tap now (app going to the background). */
   flush: () => void;
 }
 
 /**
  * Set a review's like state anywhere inside cached data, whatever the shape: old reviews carry
- * `is_liked_by_user`, feed cards `is_liked`. Without `likesCount` the count moves by one when the state flips.
+ * `is_liked_by_user`, feed cards `is_liked`. The count moves by one when the state flips.
  * Returns `node` itself when nothing matched, so React Query keeps the old reference.
  */
-export function patchLike(node: unknown, id: number, liked: boolean, likesCount?: number): unknown {
+export function patchLike(node: unknown, id: number, liked: boolean): unknown {
   if (Array.isArray(node)) {
-    const out = node.map((n) => patchLike(n, id, liked, likesCount));
+    const out = node.map((n) => patchLike(n, id, liked));
     return out.some((n, i) => n !== node[i]) ? out : node;
   }
   if (typeof node !== "object" || node === null) return node;
@@ -44,64 +22,47 @@ export function patchLike(node: unknown, id: number, liked: boolean, likesCount?
   const key = "is_liked_by_user" in o ? "is_liked_by_user" : "is_liked" in o ? "is_liked" : null;
   if (key && o.id === id) {
     const flip = o[key] === liked ? 0 : liked ? 1 : -1;
-    return { ...o, [key]: liked, likes_count: likesCount ?? (o.likes_count as number) + flip };
+    return { ...o, [key]: liked, likes_count: (o.likes_count as number) + flip };
   }
   let changed = false;
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(o)) {
-    out[k] = patchLike(v, id, liked, likesCount);
+    out[k] = patchLike(v, id, liked);
     if (out[k] !== v) changed = true;
   }
   return changed ? out : node;
 }
 
-export function createLikeSync({ send, onConfirmed, onFailed, delayMs = 400 }: LikeSyncOptions): LikeSync {
-  const entries = new Map<number, Entry>();
+export function createLikeSync({
+  send,
+  onFailed,
+  delayMs = 400,
+}: {
+  send: (reviewId: number, liked: boolean) => Promise<unknown>;
+  /** `liked` is what the failed request asked for. */
+  onFailed: (reviewId: number, liked: boolean) => void;
+  delayMs?: number;
+}): LikeSync {
+  const timers = new Map<number, ReturnType<typeof setTimeout>>();
+  const pending = new Map<number, () => void>();
+  const chains = new Map<number, Promise<unknown>>();
 
-  function fire(id: number) {
-    const e = entries.get(id);
-    if (!e) return;
-    e.timer = undefined;
-    if (e.inFlight) return; // the in-flight response re-checks
-    if (e.desired === e.confirmed) {
-      entries.delete(id);
-      return;
-    }
-    e.inFlight = true;
-    send(id, e.desired).then(
-      (result) => {
-        e.inFlight = false;
-        e.confirmed = result.liked;
-        if (e.timer) return; // a newer tap is waiting on its debounce
-        if (e.desired === e.confirmed) {
-          entries.delete(id);
-          onConfirmed(id, result);
-        } else {
-          fire(id);
-        }
-      },
-      () => {
-        clearTimeout(e.timer);
-        entries.delete(id);
-        onFailed(id, e.confirmed);
-      },
-    );
-  }
+  const fire = (id: number) => {
+    clearTimeout(timers.get(id));
+    pending.get(id)?.();
+  };
 
   return {
     set(id, liked) {
-      const e = entries.get(id) ?? { confirmed: !liked, desired: liked, inFlight: false };
-      entries.set(id, e);
-      e.desired = liked;
-      clearTimeout(e.timer);
-      e.timer = setTimeout(() => fire(id), delayMs);
+      clearTimeout(timers.get(id));
+      pending.set(id, () => {
+        pending.delete(id);
+        const req = (chains.get(id) ?? Promise.resolve()).then(() => send(id, liked));
+        chains.set(id, req.catch(() => {}));
+        req.catch(() => onFailed(id, liked));
+      });
+      timers.set(id, setTimeout(() => fire(id), delayMs));
     },
-    flush() {
-      for (const [id, e] of entries) {
-        if (!e.timer) continue;
-        clearTimeout(e.timer);
-        fire(id);
-      }
-    },
+    flush: () => [...pending.keys()].forEach(fire),
   };
 }

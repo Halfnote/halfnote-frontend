@@ -42,9 +42,9 @@ const LIKE_CACHES = [
   queryKeys.feed(),
 ];
 
-function patchCachedLike(queryClient: QueryClient, reviewId: number, liked: boolean, likesCount?: number) {
+function patchCachedLike(queryClient: QueryClient, reviewId: number, liked: boolean) {
   for (const queryKey of LIKE_CACHES) {
-    queryClient.setQueriesData({ queryKey }, (old: unknown) => patchLike(old, reviewId, liked, likesCount));
+    queryClient.setQueriesData({ queryKey }, (old: unknown) => patchLike(old, reviewId, liked));
   }
 }
 
@@ -61,9 +61,10 @@ export function HalfnoteProvider({
     const likeFailed = new Set<() => void>();
     const likes = createLikeSync({
       send: (id, liked) => client.setLike(id, liked),
-      onConfirmed: (id, r) => patchCachedLike(queryClient, id, r.liked, r.likes_count),
       onFailed: (id, liked) => {
-        patchCachedLike(queryClient, id, liked);
+        patchCachedLike(queryClient, id, !liked);
+        // The flip back is a guess; the refetch puts in the server's real state once it is reachable.
+        for (const queryKey of LIKE_CACHES) void queryClient.invalidateQueries({ queryKey });
         likeFailed.forEach((fn) => fn());
       },
     });
