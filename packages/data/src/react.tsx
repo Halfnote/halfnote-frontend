@@ -381,7 +381,7 @@ export const useEditReview = (username: string) => {
       };
       const genres = (old: Genre[]) => vars.genres?.map((name) => ({ id: 0, name })) ?? old;
 
-      // ponytail: the average is left to the refetch; it now counts each user's latest rated review.
+      // The average is left to the refetch.
       queryClient.setQueryData<AlbumDetailData>(
         queryKeys.albumDetails(vars.discogsId),
         (old) =>
@@ -397,7 +397,7 @@ export const useEditReview = (username: string) => {
         old?.map((r) => (r.id === vars.reviewId ? { ...r, ...text, user_genres: genres(r.user_genres) } : r)),
       );
 
-      // ponytail: activity rating stays as it was; ReviewActivityDetails.rating is typed non-null.
+      // Activity rating stays as it was; ReviewActivityDetails.rating is typed non-null.
       queryClient.setQueryData<Activity[]>(queryKeys.activityByUser(username), (old) =>
         old?.map((a) =>
           a.review_details?.id === vars.reviewId

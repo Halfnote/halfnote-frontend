@@ -20,7 +20,7 @@ export const tw = create({
     {
       handler: ({ addUtilities }) =>
         addUtilities({
-          // ponytail: web heading1 inherits its size, so native gets no size and no tracking; pair it with text-* and tracking-[-Npx] until a caller needs em tracking.
+          // Web heading1 inherits its size, so native gets no size or tracking; pair it with text-* and tracking-[-Npx].
           "another-heading1": another(fonts.serif, undefined, { fontWeight: "400" }),
           "another-heading2": another(fonts.serif, 28, { fontWeight: "400" }),
           "another-heading3": another(fonts.sans, 24),

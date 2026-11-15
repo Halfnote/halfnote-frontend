@@ -64,7 +64,7 @@ export async function send<T>(config: ClientConfig, ep: Endpoint<T>): Promise<T>
     // No Content-Type: fetch sets multipart/form-data with the boundary.
     const form = new FormData();
     for (const [key, value] of Object.entries(ep.form)) {
-      // ponytail: RN FormData accepts {uri, name, type}; the DOM typings only know Blob.
+      // RN FormData accepts {uri, name, type}; the DOM typings only know Blob.
       if (value !== undefined) form.append(key, value as Blob);
     }
     body = form;
