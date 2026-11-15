@@ -11,9 +11,11 @@ export interface Draft {
   rating: number | null;
   headline: string;
   body: string;
+  /** A song on the picked album; a different album clears it. */
+  favoriteSongId: number | null;
 }
 
-export const emptyDraft: Draft = { rating: null, headline: "", body: "" };
+export const emptyDraft: Draft = { rating: null, headline: "", body: "", favoriteSongId: null };
 
 /**
  * Cuts the headline at the first of: the end of line 3, or the last word that fits in `maxChars`.
