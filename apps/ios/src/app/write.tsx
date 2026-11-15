@@ -366,11 +366,6 @@ function Composer({
               scrollEnabled={false}
             />
           </View>
-          <Text style={s.hint}>
-            {full
-              ? "The serif lines are your headline in Activity. The rest opens when people tap in."
-              : "Three lines is a short take. Keep writing and it turns into a full review."}
-          </Text>
           {create.isError && <Text style={s.error}>{create.error.message}</Text>}
         </View>
       </ScrollView>

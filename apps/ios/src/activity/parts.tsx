@@ -96,7 +96,6 @@ export function Byline({ card, size }: { card: FeedCard; size: number }) {
 
 export function Reason({ card, me }: { card: FeedCard; me: string | undefined }) {
   const line = reasonLine(card, me);
-  // Always takes its line, so a review lines up the same with or without a reason.
   return (
     <Text numberOfLines={1} accessibilityElementsHidden={!line} style={{ fontFamily: F.sans500, fontSize: 12, color: SUB }}>
       {line ?? " "}
