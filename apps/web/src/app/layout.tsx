@@ -1,6 +1,6 @@
 import { NavBar } from "./components/Navbar";
 import "./globals.css";
-import { EB_Garamond } from "next/font/google";
+import { EB_Garamond, Instrument_Sans } from "next/font/google";
 import TranslationProvider from "./providers/TranslationProvider";
 import ReactQueryProvider from "./providers/QueryProvider";
 
@@ -30,6 +30,15 @@ const ebGaramond = EB_Garamond({
   adjustFontFallback: true,
 });
 
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-instrument-sans",
+  fallback: ["system-ui", "sans-serif"],
+  preload: true,
+  adjustFontFallback: true,
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -38,7 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={ebGaramond.variable}
+      className={`${ebGaramond.variable} ${instrumentSans.variable}`}
     >
       <body className="items-center justify-center flex flex-col gap-2">
         <ReactQueryProvider>

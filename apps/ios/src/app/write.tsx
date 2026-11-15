@@ -28,9 +28,9 @@ import { useSession } from "../session";
 import { labelColor } from "../storyDraft";
 
 const SERIF = "EBGaramond_400Regular";
-const SANS = "EBGaramond_400Regular";
-const SANS_MEDIUM = "EBGaramond_500Medium";
-const SANS_SEMI = "EBGaramond_600SemiBold";
+const SANS = "InstrumentSans_400Regular";
+const SANS_MEDIUM = "InstrumentSans_500Medium";
+const SANS_SEMI = "InstrumentSans_600SemiBold";
 const INK = "#111";
 const BG = "#EEEEEE";
 
