@@ -27,10 +27,10 @@ import { canPost, emptyDraft, isFullReview, spill, type Draft, type Step } from 
 import { useSession } from "../session";
 import { labelColor } from "../storyDraft";
 
-const SERIF = "InstrumentSerif_400Regular";
-const SANS = "InstrumentSans_400Regular";
-const SANS_MEDIUM = "InstrumentSans_500Medium";
-const SANS_SEMI = "InstrumentSans_600SemiBold";
+const SERIF = "EBGaramond_400Regular";
+const SANS = "EBGaramond_400Regular";
+const SANS_MEDIUM = "EBGaramond_500Medium";
+const SANS_SEMI = "EBGaramond_600SemiBold";
 const INK = "#111";
 const BG = "#EEEEEE";
 
@@ -655,7 +655,7 @@ const s = StyleSheet.create({
   sleeveFoot: { marginTop: 14, paddingTop: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   sleeveBy: { flexShrink: 1, fontFamily: SANS, fontSize: 11, color: "#555" },
   sleeveUser: { fontFamily: SANS_SEMI, color: INK },
-  wordmark: { fontFamily: "InstrumentSerifItalic", fontSize: 16, color: INK },
+  wordmark: { fontFamily: "EBGaramond_400Regular_Italic", fontSize: 16, color: INK },
   actions: { marginTop: "auto", paddingTop: 28, width: "100%", gap: 10 },
   shareBtn: { minHeight: 52, borderRadius: 10, backgroundColor: "#FAFAF8", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
   shareText: { fontFamily: SANS_SEMI, fontSize: 16, color: INK },

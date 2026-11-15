@@ -18,7 +18,7 @@ type V = Variant & {
   duo: boolean;
   light: string;
   dark2: string;
-  /** Headline: Instrument Serif italic, or Caveat. */
+  /** Headline: EB Garamond italic, or Caveat. */
   caveat: boolean;
   handBold: string;
   hand: string;

@@ -24,8 +24,6 @@ export default function Login() {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Halfnote</Text>
-      {/* TEMP-VERIFY */}
-      {([["Instrument Sans", "400", "normal"], ["Instrument Sans", "700", "normal"], ["Instrument Serif", "400", "normal"], ["Instrument Serif", "400", "italic"], ["InstrumentSerifItalic", "400", "normal"], ["InstrumentSans_700Bold", "400", "normal"], ["System", "700", "normal"]] as const).map(([f, w, st]) => <Text key={f + w + st} style={{ fontFamily: f, fontWeight: w, fontStyle: st, fontSize: 20 }}>{f} {w} {st} Hamburg</Text>)}
       <TextInput
         style={styles.input}
         placeholder="Username"
