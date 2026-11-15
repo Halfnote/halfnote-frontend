@@ -62,14 +62,13 @@ export function createLikeSync({ send, onConfirmed, onFailed, delayMs = 400 }: L
     const e = entries.get(id);
     if (!e) return;
     e.timer = undefined;
-    if (e.inFlight) return; // settle() re-checks
+    if (e.inFlight) return; // the in-flight response re-checks
     if (e.desired === e.confirmed) {
       entries.delete(id);
       return;
     }
     e.inFlight = true;
-    const sent = e.desired;
-    send(id, sent).then(
+    send(id, e.desired).then(
       (result) => {
         e.inFlight = false;
         e.confirmed = result.liked;

@@ -41,7 +41,7 @@ export const AlbumDetailRecentActivity = ({
           </p>
           <button
             onClick={() => setLike(activity.id, !activity.is_liked_by_user)}
-            className={`flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 mt-2 transition-opacity duration-200 hover:cursor-pointer`}
+            className="flex items-center justify-center gap-1 border border-black rounded-full bg-[#f4f4f4] text-sm text-black w-12 h-7 mt-2 transition-opacity duration-200 hover:cursor-pointer"
           >
             <Image
               src={
