@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Pressable, RefreshControl, Text, View } from "react-native";
+import { ActivityIndicator, Animated, PanResponder, Pressable, RefreshControl, Text, View } from "react-native";
 import { BG, F, INK } from "../../activity/parts";
 import { CoverFlow, FeedList, GridList } from "../../activity/views";
 import { NAVBAR_CLEARANCE } from "../../Navbar";
@@ -124,23 +124,61 @@ export default function Activity() {
 }
 
 const KNOB = 78;
+const SLOT = KNOB + 2;
+const LAST = VIEWS.length - 1;
+const settle = (x: Animated.Value, to: number) => Animated.spring(x, { toValue: to, useNativeDriver: true, damping: 20, stiffness: 220 }).start();
 
-/** Feed / Cover Flow / Grid, with a dark knob that slides under the picked one. */
+/** Feed / Cover Flow / Grid. The dark knob follows a drag along the track and settles on the nearest view. */
 function Switcher({ view, pick }: { view: View_; pick: (v: View_) => void }) {
   const at = VIEWS.findIndex(([k]) => k === view);
   const [x] = useState(() => new Animated.Value(at));
+  const [near, setNear] = useState(at);
+  // stopAnimation's callback is async on the native driver; a drag waiting on it starts stale and jumps a frame.
+  const live = useRef(at);
   useEffect(() => {
-    Animated.timing(x, { toValue: at, duration: 280, useNativeDriver: true }).start();
-  }, [at, x]);
+    const id = x.addListener(({ value }) => {
+      live.current = value;
+      setNear(Math.round(value));
+    });
+    return () => x.removeListener(id);
+  }, [x]);
+  useEffect(() => settle(x, at), [at, x]);
+
+  const latest = useRef({ pick, at });
+  useEffect(() => {
+    latest.current = { pick, at };
+  });
+  // eslint-disable-next-line react-hooks/refs -- the handlers read `latest` during a gesture, never during render
+  const [drag] = useState(() => {
+    let start = 0;
+    const end = () => {
+      const { pick, at } = latest.current;
+      const to = Math.round(live.current);
+      if (to === at) settle(x, to);
+      else pick(VIEWS[to][0]);
+    };
+    return PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 4 && Math.abs(g.dx) > Math.abs(g.dy),
+      onPanResponderGrant: () => {
+        start = live.current;
+        x.stopAnimation();
+      },
+      onPanResponderMove: (_, g) => x.setValue(Math.max(0, Math.min(LAST, start + g.dx / SLOT))),
+      onPanResponderRelease: end,
+      onPanResponderTerminate: end,
+      onPanResponderTerminationRequest: () => false,
+    });
+  });
+
   return (
     <View style={{ height: 52, paddingHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-      <View style={{ flexDirection: "row", padding: 3, gap: 2, borderRadius: 999, backgroundColor: "#E1E1E1" }}>
+      <View {...drag.panHandlers} style={{ flexDirection: "row", padding: 3, gap: 2, borderRadius: 999, backgroundColor: "#E1E1E1" }}>
         <Animated.View
-          style={{ position: "absolute", left: 3, top: 3, bottom: 3, width: KNOB, borderRadius: 999, backgroundColor: "#1d1d1d", transform: [{ translateX: x.interpolate({ inputRange: [0, 2], outputRange: [0, (KNOB + 2) * 2] }) }] }}
+          style={{ position: "absolute", left: 3, top: 3, bottom: 3, width: KNOB, borderRadius: 999, backgroundColor: "#1d1d1d", transform: [{ translateX: x.interpolate({ inputRange: [0, LAST], outputRange: [0, SLOT * LAST] }) }] }}
         />
-        {VIEWS.map(([k, name]) => (
+        {VIEWS.map(([k, name], i) => (
           <Pressable key={k} onPress={() => pick(k)} accessibilityRole="button" accessibilityState={{ selected: k === view }} style={{ width: KNOB, minHeight: 30, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ fontFamily: F.sans500, fontSize: 12, color: k === view ? BG : INK }}>{name}</Text>
+            <Text style={{ fontFamily: F.sans500, fontSize: 12, color: i === near ? BG : INK }}>{name}</Text>
           </Pressable>
         ))}
       </View>
