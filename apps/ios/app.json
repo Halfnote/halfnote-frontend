@@ -13,7 +13,8 @@
       "infoPlist": {
         "LSApplicationQueriesSchemes": [
           "instagram-stories"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "plugins": [

@@ -9,7 +9,7 @@ import {
   type Tokens,
 } from "@halfnote/data";
 
-export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://halfnote-backend.vercel.app/api";
+export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://halfnote-backend.onrender.com/api";
 
 const KEY = "halfnote.session";
 const REFRESH_WINDOW_MS = 60_000;
