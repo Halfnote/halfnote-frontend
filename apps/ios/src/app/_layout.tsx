@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HalfnoteProvider, queryClientDefaults, useClearSession } from "@halfnote/data/react";
 import {
-  InstrumentSans_400Regular,
-  InstrumentSans_500Medium,
-  InstrumentSans_600SemiBold,
-  InstrumentSans_700Bold,
-} from "@expo-google-fonts/instrument-sans";
-import { InstrumentSerif_400Regular, InstrumentSerif_400Regular_Italic } from "@expo-google-fonts/instrument-serif";
+  EBGaramond_400Regular,
+  EBGaramond_400Regular_Italic,
+  EBGaramond_500Medium,
+  EBGaramond_600SemiBold,
+  EBGaramond_700Bold,
+} from "@expo-google-fonts/eb-garamond";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
@@ -33,7 +33,7 @@ function Routes() {
       screenOptions={{
         headerTitle: "halfnote.",
         headerBackButtonDisplayMode: "minimal",
-        headerTitleStyle: { fontFamily: "InstrumentSerifItalic", fontSize: 28 },
+        headerTitleStyle: { fontFamily: "EBGaramond_400Regular_Italic", fontSize: 28 },
       }}
     >
       <Stack.Protected guard={!!session}>
@@ -53,13 +53,12 @@ function Routes() {
 export default function RootLayout() {
   // Runtime loading so Expo Go (which ignores app.json config plugins) gets the fonts too.
   const [fontsLoaded, fontError] = useFonts({
-    InstrumentSans_400Regular,
-    InstrumentSans_500Medium,
-    InstrumentSans_600SemiBold,
-    InstrumentSans_700Bold,
-    InstrumentSerif_400Regular,
+    EBGaramond_400Regular,
+    EBGaramond_500Medium,
+    EBGaramond_600SemiBold,
+    EBGaramond_700Bold,
     // headerTitleStyle has no fontStyle, so the wordmark needs a family name that is already italic.
-    InstrumentSerifItalic: InstrumentSerif_400Regular_Italic,
+    EBGaramond_400Regular_Italic,
   });
   if (!fontsLoaded && !fontError) return null;
   return (

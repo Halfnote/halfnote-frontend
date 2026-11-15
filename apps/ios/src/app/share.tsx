@@ -38,7 +38,7 @@ export default function ShareStory() {
   // Only ids travel in the route; the album and its reviews come from the album screen's query cache.
   const { discogsId, reviewId } = useLocalSearchParams<{ discogsId: string; reviewId?: string }>();
   const { data, error } = useAlbumDetails(discogsId);
-  // The story styles' display faces load here rather than at app start, which only needs Instrument (app/_layout.tsx).
+  // The story styles' display faces load here rather than at app start, which only needs EB Garamond (app/_layout.tsx).
   const [fontsLoaded, fontError] = useFonts({
     IBMPlexMono_400Regular,
     IBMPlexMono_500Medium,

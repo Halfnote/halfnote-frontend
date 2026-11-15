@@ -72,7 +72,7 @@ export function Navbar({ state, descriptors, navigation }: BottomTabBarProps) {
               style={tw`min-w-[62px] min-h-[48px] items-center justify-center gap-[3px]`}
             >
               {options.tabBarIcon?.({ focused, color, size: 22 })}
-              <Text style={{ color, fontSize: 11, fontFamily: focused ? "InstrumentSans_600SemiBold" : "InstrumentSans_500Medium" }}>
+              <Text style={{ color, fontSize: 11, fontFamily: focused ? "EBGaramond_600SemiBold" : "EBGaramond_500Medium" }}>
                 {options.title}
               </Text>
             </Pressable>
