@@ -3,6 +3,7 @@ import type {
   Activity,
   ActivityFilterType,
   AlbumDetailData,
+  FeedPage,
   ArtistDetails,
   RecentlyViewedResponse,
   Review,
@@ -45,6 +46,7 @@ export interface ReviewInput {
   headline: string;
   body: string;
   genres?: string[];
+  favoriteSongId?: number | null;
 }
 export interface EditReviewInput {
   reviewId: number;
@@ -52,6 +54,8 @@ export interface EditReviewInput {
   headline: string;
   body: string;
   genres?: string[];
+  /** Left out keeps the current favourite; null clears it. */
+  favoriteSongId?: number | null;
 }
 export interface EditProfileInput {
   name?: string;
@@ -144,14 +148,14 @@ export const endpoints = {
   createReview: (input: ReviewInput): Endpoint<Review> => ({
     method: "POST",
     path: `/music/albums/${seg(input.discogsId)}/review/`,
-    // JSON.stringify drops an undefined key, so genres is sent only when set.
-    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres },
+    // JSON.stringify drops an undefined key, so genres and the favourite song are sent only when set.
+    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres, favorite_song_id: input.favoriteSongId },
     parse: cast,
   }),
   editReview: (input: EditReviewInput): Endpoint<Review> => ({
     method: "PUT",
     path: `/music/reviews/${input.reviewId}/`,
-    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres },
+    json: { rating: input.rating, headline: input.headline, body: input.body, genres: input.genres, favorite_song_id: input.favoriteSongId },
     parse: cast,
   }),
   recentlyViewed: (): Endpoint<RecentlyViewedResponse> => ({
@@ -164,6 +168,13 @@ export const endpoints = {
     path: "/music/recently-viewed/",
     json: { discogs_id: discogsId },
     parse: () => undefined,
+  }),
+  /** `cursor` is opaque: lifted from the previous page's `next`, never built. */
+  feed: (cursor?: string): Endpoint<FeedPage> => ({
+    method: "GET",
+    path: "/music/feed/",
+    query: cursor ? { cursor } : undefined,
+    parse: cast,
   }),
   /** PUT likes, DELETE unlikes; both idempotent. */
   setLike: (reviewId: number, liked: boolean): Endpoint<ReviewLikeResponse> => ({

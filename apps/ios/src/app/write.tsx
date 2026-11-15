@@ -1,5 +1,5 @@
-import type { Review, SearchResult } from "@halfnote/data";
-import { useCreateReview, useDebounce, useRecentlyViewed, useRecordView, useSearchAlbums } from "@halfnote/data/react";
+import type { Review, SearchResult, Song } from "@halfnote/data";
+import { useAlbumDetails, useCreateReview, useDebounce, useRecentlyViewed, useRecordView, useSearchAlbums } from "@halfnote/data/react";
 import { router } from "expo-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
@@ -9,7 +9,6 @@ import {
   Easing,
   FlatList,
   Image,
-  PanResponder,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -23,6 +22,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect, SvgXml } from "react-native-svg";
 import { STAMPS_OFF, STAMPS_ON } from "../ratingStamps";
+import { TrackRow } from "../activity/parts";
 import { canPost, emptyDraft, isFullReview, spill, type Draft, type Step } from "../reviewDraft";
 import { useSession } from "../session";
 import { labelColor } from "../storyDraft";
@@ -41,7 +41,6 @@ AccessibilityInfo.addEventListener("reduceMotionChanged", (on) => (reduceMotion 
 const ms = (duration: number) => (reduceMotion ? 0 : duration);
 const EASE_OUT = Easing.bezier(0.2, 0.8, 0.2, 1);
 const EASE_IN = Easing.bezier(0.4, 0, 1, 1);
-const SWIPE_CLEAR = 110;
 
 /** "Write a review": pick an album, optionally rate it, write a take, post. Opened by the navbar's pencil. */
 export default function Write() {
@@ -60,7 +59,10 @@ export default function Write() {
           setDraft={setDraft}
           rateOpen={rateOpen}
           setRateOpen={setRateOpen}
-          onRepick={() => setStep({ kind: "pick" })}
+          onRepick={() => {
+            setDraft((d) => ({ ...d, favoriteSongId: null }));
+            setStep({ kind: "pick" });
+          }}
           onPosted={(review) => setStep({ kind: "posted", review })}
         />
       );
@@ -190,7 +192,7 @@ function Composer({
   const post = () => {
     if (!postable) return;
     create.mutate(
-      { discogsId: String(album.id), rating: draft.rating, headline: draft.headline, body: draft.body },
+      { discogsId: String(album.id), rating: draft.rating, headline: draft.headline, body: draft.body, favoriteSongId: draft.favoriteSongId },
       { onSuccess: onPosted },
     );
   };
@@ -209,7 +211,11 @@ function Composer({
   };
 
   const [rateOrigin, setRateOrigin] = useState("50% 40%");
-  const clearRating = () => setDraft((d) => ({ ...d, rating: null }));
+
+  // Viewing the album imports it, which is what creates its songs.
+  const songs = useAlbumDetails(String(album.id)).data?.album.songs ?? [];
+  const song = songs.find((x) => x.id === draft.favoriteSongId);
+  const [songOrigin, setSongOrigin] = useState<string>();
 
   const focusHeadEnd = () => {
     headRef.current?.focus();
@@ -251,24 +257,47 @@ function Composer({
           </View>
         </View>
 
-        <SwipeToClear enabled={draft.rating !== null} onClear={clearRating}>
+        <Pressable
+          role="button"
+          onPress={(e) => {
+            setRateOrigin(`${Math.round(e.nativeEvent.pageX)}px ${Math.round(e.nativeEvent.pageY)}px`);
+            setRateOpen(true);
+          }}
+          accessibilityLabel={draft.rating ? `Rating: ${draft.rating} out of 10. Change rating` : "Add rating"}
+          style={s.rateRow}
+        >
+          {draft.rating ? (
+            <>
+              <Pulse key={draft.rating}>
+                <SvgXml xml={STAMPS_ON[draft.rating - 1]} width={40} height={40} />
+              </Pulse>
+              <Text style={s.rateLabel}>{draft.rating} out of 10</Text>
+              <Text style={s.rateChange}>Change</Text>
+            </>
+          ) : (
+            <>
+              <Svg width={18} height={18} viewBox="0 0 18 18" fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round">
+                <Path d="M9 3 V15 M3 9 H15" />
+              </Svg>
+              <Text style={s.rateLabel}>Add rating</Text>
+              <Text style={s.optional}>Optional</Text>
+            </>
+          )}
+        </Pressable>
+
+        {songs.length > 0 && (
           <Pressable
             role="button"
-            onPress={(e) => {
-              setRateOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`);
-              setRateOpen(true);
-            }}
-            accessibilityLabel={draft.rating ? `Rating: ${draft.rating} out of 10. Change rating` : "Add rating"}
-            accessibilityActions={draft.rating ? [{ name: "clear", label: "Clear rating" }] : undefined}
-            onAccessibilityAction={(e) => e.nativeEvent.actionName === "clear" && clearRating()}
+            onPress={(e) => setSongOrigin(`${Math.round(e.nativeEvent.pageX)}px ${Math.round(e.nativeEvent.pageY)}px`)}
+            accessibilityLabel={song ? `Favourite song: ${song.title}. Change favourite song` : "Add favourite song"}
             style={s.rateRow}
           >
-            {draft.rating ? (
+            {song ? (
               <>
-                <Pulse key={draft.rating}>
-                  <SvgXml xml={STAMPS_ON[draft.rating - 1]} width={40} height={40} />
-                </Pulse>
-                <Text style={s.rateLabel}>{draft.rating} out of 10</Text>
+                <Text style={s.songPos}>{song.position}</Text>
+                <Text style={s.rateLabel} numberOfLines={1}>
+                  {song.title}
+                </Text>
                 <Text style={s.rateChange}>Change</Text>
               </>
             ) : (
@@ -276,12 +305,12 @@ function Composer({
                 <Svg width={18} height={18} viewBox="0 0 18 18" fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round">
                   <Path d="M9 3 V15 M3 9 H15" />
                 </Svg>
-                <Text style={s.rateLabel}>Add rating</Text>
+                <Text style={s.rateLabel}>Add favourite song</Text>
                 <Text style={s.optional}>Optional</Text>
               </>
             )}
           </Pressable>
-        </SwipeToClear>
+        )}
 
         <View style={s.writing}>
           <View style={s.writingHead}>
@@ -326,11 +355,6 @@ function Composer({
               scrollEnabled={false}
             />
           </View>
-          <Text style={s.hint}>
-            {full
-              ? "The serif lines are your headline in Activity. The rest opens when people tap in."
-              : "Three lines is a short take. Keep writing and it turns into a full review."}
-          </Text>
           {create.isError && <Text style={s.error}>{create.error.message}</Text>}
         </View>
       </ScrollView>
@@ -347,33 +371,50 @@ function Composer({
           onClose={() => setRateOpen(false)}
         />
       )}
+      {songOrigin && (
+        <SongSheet
+          title={album.title}
+          origin={songOrigin}
+          songs={songs}
+          songId={draft.favoriteSongId}
+          onPick={(favoriteSongId) => {
+            setDraft((d) => ({ ...d, favoriteSongId }));
+            setSongOrigin(undefined);
+          }}
+          onClose={() => setSongOrigin(undefined)}
+        />
+      )}
     </View>
   );
 }
 
-function RateSheet({
+type Close = (then: () => void, delay?: number) => void;
+
+/** A full-screen picker that grows from the tap that opened it and shrinks back to it. */
+function Sheet({
   title,
+  label,
   origin,
-  rating,
-  onPick,
+  cancellable,
   onClose,
+  children,
 }: {
   title: string;
-  /** Where the tap that opened it landed: the sheet grows from and shrinks back to it. */
+  label: string;
   origin: string;
-  rating: number | null;
-  onPick: (rating: number) => void;
+  /** Show Cancel: there is a current value to keep. */
+  cancellable: boolean;
   onClose: () => void;
+  children: (close: Close) => ReactNode;
 }) {
   const insets = useSafeAreaInsets();
   // 0 → 1 opens, 1 → 2 closes.
   const t = useAnimatedValue(0);
   const closing = useRef(false);
-  const [picked, setPicked] = useState(rating);
   useEffect(() => {
     Animated.timing(t, { toValue: 1, duration: ms(260), easing: EASE_OUT, useNativeDriver: true }).start();
   }, [t]);
-  const close = (then: () => void, delay = 0) => {
+  const close: Close = (then, delay = 0) => {
     if (closing.current) return;
     closing.current = true;
     Animated.timing(t, { toValue: 2, duration: ms(200), delay: ms(delay), easing: EASE_IN, useNativeDriver: true }).start(then);
@@ -387,7 +428,7 @@ function RateSheet({
     <Animated.View
       style={[StyleSheet.absoluteFill, s.screen, { paddingTop: insets.top, paddingBottom: insets.bottom }, sheet]}
       accessibilityViewIsModal
-      aria-label={`Rate ${title}`}
+      aria-label={label}
     >
       <View style={s.bar}>
         <Pressable role="button" onPress={() => close(onClose)} accessibilityLabel="Close" style={s.close}>
@@ -395,29 +436,12 @@ function RateSheet({
             <Path d="M2 2 L12 12 M12 2 L2 12" />
           </Svg>
         </Pressable>
-        <Text style={s.barTitle}>Rate</Text>
+        <Text style={s.barTitle}>{title}</Text>
         <View style={s.close} />
       </View>
-      <ScrollView contentContainerStyle={s.stamps} accessibilityLabel="Rating out of 10">
-        {STAMPS_ON.map((_, i) => 10 - i).map((n) => (
-          <Rise key={n} delay={(10 - n) * 30}>
-            <Pressable
-              role="button"
-              onPress={() => {
-                setPicked(n);
-                // A beat to see the stamp land before the sheet closes.
-                close(() => onPick(n), 280);
-              }}
-              accessibilityLabel={`Rate ${n} out of 10`}
-              accessibilityState={{ selected: n === picked }}
-              style={[s.stamp, n === picked && s.stampPicked]}
-            >
-              <SvgXml xml={(n === picked ? STAMPS_ON : STAMPS_OFF)[n - 1]} width={52} height={52} />
-            </Pressable>
-          </Rise>
-        ))}
-      </ScrollView>
-      {rating !== null && (
+      {/* eslint-disable-next-line react-hooks/refs -- close reads `closing` on press, never during render */}
+      {children(close)}
+      {cancellable && (
         <Rise delay={330} style={s.sheetFoot}>
           <Pressable role="button" onPress={() => close(onClose)} style={s.sheetCancel}>
             <Text style={s.sheetCancelText}>Cancel</Text>
@@ -425,6 +449,90 @@ function RateSheet({
         </Rise>
       )}
     </Animated.View>
+  );
+}
+
+function RateSheet({
+  title,
+  origin,
+  rating,
+  onPick,
+  onClose,
+}: {
+  title: string;
+  origin: string;
+  rating: number | null;
+  onPick: (rating: number) => void;
+  onClose: () => void;
+}) {
+  const [picked, setPicked] = useState(rating);
+  return (
+    <Sheet title="Rate" label={`Rate ${title}`} origin={origin} cancellable={rating !== null} onClose={onClose}>
+      {(close) => (
+        <ScrollView contentContainerStyle={s.stamps} accessibilityLabel="Rating out of 10">
+          {STAMPS_ON.map((_, i) => 10 - i).map((n) => (
+            <Rise key={n} delay={(10 - n) * 30}>
+              <Pressable
+                role="button"
+                onPress={() => {
+                  setPicked(n);
+                  // A beat to see the stamp land before the sheet closes.
+                  close(() => onPick(n), 280);
+                }}
+                accessibilityLabel={`Rate ${n} out of 10`}
+                accessibilityState={{ selected: n === picked }}
+                style={[s.stamp, n === picked && s.stampPicked]}
+              >
+                <SvgXml xml={(n === picked ? STAMPS_ON : STAMPS_OFF)[n - 1]} width={52} height={52} />
+              </Pressable>
+            </Rise>
+          ))}
+        </ScrollView>
+      )}
+    </Sheet>
+  );
+}
+
+const minutes = (sec: number | null) => (sec == null ? "" : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);
+
+/** The album's songs as the Activity tracklist draws them; the picked one is inverted. */
+function SongSheet({
+  title,
+  origin,
+  songs,
+  songId,
+  onPick,
+  onClose,
+}: {
+  title: string;
+  origin: string;
+  songs: Song[];
+  songId: number | null;
+  onPick: (songId: number) => void;
+  onClose: () => void;
+}) {
+  const [picked, setPicked] = useState(songId);
+  return (
+    <Sheet title="Favourite song" label={`Favourite song on ${title}`} origin={origin} cancellable={songId !== null} onClose={onClose}>
+      {(close) => (
+        <ScrollView contentContainerStyle={s.songs}>
+          {songs.map((song, i) => (
+            <Rise key={song.id} delay={Math.min(i, 10) * 30}>
+              <Pressable
+                role="button"
+                onPress={() => {
+                  setPicked(song.id);
+                  close(() => onPick(song.id), 280);
+                }}
+                accessibilityState={{ selected: song.id === picked }}
+              >
+                <TrackRow position={song.position} title={song.title} length={minutes(song.duration_seconds)} on={song.id === picked} />
+              </Pressable>
+            </Rise>
+          ))}
+        </ScrollView>
+      )}
+    </Sheet>
   );
 }
 
@@ -447,59 +555,6 @@ function Pulse({ children }: { children: ReactNode }) {
   const scale = t.interpolate({ inputRange: [0, 0.55, 1], outputRange: [0.6, 1.14, 1] });
   const opacity = t.interpolate({ inputRange: [0, 0.55, 1], outputRange: [0, 1, 1] });
   return <Animated.View style={{ opacity, transform: [{ scale }] }}>{children}</Animated.View>;
-}
-
-/** Drag the row right past SWIPE_CLEAR and let go to clear. Taps still reach the row. */
-function SwipeToClear({ enabled, onClear, children }: { enabled: boolean; onClear: () => void; children: ReactNode }) {
-  const x = useAnimatedValue(0);
-  const [past, setPast] = useState(false);
-  // The responder is created once; it reads the latest props through this ref.
-  const latest = useRef({ enabled, onClear });
-  useEffect(() => {
-    latest.current = { enabled, onClear };
-  });
-  // eslint-disable-next-line react-hooks/refs -- the handlers read `latest` during a gesture, never during render
-  const [pan] = useState(() => {
-    const settle = () => {
-      setPast(false);
-      Animated.timing(x, { toValue: 0, duration: ms(260), easing: EASE_OUT, useNativeDriver: true }).start();
-    };
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) => latest.current.enabled && Math.abs(g.dx) > 6 && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderTerminationRequest: () => false,
-      onPanResponderMove: (_, g) => {
-        // Past either edge the row resists, following at a quarter of the finger.
-        const v = g.dx < 0 ? Math.max(g.dx * 0.25, -28) : g.dx > 300 ? 300 + (g.dx - 300) * 0.25 : g.dx;
-        x.setValue(v);
-        setPast(v >= SWIPE_CLEAR);
-      },
-      onPanResponderRelease: (_, g) => {
-        if (g.dx < SWIPE_CLEAR) return settle();
-        Animated.timing(x, { toValue: 360, duration: ms(240), easing: EASE_OUT, useNativeDriver: true }).start(() => {
-          latest.current.onClear();
-          x.setValue(0);
-          setPast(false);
-        });
-      },
-      onPanResponderTerminate: settle,
-    });
-  });
-  return (
-    <View style={[s.swipe, enabled && { backgroundColor: past ? "#B3261E" : "#7A7A7A" }]} {...pan.panHandlers}>
-      {enabled && (
-        <Animated.View
-          style={[s.swipeHint, { opacity: x.interpolate({ inputRange: [0, 60], outputRange: [0, 1], extrapolate: "clamp" }) }]}
-          aria-hidden
-        >
-          <Svg width={14} height={14} viewBox="0 0 14 14" fill="none" stroke="#FAFAF8" strokeWidth={1.7} strokeLinecap="round">
-            <Path d="M2 2 L12 12 M12 2 L2 12" />
-          </Svg>
-          <Text style={s.swipeLabel}>{past ? "Release to clear" : "Clear rating"}</Text>
-        </Animated.View>
-      )}
-      <Animated.View style={{ transform: [{ translateX: x }] }}>{children}</Animated.View>
-    </View>
-  );
 }
 
 function Posted({ review }: { review: Review }) {
@@ -604,9 +659,6 @@ const s = StyleSheet.create({
   heroText: { alignItems: "center", gap: 4 },
   heroTitle: { fontFamily: SERIF, fontSize: 36, lineHeight: 36, color: INK, textAlign: "center" },
   heroMeta: { fontFamily: SANS, fontSize: 13, color: "#555", textAlign: "center" },
-  swipe: { borderRadius: 16, overflow: "hidden" },
-  swipeHint: { position: "absolute", left: 0, top: 0, bottom: 0, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", gap: 8 },
-  swipeLabel: { fontFamily: SANS_SEMI, fontSize: 14, color: "#FAFAF8" },
   rateRow: { minHeight: 60, paddingHorizontal: 16, borderRadius: 16, backgroundColor: "#FFFFFF", flexDirection: "row", alignItems: "center", gap: 12 },
   rateLabel: { flex: 1, fontFamily: SANS_MEDIUM, fontSize: 15, color: INK },
   rateChange: { fontFamily: SANS, fontSize: 13, color: "#666" },
@@ -620,7 +672,6 @@ const s = StyleSheet.create({
   twin: { position: "absolute", top: 0, left: 0, right: 0, height: undefined, opacity: 0, pointerEvents: "none" },
   rule: { marginTop: 8, marginBottom: 10, height: 1 },
   body: { padding: 0, fontFamily: SANS, fontSize: 15, lineHeight: 23, color: "#222", textAlignVertical: "top" },
-  hint: { fontFamily: SANS, fontSize: 12, lineHeight: 18, color: "#666" },
   error: { fontFamily: SANS_MEDIUM, fontSize: 13, color: "#B3261E" },
 
   close: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
@@ -628,6 +679,8 @@ const s = StyleSheet.create({
   stamp: { width: 52, height: 52 },
   stampPicked: { transform: [{ scale: 1.18 }] },
   sheetFoot: { paddingHorizontal: 20, paddingBottom: 28 },
+  songs: { paddingHorizontal: 20, paddingBottom: 20 },
+  songPos: { width: 28, fontFamily: SANS, fontSize: 12, color: INK, opacity: 0.6 },
   sheetCancel: { minHeight: 52, borderRadius: 10, backgroundColor: "#E2E2E2", alignItems: "center", justifyContent: "center" },
   sheetCancelText: { fontFamily: SANS_MEDIUM, fontSize: 16, color: INK },
 
