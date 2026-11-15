@@ -122,37 +122,37 @@ html body {
 }
 
 .another-heading3 {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply text-[24px] tracking-[-0.03em];
 }
 
 .another-heading4 {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply font-normal text-[20px] tracking-[-0.03em];
 }
 
 .another-heading5 {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply text-[16px] tracking-[-0.03em];
 }
 
 .another-heading6 {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply font-normal text-[14px] tracking-[-0.03em];
 }
 
 .another-body {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply font-normal text-[14px] tracking-[-0.03em];
 }
 
 .another-label {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply font-normal text-[10px] tracking-[-0.03em];
 }
 
 .another-top-rated-album {
-  font-family: var(--font-eb-garamond), serif;
+  font-family: var(--font-instrument-sans), sans-serif;
   @apply font-bold text-[28px] tracking-[-0.03em] text-center;
 }
 

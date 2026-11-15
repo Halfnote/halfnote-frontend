@@ -7,6 +7,12 @@ import {
   EBGaramond_600SemiBold,
   EBGaramond_700Bold,
 } from "@expo-google-fonts/eb-garamond";
+import {
+  InstrumentSans_400Regular,
+  InstrumentSans_500Medium,
+  InstrumentSans_600SemiBold,
+  InstrumentSans_700Bold,
+} from "@expo-google-fonts/instrument-sans";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
@@ -57,6 +63,10 @@ export default function RootLayout() {
     EBGaramond_600SemiBold,
     EBGaramond_700Bold,
     EBGaramond_400Regular_Italic,
+    InstrumentSans_400Regular,
+    InstrumentSans_500Medium,
+    InstrumentSans_600SemiBold,
+    InstrumentSans_700Bold,
   });
   if (!fontsLoaded && !fontError) return null;
   return (
