@@ -9,7 +9,6 @@ import {
   Easing,
   FlatList,
   Image,
-  PanResponder,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -42,7 +41,6 @@ AccessibilityInfo.addEventListener("reduceMotionChanged", (on) => (reduceMotion 
 const ms = (duration: number) => (reduceMotion ? 0 : duration);
 const EASE_OUT = Easing.bezier(0.2, 0.8, 0.2, 1);
 const EASE_IN = Easing.bezier(0.4, 0, 1, 1);
-const SWIPE_CLEAR = 110;
 
 /** "Write a review": pick an album, optionally rate it, write a take, post. Opened by the navbar's pencil. */
 export default function Write() {
@@ -213,13 +211,11 @@ function Composer({
   };
 
   const [rateOrigin, setRateOrigin] = useState("50% 40%");
-  const clearRating = () => setDraft((d) => ({ ...d, rating: null }));
 
   // Viewing the album imports it, which is what creates its songs.
   const songs = useAlbumDetails(String(album.id)).data?.album.songs ?? [];
   const song = songs.find((x) => x.id === draft.favoriteSongId);
   const [songOrigin, setSongOrigin] = useState<string>();
-  const clearSong = () => setDraft((d) => ({ ...d, favoriteSongId: null }));
 
   const focusHeadEnd = () => {
     headRef.current?.focus();
@@ -261,24 +257,47 @@ function Composer({
           </View>
         </View>
 
-        <SwipeToClear enabled={draft.rating !== null} onClear={clearRating}>
+        <Pressable
+          role="button"
+          onPress={(e) => {
+            setRateOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`);
+            setRateOpen(true);
+          }}
+          accessibilityLabel={draft.rating ? `Rating: ${draft.rating} out of 10. Change rating` : "Add rating"}
+          style={s.rateRow}
+        >
+          {draft.rating ? (
+            <>
+              <Pulse key={draft.rating}>
+                <SvgXml xml={STAMPS_ON[draft.rating - 1]} width={40} height={40} />
+              </Pulse>
+              <Text style={s.rateLabel}>{draft.rating} out of 10</Text>
+              <Text style={s.rateChange}>Change</Text>
+            </>
+          ) : (
+            <>
+              <Svg width={18} height={18} viewBox="0 0 18 18" fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round">
+                <Path d="M9 3 V15 M3 9 H15" />
+              </Svg>
+              <Text style={s.rateLabel}>Add rating</Text>
+              <Text style={s.optional}>Optional</Text>
+            </>
+          )}
+        </Pressable>
+
+        {songs.length > 0 && (
           <Pressable
             role="button"
-            onPress={(e) => {
-              setRateOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`);
-              setRateOpen(true);
-            }}
-            accessibilityLabel={draft.rating ? `Rating: ${draft.rating} out of 10. Change rating` : "Add rating"}
-            accessibilityActions={draft.rating ? [{ name: "clear", label: "Clear rating" }] : undefined}
-            onAccessibilityAction={(e) => e.nativeEvent.actionName === "clear" && clearRating()}
+            onPress={(e) => setSongOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`)}
+            accessibilityLabel={song ? `Favourite song: ${song.title}. Change favourite song` : "Add favourite song"}
             style={s.rateRow}
           >
-            {draft.rating ? (
+            {song ? (
               <>
-                <Pulse key={draft.rating}>
-                  <SvgXml xml={STAMPS_ON[draft.rating - 1]} width={40} height={40} />
-                </Pulse>
-                <Text style={s.rateLabel}>{draft.rating} out of 10</Text>
+                <Text style={s.songPos}>{song.position}</Text>
+                <Text style={s.rateLabel} numberOfLines={1}>
+                  {song.title}
+                </Text>
                 <Text style={s.rateChange}>Change</Text>
               </>
             ) : (
@@ -286,42 +305,11 @@ function Composer({
                 <Svg width={18} height={18} viewBox="0 0 18 18" fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round">
                   <Path d="M9 3 V15 M3 9 H15" />
                 </Svg>
-                <Text style={s.rateLabel}>Add rating</Text>
+                <Text style={s.rateLabel}>Add favourite song</Text>
                 <Text style={s.optional}>Optional</Text>
               </>
             )}
           </Pressable>
-        </SwipeToClear>
-
-        {songs.length > 0 && (
-          <SwipeToClear enabled={song != null} onClear={clearSong}>
-            <Pressable
-              role="button"
-              onPress={(e) => setSongOrigin(`${e.nativeEvent.pageX}px ${e.nativeEvent.pageY}px`)}
-              accessibilityLabel={song ? `Favourite song: ${song.title}. Change favourite song` : "Add favourite song"}
-              accessibilityActions={song ? [{ name: "clear", label: "Clear favourite song" }] : undefined}
-              onAccessibilityAction={(e) => e.nativeEvent.actionName === "clear" && clearSong()}
-              style={s.rateRow}
-            >
-              {song ? (
-                <>
-                  <Text style={s.songPos}>{song.position}</Text>
-                  <Text style={s.rateLabel} numberOfLines={1}>
-                    {song.title}
-                  </Text>
-                  <Text style={s.rateChange}>Change</Text>
-                </>
-              ) : (
-                <>
-                  <Svg width={18} height={18} viewBox="0 0 18 18" fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round">
-                    <Path d="M9 3 V15 M3 9 H15" />
-                  </Svg>
-                  <Text style={s.rateLabel}>Add favourite song</Text>
-                  <Text style={s.optional}>Optional</Text>
-                </>
-              )}
-            </Pressable>
-          </SwipeToClear>
         )}
 
         <View style={s.writing}>
@@ -569,59 +557,6 @@ function Pulse({ children }: { children: ReactNode }) {
   return <Animated.View style={{ opacity, transform: [{ scale }] }}>{children}</Animated.View>;
 }
 
-/** Drag the row right past SWIPE_CLEAR and let go to clear. Taps still reach the row. */
-function SwipeToClear({ enabled, onClear, children }: { enabled: boolean; onClear: () => void; children: ReactNode }) {
-  const x = useAnimatedValue(0);
-  const [past, setPast] = useState(false);
-  // The responder is created once; it reads the latest props through this ref.
-  const latest = useRef({ enabled, onClear });
-  useEffect(() => {
-    latest.current = { enabled, onClear };
-  });
-  // eslint-disable-next-line react-hooks/refs -- the handlers read `latest` during a gesture, never during render
-  const [pan] = useState(() => {
-    const settle = () => {
-      setPast(false);
-      Animated.timing(x, { toValue: 0, duration: ms(260), easing: EASE_OUT, useNativeDriver: true }).start();
-    };
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) => latest.current.enabled && Math.abs(g.dx) > 6 && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderTerminationRequest: () => false,
-      onPanResponderMove: (_, g) => {
-        // Past either edge the row resists, following at a quarter of the finger.
-        const v = g.dx < 0 ? Math.max(g.dx * 0.25, -28) : g.dx > 300 ? 300 + (g.dx - 300) * 0.25 : g.dx;
-        x.setValue(v);
-        setPast(v >= SWIPE_CLEAR);
-      },
-      onPanResponderRelease: (_, g) => {
-        if (g.dx < SWIPE_CLEAR) return settle();
-        Animated.timing(x, { toValue: 360, duration: ms(240), easing: EASE_OUT, useNativeDriver: true }).start(() => {
-          latest.current.onClear();
-          x.setValue(0);
-          setPast(false);
-        });
-      },
-      onPanResponderTerminate: settle,
-    });
-  });
-  return (
-    <View style={[s.swipe, enabled && { backgroundColor: past ? "#B3261E" : "#7A7A7A" }]} {...pan.panHandlers}>
-      {enabled && (
-        <Animated.View
-          style={[s.swipeHint, { opacity: x.interpolate({ inputRange: [0, 60], outputRange: [0, 1], extrapolate: "clamp" }) }]}
-          aria-hidden
-        >
-          <Svg width={14} height={14} viewBox="0 0 14 14" fill="none" stroke="#FAFAF8" strokeWidth={1.7} strokeLinecap="round">
-            <Path d="M2 2 L12 12 M12 2 L2 12" />
-          </Svg>
-          <Text style={s.swipeLabel}>{past ? "Release to clear" : "Clear rating"}</Text>
-        </Animated.View>
-      )}
-      <Animated.View style={{ transform: [{ translateX: x }] }}>{children}</Animated.View>
-    </View>
-  );
-}
-
 function Posted({ review }: { review: Review }) {
   const insets = useSafeAreaInsets();
   const full = isFullReview(review.body);
@@ -724,9 +659,6 @@ const s = StyleSheet.create({
   heroText: { alignItems: "center", gap: 4 },
   heroTitle: { fontFamily: SERIF, fontSize: 36, lineHeight: 36, color: INK, textAlign: "center" },
   heroMeta: { fontFamily: SANS, fontSize: 13, color: "#555", textAlign: "center" },
-  swipe: { borderRadius: 16, overflow: "hidden" },
-  swipeHint: { position: "absolute", left: 0, top: 0, bottom: 0, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", gap: 8 },
-  swipeLabel: { fontFamily: SANS_SEMI, fontSize: 14, color: "#FAFAF8" },
   rateRow: { minHeight: 60, paddingHorizontal: 16, borderRadius: 16, backgroundColor: "#FFFFFF", flexDirection: "row", alignItems: "center", gap: 12 },
   rateLabel: { flex: 1, fontFamily: SANS_MEDIUM, fontSize: 15, color: INK },
   rateChange: { fontFamily: SANS, fontSize: 13, color: "#666" },
