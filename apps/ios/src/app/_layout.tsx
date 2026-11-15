@@ -31,13 +31,12 @@ function Routes() {
   return (
     <Stack
       screenOptions={{
-        headerTitle: "halfnote.",
+        headerTitle: "",
         headerBackButtonDisplayMode: "minimal",
-        headerTitleStyle: { fontFamily: "EBGaramond_400Regular_Italic", fontSize: 28 },
       }}
     >
       <Stack.Protected guard={!!session}>
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="dev/search" />
         <Stack.Screen name="album/[discogsId]" />
         <Stack.Screen name="share" options={{ presentation: "fullScreenModal", headerShown: false }} />
@@ -57,7 +56,6 @@ export default function RootLayout() {
     EBGaramond_500Medium,
     EBGaramond_600SemiBold,
     EBGaramond_700Bold,
-    // headerTitleStyle has no fontStyle, so the wordmark needs a family name that is already italic.
     EBGaramond_400Regular_Italic,
   });
   if (!fontsLoaded && !fontError) return null;
