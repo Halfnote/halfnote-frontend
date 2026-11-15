@@ -412,7 +412,6 @@ function Sheet({
 }: {
   title: string;
   label: string;
-  /** Where the tap that opened it landed. */
   origin: string;
   /** Show Cancel: there is a current value to keep. */
   cancellable: boolean;
@@ -747,7 +746,6 @@ const s = StyleSheet.create({
   twin: { position: "absolute", top: 0, left: 0, right: 0, height: undefined, opacity: 0, pointerEvents: "none" },
   rule: { marginTop: 8, marginBottom: 10, height: 1 },
   body: { padding: 0, fontFamily: SANS, fontSize: 15, lineHeight: 23, color: "#222", textAlignVertical: "top" },
-  hint: { fontFamily: SANS, fontSize: 12, lineHeight: 18, color: "#666" },
   error: { fontFamily: SANS_MEDIUM, fontSize: 13, color: "#B3261E" },
 
   close: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },

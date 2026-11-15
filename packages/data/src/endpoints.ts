@@ -46,7 +46,6 @@ export interface ReviewInput {
   headline: string;
   body: string;
   genres?: string[];
-  /** A song on this album, or null for none. */
   favoriteSongId?: number | null;
 }
 export interface EditReviewInput {
