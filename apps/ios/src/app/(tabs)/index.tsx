@@ -1,5 +1,5 @@
 import type { FeedCard, OnThisDay } from "@halfnote/data";
-import { useDebounce, useDiscover, useSearchAlbums } from "@halfnote/data/react";
+import { useDebounce, useDiscover, useSearchAlbums, useSetLike } from "@halfnote/data/react";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
@@ -112,6 +112,7 @@ export default function Discover() {
 
 function TopReviews({ cards }: { cards: Omit<FeedCard, "latest_activity">[] }) {
   const [index, setIndex] = useState(0);
+  const setLike = useSetLike();
   if (cards.length === 0) return null;
   return (
     <View style={{ paddingTop: 30 }}>
@@ -126,7 +127,14 @@ function TopReviews({ cards }: { cards: Omit<FeedCard, "latest_activity">[] }) {
         onScroll={(e) => setIndex(Math.max(0, Math.min(cards.length - 1, Math.round(e.nativeEvent.contentOffset.x / (TOP_REVIEW_WIDTH + GAP)))))}
       >
         {cards.map((c) => (
-          <TopReviewCard key={c.review.id} card={c} onPress={() => openAlbum(c.album.discogs_id)} onAuthorPress={() => router.push(`/user/${c.author.username}`)} />
+          <TopReviewCard
+            key={c.review.id}
+            card={c}
+            onPress={() => router.push(`/review/${c.review.id}`)}
+            onAlbumPress={() => openAlbum(c.album.discogs_id)}
+            onAuthorPress={() => router.push(`/user/${c.author.username}`)}
+            onLike={() => setLike(c.review.id, !c.review.is_liked)}
+          />
         ))}
       </ScrollView>
       <View style={{ paddingTop: 12, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 5, height: 16 }}>

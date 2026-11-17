@@ -160,17 +160,25 @@ export function ReviewRow({ text, onPress, ...row }: Omit<ItemRowProps, "onPress
 
 export const TOP_REVIEW_WIDTH = 306;
 
-export function TopReviewCard({ card, onPress, onAuthorPress }: { card: Omit<FeedCard, "latest_activity">; onPress: () => void; onAuthorPress: () => void }) {
+interface TopReviewCardProps {
+  card: Omit<FeedCard, "latest_activity">;
+  onPress: () => void;
+  onAlbumPress: () => void;
+  onAuthorPress: () => void;
+  onLike: () => void;
+}
+
+export function TopReviewCard({ card, onPress, onAlbumPress, onAuthorPress, onLike }: TopReviewCardProps) {
   const { review, author, album } = card;
   return (
-    <View style={{ width: TOP_REVIEW_WIDTH, padding: 16, borderRadius: 16, backgroundColor: "#FFFFFF", gap: 12 }}>
+    <Pressable onPress={onPress} accessibilityLabel={`Open ${author.name || author.username}'s review of ${album.title}`} style={{ width: TOP_REVIEW_WIDTH, padding: 16, borderRadius: 16, backgroundColor: "#FFFFFF", gap: 12 }}>
       <ItemRow
         lead={<Art uri={album.cover_url ?? undefined} style={{ width: 72, height: 72, borderRadius: 2, boxShadow: "0 8px 16px -10px rgba(0,0,0,0.5)" }} />}
         title={album.title}
         subtitle={album.artist}
         rating={review.rating}
         stampSize={52}
-        onPress={onPress}
+        onPress={onAlbumPress}
       />
       {review.headline !== "" && (
         <Text numberOfLines={3} style={{ fontFamily: F.sans, fontSize: 14, lineHeight: 21, color: "#222" }}>
@@ -184,10 +192,17 @@ export function TopReviewCard({ card, onPress, onAuthorPress }: { card: Omit<Fee
             <Text style={{ fontFamily: F.sans600, color: INK }}>{author.name || author.username}</Text> · {ago(review.created_at)}
           </Text>
         </Pressable>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+        <Pressable
+          onPress={onLike}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel={review.is_liked ? "Unlike" : "Like"}
+          accessibilityState={{ selected: review.is_liked }}
+          style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+        >
           <Heart on={review.is_liked} size={13} />
           <Text style={{ fontFamily: F.sans, fontSize: 12, color: "#555" }}>{review.likes_count}</Text>
-        </View>
+        </Pressable>
       </View>
       {review.favorite_song && (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
@@ -199,6 +214,6 @@ export function TopReviewCard({ card, onPress, onAuthorPress }: { card: Omit<Fee
           </Text>
         </View>
       )}
-    </View>
+    </Pressable>
   );
 }
