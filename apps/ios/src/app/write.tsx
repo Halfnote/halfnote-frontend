@@ -22,7 +22,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect, SvgXml } from "react-native-svg";
 import { STAMPS_OFF, STAMPS_ON } from "../ratingStamps";
-import { TrackRow } from "../activity/parts";
+import { TrackRow } from "../components";
 import { canPost, emptyDraft, isFullReview, spill, type Draft, type Step } from "../reviewDraft";
 import { useSession } from "../session";
 import { labelColor } from "../storyDraft";

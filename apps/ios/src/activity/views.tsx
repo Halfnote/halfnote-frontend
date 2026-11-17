@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import { NAVBAR_CLEARANCE } from "../Navbar";
 import { Art, F, Vinyl, font } from "../story/kit";
-import { ArrowRight, Byline, Heart, INK, Reason, Stamp, SUB, displayName, dotWindow, firstName, ago, isFullReview, label, withYear } from "./parts";
+import { Heart, INK, Stamp, SUB, ago, dotWindow } from "../components";
+import { ArrowRight, Byline, Reason, displayName, firstName, isFullReview, label, withYear } from "./parts";
 
 interface ListProps {
   cards: FeedCard[];

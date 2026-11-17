@@ -3,7 +3,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Art, F, font } from "../../story/kit";
-import { Avatar, INK, PixelBack, Stamp, SUB, TrackRow, firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { Avatar, INK, PageHeader, Stamp, SUB, TrackRow } from "../../components";
 
 const PAPER = "#FAFAF8";
 
@@ -21,14 +22,7 @@ export default function Review() {
 
   return (
     <View style={{ flex: 1, backgroundColor: PAPER }}>
-      <View style={{ paddingTop: insets.top, backgroundColor: PAPER, flexDirection: "row", alignItems: "center", gap: 12, height: 64 + insets.top, paddingLeft: 8, paddingRight: 14 }}>
-        <Pressable onPress={() => router.back()} accessibilityLabel="Back" style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
-          <PixelBack />
-        </Pressable>
-        <Text numberOfLines={1} style={{ flex: 1, fontFamily: F.sans600, fontSize: 22, color: INK }}>
-          {album.title}
-        </Text>
-      </View>
+      <PageHeader title={album.title} background={PAPER} />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, paddingBottom: 40 + insets.bottom }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontFamily: F.sans, fontSize: 15, color: INK }}>{album.artist}</Text>
