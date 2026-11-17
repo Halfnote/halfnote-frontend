@@ -1,14 +1,19 @@
 import { useDebounce, useSearchAlbums } from "@halfnote/data/react";
-import { router } from "expo-router";
-import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { router, useNavigation, type NativeStackNavigationProp } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BG, ItemRow, PixelBack, SearchBar } from "../components";
 import { Art, F } from "../story/kit";
 
 export default function Search() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<Record<string, object | undefined>>>();
+  const input = useRef<TextInput>(null);
   const [q, setQ] = useState("");
+
+  // autoFocus raises the keyboard mid-push and the two animations stutter; focus once the page has landed.
+  useEffect(() => navigation.addListener("transitionEnd", (e) => !e.data.closing && input.current?.focus()), [navigation]);
   const debounced = useDebounce(q.trim().toLowerCase(), 300);
   const query = debounced.length >= 2 ? debounced : "";
   const search = useSearchAlbums(query);
@@ -25,7 +30,7 @@ export default function Search() {
           <PixelBack />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <SearchBar value={q} onChangeText={setQ} autoFocus />
+          <SearchBar ref={input} value={q} onChangeText={setQ} />
         </View>
       </View>
       <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 + insets.bottom }}>

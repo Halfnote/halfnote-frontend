@@ -1,6 +1,6 @@
 import type { FeedCard, Person } from "@halfnote/data";
 import { router } from "expo-router";
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import { Image, Pressable, Text, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect, SvgXml } from "react-native-svg";
@@ -218,7 +218,7 @@ export function TopReviewCard({ card, onPress, onAlbumPress, onAuthorPress, onLi
   );
 }
 
-export function SearchBar({ value = "", onChangeText, autoFocus }: { value?: string; onChangeText?: (q: string) => void; autoFocus?: boolean }) {
+export function SearchBar({ value = "", onChangeText, ref }: { value?: string; onChangeText?: (q: string) => void; ref?: Ref<TextInput> }) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", gap: 10, height: 46, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "#FFFFFF" }}>
       <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth={1.8} strokeLinecap="round">
@@ -228,7 +228,7 @@ export function SearchBar({ value = "", onChangeText, autoFocus }: { value?: str
       <TextInput
         value={value}
         onChangeText={onChangeText}
-        autoFocus={autoFocus}
+        ref={ref}
         editable={!!onChangeText}
         placeholder="Search"
         placeholderTextColor="#8A8A8A"
