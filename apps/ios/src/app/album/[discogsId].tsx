@@ -1,83 +1,94 @@
-import { useAlbumDetails, useSetLike } from "@halfnote/data/react";
-import type { Review } from "@halfnote/data";
-import { router, Stack, useLocalSearchParams } from "expo-router";
-import { AlbumCard, RatingBadge } from "@halfnote/ui";
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useAlbumDetails } from "@halfnote/data/react";
+import { router, useLocalSearchParams } from "expo-router";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Art, F, font } from "../../story/kit";
+import { labelColor } from "../../storyDraft";
+import { Avatar, BG, INK, PageHeader, ReviewRow, SectionHeader, Stamp, SUB, TrackRow } from "../../components";
 
-export default function AlbumDetails() {
+const minutes = (sec: number | null) => (sec == null ? "" : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);
+
+export default function Album() {
+  const insets = useSafeAreaInsets();
   const { discogsId } = useLocalSearchParams<{ discogsId: string }>();
-  const { data, error, isLoading } = useAlbumDetails(discogsId);
-  const setLike = useSetLike();
+  const { data, error } = useAlbumDetails(discogsId);
+  const songs = data?.album.songs ?? [];
 
-  if (isLoading) return <ActivityIndicator style={styles.center} />;
-  if (error || !data) return <Text style={[styles.center, styles.error]}>{error?.message ?? "Album not found"}</Text>;
-
-  const { album, reviews, average_rating, review_count } = data;
   return (
-    <FlatList
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-      data={reviews}
-      keyExtractor={(r) => String(r.id)}
-      ListHeaderComponent={
-        <View style={styles.header}>
-          <Stack.Screen options={{ title: album.title }} />
-          <AlbumCard albumCover={album.cover_url ?? ""} albumName={album.title} artistName={album.artist} size={240} />
-          <Text style={styles.muted}>
-            {album.year ? `${album.year} · ` : ""}
-            {review_count} reviews
-          </Text>
-          {average_rating != null && <RatingBadge rating={Math.round(average_rating)} />}
-          <ShareButton onPress={() => router.push({ pathname: "/share", params: { discogsId } })} />
-        </View>
-      }
-      renderItem={({ item }) => (
-        <ReviewRow
-          review={item}
-          onLike={() => setLike(item.id, !item.is_liked_by_user)}
-          onShare={() => router.push({ pathname: "/share", params: { discogsId, reviewId: item.id } })}
-        />
+    <View style={{ flex: 1, backgroundColor: BG }}>
+      <PageHeader title="Album" />
+      {error && <Text style={{ fontFamily: F.sans, fontSize: 14, color: SUB, textAlign: "center", marginTop: 48 }}>{error.message}</Text>}
+      {data && (
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, paddingBottom: 48 + insets.bottom }}>
+          <View style={{ alignItems: "center", gap: 12 }}>
+            <Art uri={data.album.cover_url} style={{ width: 248, height: 248, borderRadius: 4, boxShadow: "0 30px 44px -26px rgba(0,0,0,0.6)" }} />
+            <View style={{ alignItems: "center", gap: 4 }}>
+              <Text style={[font(F.serif, 38, 1), { color: INK, textAlign: "center" }]}>{data.album.title}</Text>
+              <Text style={{ fontFamily: F.sans, fontSize: 14, color: "#444", textAlign: "center" }}>
+                {data.album.year ? `${data.album.artist} · ${data.album.year}` : data.album.artist}
+              </Text>
+              {!!data.album.label && <Text style={{ fontFamily: F.sans, fontSize: 12, color: SUB, textAlign: "center" }}>{data.album.label}</Text>}
+            </View>
+            {data.average_rating != null && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <Stamp rating={Math.round(data.average_rating)} size={56} />
+                <Text style={{ fontFamily: F.sans, fontSize: 13, color: "#555" }}>
+                  Average from{"\n"}
+                  {data.rating_count} ratings
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <Pressable
+            role="button"
+            onPress={() => router.push({ pathname: "/write", params: { discogsId } })}
+            style={({ pressed }) => ({
+              marginTop: 20,
+              minHeight: 50,
+              borderRadius: 12,
+              backgroundColor: "#1d1d1d",
+              alignItems: "center",
+              justifyContent: "center",
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
+          >
+            <Text style={{ fontFamily: F.sans600, fontSize: 16, color: BG }}>Write a review</Text>
+          </Pressable>
+
+          {data.reviews.length > 0 && (
+            <>
+              <SectionHeader title="Reviews" style={{ marginTop: 32, marginBottom: 10 }} />
+              <View style={{ gap: 10 }}>
+                {data.reviews.map((r) => (
+                  <ReviewRow
+                    key={r.id}
+                    person
+                    lead={
+                      <Pressable onPress={() => router.push(`/user/${r.username}`)} accessibilityLabel={`Open ${r.username}'s profile`} hitSlop={8}>
+                        <Avatar person={{ username: r.username, name: "", avatar: r.user_avatar }} color={labelColor(discogsId)} size={34} />
+                      </Pressable>
+                    }
+                    title={r.username}
+                    subtitle={r.is_following_author ? `You follow · @${r.username}` : `@${r.username}`}
+                    rating={r.rating}
+                    text={r.headline}
+                  />
+                ))}
+              </View>
+            </>
+          )}
+
+          {songs.length > 0 && (
+            <>
+              <SectionHeader title="Tracklist" style={{ marginTop: 32, marginBottom: 6 }} />
+              {songs.map((song) => (
+                <TrackRow key={song.id} position={song.position} title={song.title} length={minutes(song.duration_seconds)} on={false} />
+              ))}
+            </>
+          )}
+        </ScrollView>
       )}
-      ListEmptyComponent={<Text style={styles.muted}>No reviews yet</Text>}
-    />
-  );
-}
-
-function ReviewRow({ review, onLike, onShare }: { review: Review; onLike: () => void; onShare: () => void }) {
-  return (
-    <View style={styles.review}>
-      <View style={styles.reviewHeader}>
-        {review.rating != null && <RatingBadge rating={review.rating} />}
-        <Text style={styles.reviewer}>{review.username}</Text>
-      </View>
-      {!!review.content && <Text>{review.content}</Text>}
-      <Pressable onPress={onLike} hitSlop={8} accessibilityRole="button" testID={`like-${review.id}`}>
-        <Text style={review.is_liked_by_user ? styles.liked : styles.muted}>
-          {review.is_liked_by_user ? "♥" : "♡"} {review.likes_count}
-        </Text>
-      </Pressable>
-      <ShareButton onPress={onShare} />
     </View>
   );
 }
-
-function ShareButton({ onPress }: { onPress: () => void }) {
-  return (
-    <Pressable onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel="Share to Story">
-      <Text style={styles.muted}>Share to Story</Text>
-    </Pressable>
-  );
-}
-
-const styles = StyleSheet.create({
-  screen: { backgroundColor: "#fff" },
-  content: { padding: 16, gap: 12 },
-  center: { flex: 1, textAlign: "center", marginTop: 48 },
-  error: { color: "#c00" },
-  header: { alignItems: "center", gap: 4, marginBottom: 12 },
-  muted: { color: "#666" },
-  review: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: "#ccc", paddingTop: 12, gap: 6 },
-  reviewHeader: { flexDirection: "row", alignItems: "center", gap: 8 },
-  reviewer: { fontWeight: "600" },
-  liked: { color: "#d22" },
-});

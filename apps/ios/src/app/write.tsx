@@ -1,6 +1,6 @@
 import type { Review, SearchResult, Song } from "@halfnote/data";
 import { useAlbumDetails, useCreateReview, useDebounce, useRecentlyViewed, useRecordView, useSearchAlbums } from "@halfnote/data/react";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   AccessibilityInfo,
@@ -44,9 +44,21 @@ const EASE_IN = Easing.bezier(0.4, 0, 1, 1);
 
 /** "Write a review": pick an album, optionally rate it, write a take, post. Opened by the navbar's pencil. */
 export default function Write() {
-  const [step, setStep] = useState<Step>({ kind: "pick" });
+  const params = useLocalSearchParams<{ discogsId?: string }>();
+  const [preset, setPreset] = useState(params.discogsId);
+  const presetAlbum = useAlbumDetails(preset ?? "").data?.album;
+  const [picked, setStep] = useState<Step>({ kind: "pick" });
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [rateOpen, setRateOpen] = useState(false);
+
+  let step = picked;
+  if (preset && step.kind === "pick") {
+    if (!presetAlbum) return <View style={s.screen} />;
+    step = {
+      kind: "compose",
+      album: { id: Number(preset), title: presetAlbum.title, artist: presetAlbum.artist, year: presetAlbum.year, cover_image: presetAlbum.cover_url, average_rating: null },
+    };
+  }
 
   switch (step.kind) {
     case "pick":
@@ -61,6 +73,7 @@ export default function Write() {
           setRateOpen={setRateOpen}
           onRepick={() => {
             setDraft((d) => ({ ...d, favoriteSongId: null }));
+            setPreset(undefined);
             setStep({ kind: "pick" });
           }}
           onPosted={(review) => setStep({ kind: "posted", review })}
