@@ -1,21 +1,16 @@
 import type { FeedCard, OnThisDay } from "@halfnote/data";
-import { useDebounce, useDiscover, useSearchAlbums, useSetLike } from "@halfnote/data/react";
+import { useDiscover, useSetLike } from "@halfnote/data/react";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
-import Svg, { Circle, Path } from "react-native-svg";
-import { BG, INK, ItemRow, SectionHeader, TOP_REVIEW_WIDTH, TopReviewCard, dotWindow } from "../../components";
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
+import { BG, INK, SearchBar, SectionHeader, TOP_REVIEW_WIDTH, TopReviewCard, dotWindow } from "../../components";
 import { NAVBAR_CLEARANCE } from "../../Navbar";
-import { Art, F, font } from "../../story/kit";
+import { F, font } from "../../story/kit";
 
 const GAP = 12;
 const openAlbum = (discogsId: string | number) => router.push(`/album/${discogsId}`);
 
 export default function Discover() {
-  const [q, setQ] = useState("");
-  const debounced = useDebounce(q.trim().toLowerCase(), 300);
-  const query = debounced.length >= 2 ? debounced : "";
-  const search = useSearchAlbums(query);
   const discover = useDiscover();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -25,29 +20,7 @@ export default function Discover() {
   };
 
   let body;
-  if (q.trim()) {
-    const results = search.data?.results ?? [];
-    let label = "";
-    if (search.isError) label = "Search isn't working right now.";
-    else if (query && !search.isFetching) label = results.length === 1 ? "1 album" : results.length ? `${results.length} albums` : "No matches yet";
-    body = (
-      <View style={{ paddingHorizontal: 20, paddingTop: 4 }}>
-        <Text style={{ paddingTop: 6, paddingBottom: 8, fontFamily: F.sans600, fontSize: 12, color: "#666" }}>{label}</Text>
-        {results.map((r) => (
-          <View key={r.id} style={{ minHeight: 64, paddingVertical: 8, borderTopWidth: 1, borderTopColor: "#DFDFDF", justifyContent: "center" }}>
-            <ItemRow
-              lead={<Art uri={r.cover_image ?? r.thumb} style={{ width: 48, height: 48, borderRadius: 2 }} />}
-              title={r.title}
-              subtitle={r.year ? `${r.artist} · ${r.year}` : r.artist}
-              rating={r.average_rating == null ? null : Math.round(r.average_rating)}
-              stampSize={36}
-              onPress={() => openAlbum(r.id)}
-            />
-          </View>
-        ))}
-      </View>
-    );
-  } else if (discover.isPending) body = <ActivityIndicator style={{ marginTop: 40 }} />;
+  if (discover.isPending) body = <ActivityIndicator style={{ marginTop: 40 }} />;
   else if (discover.isError)
     body = (
       <View style={{ alignItems: "center", gap: 16, marginTop: 40 }}>
@@ -70,8 +43,6 @@ export default function Discover() {
       style={{ flex: 1, backgroundColor: BG }}
       contentContainerStyle={{ paddingBottom: NAVBAR_CLEARANCE }}
       stickyHeaderIndices={[1]}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={pull} />}
     >
       <View style={{ paddingTop: 18, paddingHorizontal: 20, gap: 14 }}>
@@ -79,32 +50,11 @@ export default function Discover() {
           Discover
         </Text>
       </View>
-      <View style={{ paddingVertical: 12, paddingHorizontal: 20, backgroundColor: BG }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, height: 46, paddingHorizontal: 14, borderRadius: 10, backgroundColor: "#FFFFFF" }}>
-          <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth={1.8} strokeLinecap="round">
-            <Circle cx={11} cy={11} r={6.5} />
-            <Path d="M16 16 L20 20" />
-          </Svg>
-          <TextInput
-            value={q}
-            onChangeText={setQ}
-            placeholder="Search"
-            placeholderTextColor="#8A8A8A"
-            accessibilityLabel="Search"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-            style={{ flex: 1, height: "100%", fontFamily: F.sans, fontSize: 15, color: INK }}
-          />
-          {q ? (
-            <Pressable onPress={() => setQ("")} accessibilityLabel="Clear search" hitSlop={8} style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: "#DCDCDC", alignItems: "center", justifyContent: "center" }}>
-              <Svg width={10} height={10} viewBox="0 0 14 14" fill="none" stroke={INK} strokeWidth={1.8} strokeLinecap="round">
-                <Path d="M2 2 L12 12 M12 2 L2 12" />
-              </Svg>
-            </Pressable>
-          ) : null}
+      <Pressable onPress={() => router.push("/search")} accessibilityRole="search" style={{ paddingVertical: 12, paddingHorizontal: 20, backgroundColor: BG }}>
+        <View pointerEvents="none">
+          <SearchBar />
         </View>
-      </View>
+      </Pressable>
       {body}
     </ScrollView>
   );

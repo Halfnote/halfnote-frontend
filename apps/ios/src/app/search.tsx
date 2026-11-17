@@ -1,0 +1,48 @@
+import { useDebounce, useSearchAlbums } from "@halfnote/data/react";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BG, ItemRow, PixelBack, SearchBar } from "../components";
+import { Art, F } from "../story/kit";
+
+export default function Search() {
+  const insets = useSafeAreaInsets();
+  const [q, setQ] = useState("");
+  const debounced = useDebounce(q.trim().toLowerCase(), 300);
+  const query = debounced.length >= 2 ? debounced : "";
+  const search = useSearchAlbums(query);
+  const results = q.trim() ? (search.data?.results ?? []) : [];
+
+  let label = "";
+  if (search.isError) label = "Search isn't working right now.";
+  else if (query && !search.isFetching) label = results.length === 1 ? "1 album" : results.length ? `${results.length} albums` : "No matches yet";
+
+  return (
+    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: BG }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 12, paddingLeft: 8, paddingRight: 20 }}>
+        <Pressable onPress={() => router.back()} accessibilityLabel="Back" style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
+          <PixelBack />
+        </Pressable>
+        <View style={{ flex: 1 }}>
+          <SearchBar value={q} onChangeText={setQ} autoFocus />
+        </View>
+      </View>
+      <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 + insets.bottom }}>
+        <Text style={{ paddingTop: 6, paddingBottom: 8, fontFamily: F.sans600, fontSize: 12, color: "#666" }}>{label}</Text>
+        {results.map((r) => (
+          <View key={r.id} style={{ minHeight: 64, paddingVertical: 8, borderTopWidth: 1, borderTopColor: "#DFDFDF", justifyContent: "center" }}>
+            <ItemRow
+              lead={<Art uri={r.cover_image ?? r.thumb} style={{ width: 48, height: 48, borderRadius: 2 }} />}
+              title={r.title}
+              subtitle={r.year ? `${r.artist} · ${r.year}` : r.artist}
+              rating={r.average_rating == null ? null : Math.round(r.average_rating)}
+              stampSize={36}
+              onPress={() => router.push(`/album/${r.id}`)}
+            />
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
