@@ -3,6 +3,8 @@ import type {
   Activity,
   ActivityFilterType,
   AlbumDetailData,
+  DiscoverResponse,
+  FeedCard,
   FeedPage,
   ArtistDetails,
   RecentlyViewedResponse,
@@ -174,6 +176,17 @@ export const endpoints = {
     method: "GET",
     path: "/music/feed/",
     query: cursor ? { cursor } : undefined,
+    parse: cast,
+  }),
+  discover: (date: string): Endpoint<DiscoverResponse> => ({
+    method: "GET",
+    path: "/music/discover/",
+    query: { date },
+    parse: cast,
+  }),
+  review: (id: number): Endpoint<Omit<FeedCard, "latest_activity">> => ({
+    method: "GET",
+    path: `/music/reviews/${id}/`,
     parse: cast,
   }),
   /** PUT likes, DELETE unlikes; both idempotent. */

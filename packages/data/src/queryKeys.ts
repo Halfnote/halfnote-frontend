@@ -30,6 +30,8 @@ export const queryKeys = {
 
   // Activity screen: one card per review
   feed: () => ["feed"] as const,
+  review: (id: number) => ["review", id] as const,
+  discover: (date: string) => ["discover", date] as const,
 
   // Albums & album details
   albums: () => ["albums"],

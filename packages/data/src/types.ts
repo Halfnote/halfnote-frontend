@@ -48,6 +48,7 @@ export interface Album {
   artist_photo_url?: string; // Artist photo from Discogs
   genres?: Genre[]; // Album genres (not user-assigned)
   discogs_id: string;
+  label?: string;
   discogs_genres?: string[]; // Original genres from Discogs
   discogs_styles?: string[]; // Original styles from Discogs
   tracklist?: Array<{
@@ -92,12 +93,15 @@ export interface Review {
 
 export interface AlbumDetailData {
   album: Album; // Full album details with all fields from AlbumSerializer
-  reviews: Review[];
+  reviews: AlbumDetailReview[];
   review_count: number;
   average_rating: number | null;
+  rating_count: number;
   exists_in_db: boolean;
   cached: boolean;
 }
+
+export type AlbumDetailReview = Review & { is_following_author: boolean };
 
 // Alias for AlbumData - same structure as Album
 export type AlbumData = Album;
@@ -126,6 +130,7 @@ export interface SearchResult {
   genre?: string[];
   style?: string[];
   artist_photo_url?: string;
+  average_rating: number | null;
 }
 
 export interface TopRatedAlbum {
@@ -434,4 +439,19 @@ export interface FeedCard {
 export interface FeedPage {
   next: string | null;
   results: FeedCard[];
+}
+
+export interface OnThisDay {
+  month: number;
+  day: number;
+  year: number;
+  years_ago: number;
+  headline: string;
+  body: string;
+  discogs_id: string | null;
+}
+
+export interface DiscoverResponse {
+  top_reviews: Omit<FeedCard, "latest_activity">[];
+  on_this_day: OnThisDay | null;
 }

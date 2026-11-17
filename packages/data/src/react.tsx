@@ -24,6 +24,7 @@ import type {
 import { queryKeys } from "./queryKeys";
 import { CACHE_TIMES } from "./constants";
 import { useDebounce } from "./useDebounce";
+import { localDate } from "./localDate";
 
 export { useDebounce };
 
@@ -42,6 +43,7 @@ const LIKE_CACHES = [
   ["other"],
   ["albumDetails"],
   queryKeys.feed(),
+  ["discover"],
 ];
 
 function patchCachedLike(queryClient: QueryClient, reviewId: number, liked: boolean) {
@@ -194,6 +196,25 @@ export function useFeed() {
   return query;
 }
 
+export const useReview = (id: number) => {
+  const client = useClient();
+  return useQuery({
+    queryKey: queryKeys.review(id),
+    queryFn: () => client.review(id),
+    enabled: !!id,
+  });
+};
+
+/** Keyed on the local date, so the day's "On this day" turns over at the device's midnight. */
+export const useDiscover = () => {
+  const client = useClient();
+  const date = localDate();
+  return useQuery({
+    queryKey: queryKeys.discover(date),
+    queryFn: () => client.discover(date),
+  });
+};
+
 export const useUserActivity = (username: string) => {
   const client = useClient();
   return useQuery<Activity[], Error>({
@@ -284,6 +305,7 @@ export const useCreateReview = (username: string) => {
         queryClient.invalidateQueries({ queryKey: queryKeys.albumDetails(discogsId) }),
         queryClient.invalidateQueries({ queryKey: queryKeys.reviewsByUser(username) }),
         queryClient.invalidateQueries({ queryKey: queryKeys.activityByUser(username) }),
+        queryClient.invalidateQueries({ queryKey: ["discover"] }),
       ]),
   });
   return {
@@ -400,7 +422,7 @@ export const useEditReview = (username: string) => {
             ? {
                 ...old,
                 reviews: old.reviews.map((r) =>
-                  r.id === serverData.id ? serverData : r,
+                  r.id === serverData.id ? { ...serverData, is_following_author: r.is_following_author } : r,
                 ),
               }
             : old,
