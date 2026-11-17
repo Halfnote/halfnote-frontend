@@ -10,9 +10,10 @@ import { labelColor } from "../storyDraft";
 
 export const firstName = (p: Person) => (p.name || p.username).split(" ")[0];
 export const displayName = (p: Person) => p.name || p.username;
-export const isFullReview = (c: FeedCard) => c.review.body !== "";
-export const label = (c: FeedCard) => labelColor(c.album.discogs_id);
-export const yearOf = (c: FeedCard) => (c.album.year == null ? "" : String(c.album.year));
+type Card = Pick<FeedCard, "review" | "album">;
+export const isFullReview = (c: Card) => c.review.body !== "";
+export const label = (c: Card) => labelColor(c.album.discogs_id);
+export const yearOf = (c: Card) => (c.album.year == null ? "" : String(c.album.year));
 export const withYear = (c: FeedCard) => [c.album.artist, yearOf(c)].filter(Boolean).join(" · ");
 
 /** "Nia liked this · 2m", or null for a plain new review (the contract shows no reason line then). */
