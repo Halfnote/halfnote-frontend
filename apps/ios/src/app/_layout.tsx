@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { AppState } from "react-native";
 import { client, loadSession, useSession } from "../session";
 
-// Deep links (album, dev/search) still get the tabs underneath, so Back works.
+// Deep links (album, user, review) still get the tabs underneath, so Back works.
 export const unstable_settings = { anchor: "(tabs)" };
 
 const queryClient = new QueryClient({ defaultOptions: queryClientDefaults });
@@ -53,8 +53,8 @@ function Routes() {
     >
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="dev/search" />
-        <Stack.Screen name="album/[discogsId]" />
+        <Stack.Screen name="album/[discogsId]" options={{ headerShown: false }} />
+        <Stack.Screen name="user/[username]" options={{ headerShown: false }} />
         <Stack.Screen name="review/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="share" options={{ presentation: "fullScreenModal", headerShown: false }} />
         <Stack.Screen name="write" options={{ presentation: "fullScreenModal", headerShown: false }} />
