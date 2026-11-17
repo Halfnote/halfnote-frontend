@@ -119,6 +119,15 @@ export const useUser = () => {
   });
 };
 
+export const useUserProfile = (username: string) => {
+  const client = useClient();
+  return useQuery({
+    queryKey: queryKeys.profile(username),
+    queryFn: () => client.userProfile(username),
+    enabled: !!username,
+  });
+};
+
 export const useUserReviews = (username: string) => {
   const client = useClient();
   return useQuery<Review[]>({

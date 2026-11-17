@@ -97,6 +97,11 @@ export const endpoints = {
     query: { q },
     parse: cast,
   }),
+  userProfile: (username: string): Endpoint<User> => ({
+    method: "GET",
+    path: `/accounts/users/${seg(username)}/`,
+    parse: cast,
+  }),
   userReviews: (username: string): Endpoint<Review[]> => ({
     method: "GET",
     path: `/accounts/users/${seg(username)}/reviews/`,
