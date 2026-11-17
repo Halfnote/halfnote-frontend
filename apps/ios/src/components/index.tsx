@@ -172,9 +172,11 @@ export function TopReviewCard({ card, onPress, onAuthorPress }: { card: Omit<Fee
         stampSize={52}
         onPress={onPress}
       />
-      <Text numberOfLines={3} style={{ fontFamily: F.sans, fontSize: 14, lineHeight: 21, color: "#222" }}>
-        {review.headline}
-      </Text>
+      {review.headline !== "" && (
+        <Text numberOfLines={3} style={{ fontFamily: F.sans, fontSize: 14, lineHeight: 21, color: "#222" }}>
+          {review.headline}
+        </Text>
+      )}
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <Pressable onPress={onAuthorPress} accessibilityLabel={`Open ${author.name || author.username}'s profile`} hitSlop={8} style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1 }}>
           <Avatar person={author} color={labelColor(album.discogs_id)} size={26} />

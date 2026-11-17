@@ -34,7 +34,7 @@ export default function Album() {
                 <Stamp rating={Math.round(data.average_rating)} size={56} />
                 <Text style={{ fontFamily: F.sans, fontSize: 13, color: "#555" }}>
                   Average from{"\n"}
-                  {data.rating_count} ratings
+                  {data.rating_count} {data.rating_count === 1 ? "rating" : "ratings"}
                 </Text>
               </View>
             )}
