@@ -13,7 +13,8 @@ const openAlbum = (discogsId: string | number) => router.push(`/album/${discogsI
 
 export default function Discover() {
   const [q, setQ] = useState("");
-  const query = useDebounce(q.trim(), 300);
+  const debounced = useDebounce(q.trim().toLowerCase(), 300);
+  const query = debounced.length >= 2 ? debounced : "";
   const search = useSearchAlbums(query);
   const discover = useDiscover();
 

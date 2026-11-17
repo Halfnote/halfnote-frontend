@@ -1,6 +1,6 @@
 import { useAlbumDetails } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Art, F, font } from "../../story/kit";
 import { labelColor } from "../../storyDraft";
@@ -11,12 +11,13 @@ const minutes = (sec: number | null) => (sec == null ? "" : `${Math.floor(sec / 
 export default function Album() {
   const insets = useSafeAreaInsets();
   const { discogsId } = useLocalSearchParams<{ discogsId: string }>();
-  const { data, error } = useAlbumDetails(discogsId);
+  const { data, error, isLoading } = useAlbumDetails(discogsId);
   const songs = data?.album.songs ?? [];
 
   return (
     <View style={{ flex: 1, backgroundColor: BG }}>
       <PageHeader title="Album" />
+      {isLoading && <ActivityIndicator style={{ marginTop: 48 }} />}
       {error && <Text style={{ fontFamily: F.sans, fontSize: 14, color: SUB, textAlign: "center", marginTop: 48 }}>{error.message}</Text>}
       {data && (
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, paddingBottom: 48 + insets.bottom }}>

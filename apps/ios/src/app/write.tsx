@@ -52,8 +52,7 @@ export default function Write() {
   const [rateOpen, setRateOpen] = useState(false);
 
   let step = picked;
-  if (preset && step.kind === "pick") {
-    if (!presetAlbum) return <View style={s.screen} />;
+  if (preset && presetAlbum && step.kind === "pick") {
     step = {
       kind: "compose",
       album: { id: Number(preset), title: presetAlbum.title, artist: presetAlbum.artist, year: presetAlbum.year, cover_image: presetAlbum.cover_url, average_rating: null },

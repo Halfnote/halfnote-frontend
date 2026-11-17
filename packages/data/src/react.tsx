@@ -447,6 +447,8 @@ export const useEditReview = (username: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.albumDetails(serverData.album_discogs_id),
       });
+      queryClient.invalidateQueries({ queryKey: queryKeys.review(serverData.id) });
+      queryClient.invalidateQueries({ queryKey: ["discover"] });
     },
   });
 
