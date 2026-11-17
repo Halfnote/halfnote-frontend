@@ -75,9 +75,6 @@ export default function Discover() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={pull} />}
     >
       <View style={{ paddingTop: 18, paddingHorizontal: 20, gap: 14 }}>
-        <Text accessibilityLabel="halfnote" style={[font(F.serifItalic, 28, 0.93), { color: INK }]}>
-          halfnote.
-        </Text>
         <Text accessibilityRole="header" style={[font(F.serif, 44, 0.95), { color: INK }]}>
           Discover
         </Text>
