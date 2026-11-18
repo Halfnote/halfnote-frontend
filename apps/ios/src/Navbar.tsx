@@ -98,10 +98,11 @@ export function Navbar({ state, descriptors, navigation }: BottomTabBarProps) {
 }
 
 /** An empty tab: just its title, padded so later content clears the floating bar. */
-export function TabPlaceholder({ title }: { title: string }) {
+export function TabPlaceholder({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <View style={[tw`flex-1 bg-[#EEEEEE] px-5 pt-4`, { paddingBottom: NAVBAR_CLEARANCE }]}>
       <Text style={tw`another-heading2 text-black`}>{title}</Text>
+      {children}
     </View>
   );
 }

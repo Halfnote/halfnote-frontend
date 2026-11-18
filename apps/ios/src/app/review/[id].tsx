@@ -1,9 +1,10 @@
-import { useFeed } from "@halfnote/data/react";
+import { useReview } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Art, F, font } from "../../story/kit";
-import { Avatar, INK, PixelBack, Stamp, SUB, TrackRow, firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { Avatar, INK, PageHeader, Stamp, SUB, TrackRow } from "../../components";
 
 const PAPER = "#FAFAF8";
 
@@ -12,8 +13,15 @@ const headSize = (n: number) => (n <= 70 ? 58 : n <= 110 ? 48 : 40);
 export default function Review() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const card = useFeed().data?.find((c) => String(c.review.id) === id);
-  if (!card) return null;
+  const { data: card, isLoading, error } = useReview(Number(id));
+  if (isLoading) return <ActivityIndicator style={{ flex: 1, backgroundColor: PAPER }} />;
+  if (!card)
+    return (
+      <View style={{ flex: 1, backgroundColor: PAPER }}>
+        <PageHeader title="" background={PAPER} />
+        <Text style={{ margin: 20, fontFamily: F.sans, fontSize: 15, color: SUB }}>{error?.message ?? "Review not found"}</Text>
+      </View>
+    );
   const { review, album } = card;
   const favorite = review.favorite_song?.position;
   const paras = isFullReview(card) ? review.body.split(/\n\s*\n/).filter((p) => p.trim()) : [];
@@ -21,14 +29,7 @@ export default function Review() {
 
   return (
     <View style={{ flex: 1, backgroundColor: PAPER }}>
-      <View style={{ paddingTop: insets.top, backgroundColor: PAPER, flexDirection: "row", alignItems: "center", gap: 12, height: 64 + insets.top, paddingLeft: 8, paddingRight: 14 }}>
-        <Pressable onPress={() => router.back()} accessibilityLabel="Back" style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
-          <PixelBack />
-        </Pressable>
-        <Text numberOfLines={1} style={{ flex: 1, fontFamily: F.sans600, fontSize: 22, color: INK }}>
-          {album.title}
-        </Text>
-      </View>
+      <PageHeader title={album.title} background={PAPER} />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 4, paddingBottom: 40 + insets.bottom }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontFamily: F.sans, fontSize: 15, color: INK }}>{album.artist}</Text>
