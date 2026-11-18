@@ -1,7 +1,7 @@
 import type { Review, SearchResult, Song } from "@halfnote/data";
 import { useAlbumDetails, useCreateReview, useDebounce, useRecentlyViewed, useRecordView, useSearchAlbums } from "@halfnote/data/react";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { router, useNavigation } from "expo-router";
+import { createContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   AccessibilityInfo,
   ActivityIndicator,
@@ -21,18 +21,18 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect, SvgXml } from "react-native-svg";
-import { STAMPS_OFF, STAMPS_ON } from "../ratingStamps";
-import { TrackRow } from "../components";
-import { canPost, emptyDraft, isFullReview, spill, type Draft, type Step } from "../reviewDraft";
-import { useSession } from "../session";
-import { labelColor } from "../storyDraft";
+import { STAMPS_OFF, STAMPS_ON } from "./ratingStamps";
+import { TrackRow } from "./components";
+import { canPost, isFullReview, spill, type Draft } from "./reviewDraft";
+import { useSession } from "./session";
+import { labelColor } from "./storyDraft";
 
 const SERIF = "EBGaramond_400Regular";
 const SANS = "InstrumentSans_400Regular";
 const SANS_MEDIUM = "InstrumentSans_500Medium";
 const SANS_SEMI = "InstrumentSans_600SemiBold";
 const INK = "#111";
-const BG = "#EEEEEE";
+export const BG = "#EEEEEE";
 
 // Read when an animation starts, so no component re-renders on the setting.
 let reduceMotion = false;
@@ -42,51 +42,18 @@ const ms = (duration: number) => (reduceMotion ? 0 : duration);
 const EASE_OUT = Easing.bezier(0.2, 0.8, 0.2, 1);
 const EASE_IN = Easing.bezier(0.4, 0, 1, 1);
 
-/** "Write a review": pick an album, optionally rate it, write a take, post. Opened by the navbar's pencil. */
-export default function Write() {
-  const params = useLocalSearchParams<{ discogsId?: string }>();
-  const [preset, setPreset] = useState(params.discogsId);
-  const presetAlbum = useAlbumDetails(preset ?? "").data?.album;
-  const [picked, setStep] = useState<Step>({ kind: "pick" });
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [rateOpen, setRateOpen] = useState(false);
-
-  let step = picked;
-  if (preset && presetAlbum && step.kind === "pick") {
-    step = {
-      kind: "compose",
-      album: { id: Number(preset), title: presetAlbum.title, artist: presetAlbum.artist, year: presetAlbum.year, cover_image: presetAlbum.cover_url, average_rating: null },
-    };
-  }
-
-  switch (step.kind) {
-    case "pick":
-      return <Picker onPick={(album) => setStep({ kind: "compose", album })} />;
-    case "compose":
-      return (
-        <Composer
-          album={step.album}
-          draft={draft}
-          setDraft={setDraft}
-          rateOpen={rateOpen}
-          setRateOpen={setRateOpen}
-          onRepick={() => {
-            setDraft((d) => ({ ...d, favoriteSongId: null }));
-            setPreset(undefined);
-            setStep({ kind: "pick" });
-          }}
-          onPosted={(review) => setStep({ kind: "posted", review })}
-        />
-      );
-    case "posted":
-      return <Posted review={step.review} />;
-  }
-}
+export const WriteContext = createContext<{
+  draft: Draft;
+  setDraft: (update: (d: Draft) => Draft) => void;
+  album: SearchResult | null;
+  setAlbum: (album: SearchResult) => void;
+}>(null!);
 
 function TopBar({ title, right }: { title: string; right?: ReactNode }) {
+  const navigation = useNavigation();
   return (
     <View style={s.bar}>
-      <Pressable role="button" onPress={() => router.back()} hitSlop={8} style={s.cancel}>
+      <Pressable role="button" onPress={() => navigation.getParent()?.goBack()} hitSlop={8} style={s.cancel}>
         <Text style={s.cancelText}>Cancel</Text>
       </Pressable>
       <Text style={s.barTitle}>{title}</Text>
@@ -95,7 +62,7 @@ function TopBar({ title, right }: { title: string; right?: ReactNode }) {
   );
 }
 
-function Picker({ onPick }: { onPick: (album: SearchResult) => void }) {
+export function Picker({ onPick }: { onPick: (album: SearchResult) => void }) {
   const insets = useSafeAreaInsets();
   const [text, setText] = useState("");
   const debounced = useDebounce(text.trim().toLowerCase(), 500);
@@ -175,20 +142,16 @@ function AlbumRow({ album, onPress }: { album: SearchResult; onPress: () => void
   );
 }
 
-function Composer({
+export function Composer({
   album,
   draft,
   setDraft,
-  rateOpen,
-  setRateOpen,
   onRepick,
   onPosted,
 }: {
   album: SearchResult;
   draft: Draft;
   setDraft: (update: (d: Draft) => Draft) => void;
-  rateOpen: boolean;
-  setRateOpen: (open: boolean) => void;
   onRepick: () => void;
   onPosted: (review: Review) => void;
 }) {
@@ -222,6 +185,7 @@ function Composer({
     });
   };
 
+  const [rateOpen, setRateOpen] = useState(false);
   const [rateOrigin, setRateOrigin] = useState("50% 40%");
 
   // Viewing the album imports it, which is what creates its songs.
@@ -569,7 +533,7 @@ function Pulse({ children }: { children: ReactNode }) {
   return <Animated.View style={{ opacity, transform: [{ scale }] }}>{children}</Animated.View>;
 }
 
-function Posted({ review }: { review: Review }) {
+export function Posted({ review }: { review: Review }) {
   const insets = useSafeAreaInsets();
   const full = isFullReview(review.body);
   const kind = full ? "Full review" : "Short take";

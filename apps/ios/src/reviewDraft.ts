@@ -1,11 +1,6 @@
-import type { Review, SearchResult } from "@halfnote/data";
-
 /** The contract's headline limits: three serif lines, 150 characters. */
 export const HEADLINE_LINES = 3;
 export const HEADLINE_CHARS = 150;
-
-/** The composer is one screen moving through three steps. */
-export type Step = { kind: "pick" } | { kind: "compose"; album: SearchResult } | { kind: "posted"; review: Review };
 
 export interface Draft {
   rating: number | null;
