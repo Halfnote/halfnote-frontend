@@ -51,6 +51,7 @@ export const WriteContext = createContext<{
 
 function TopBar({ title, right }: { title: string; right?: ReactNode }) {
   const navigation = useNavigation();
+  // The parent is the root stack, so Cancel closes all of Write instead of popping back to the picker.
   return (
     <View style={s.bar}>
       <Pressable role="button" onPress={() => navigation.getParent()?.goBack()} hitSlop={8} style={s.cancel}>
