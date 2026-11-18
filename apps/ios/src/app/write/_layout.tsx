@@ -2,7 +2,7 @@ import type { SearchResult } from "@halfnote/data";
 import { Stack } from "expo-router";
 import { useState } from "react";
 import { emptyDraft, type Draft } from "../../reviewDraft";
-import { WriteContext } from "../../write";
+import { WriteContext } from "../../write/context";
 
 export default function WriteLayout() {
   const [draft, setDraft] = useState<Draft>(emptyDraft);

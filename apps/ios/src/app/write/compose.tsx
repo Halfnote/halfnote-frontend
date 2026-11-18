@@ -3,7 +3,10 @@ import { useAlbumDetails } from "@halfnote/data/react";
 import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
 import { View } from "react-native";
-import { BG, Composer, Posted, WriteContext } from "../../write";
+import { BG } from "../../components";
+import { Composer } from "../../write/Composer";
+import { WriteContext } from "../../write/context";
+import { Posted } from "../../write/Posted";
 
 export default function Compose() {
   const { discogsId = "" } = useLocalSearchParams<{ discogsId?: string }>();
