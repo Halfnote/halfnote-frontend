@@ -3,9 +3,12 @@ import type {
   Activity,
   ActivityFilterType,
   AlbumDetailData,
+  AvatarPreset,
   DiscoverResponse,
+  FavoriteAlbumsResponse,
   FeedCard,
   FeedPage,
+  OnboardingAlbumsResponse,
   ArtistDetails,
   RecentlyViewedResponse,
   Review,
@@ -14,6 +17,7 @@ import type {
   SearchArtistsResponse,
   SearchUsersResponse,
   User,
+  UsernameAvailability,
 } from "./types";
 
 /** A web File/Blob, or the {uri, name, type} triple React Native's FormData accepts. */
@@ -61,10 +65,14 @@ export interface EditReviewInput {
 }
 export interface EditProfileInput {
   name?: string;
+  username?: string;
   bio?: string;
   location?: string;
   avatar?: Upload;
+  avatarPreset?: AvatarPreset;
   banner?: Upload;
+  /** Ends onboarding; can't be undone. */
+  onboarded?: true;
 }
 export interface CreateListInput {
   name: string;
@@ -84,13 +92,35 @@ export const endpoints = {
     // Empty strings are skipped, so a blank form field never clears the stored value.
     form: {
       name: input.name || undefined,
+      username: input.username || undefined,
       bio: input.bio || undefined,
       location: input.location || undefined,
       avatar: input.avatar,
+      avatar_preset: input.avatarPreset,
       banner: input.banner,
+      onboarded: input.onboarded && "true",
     },
     parse: cast,
   }),
+  usernameAvailable: (username: string): Endpoint<UsernameAvailability> => ({
+    method: "GET",
+    path: "/accounts/username-available/",
+    query: { username },
+    parse: cast,
+  }),
+  /** Replaces the whole set: 0 to 4 ids, in any order. */
+  setFavoriteAlbums: (discogsIds: string[]): Endpoint<FavoriteAlbumsResponse> => ({
+    method: "PUT",
+    path: "/accounts/favorite-albums/",
+    json: { discogs_ids: discogsIds },
+    parse: cast,
+  }),
+  onboardingAlbums: (): Endpoint<OnboardingAlbumsResponse> => ({
+    method: "GET",
+    path: "/music/onboarding/albums/",
+    parse: cast,
+  }),
+  deleteMe: (): Endpoint<void> => ({ method: "DELETE", path: "/accounts/me/", parse: () => undefined }),
   searchUsers: (q: string): Endpoint<SearchUsersResponse> => ({
     method: "GET",
     path: "/accounts/users/search/",

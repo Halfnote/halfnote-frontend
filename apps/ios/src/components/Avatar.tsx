@@ -1,11 +1,14 @@
 import type { Person } from "@halfnote/data";
 import { Image, View } from "react-native";
-import Svg, { Rect } from "react-native-svg";
+import Svg, { Rect, SvgXml } from "react-native-svg";
+import { FACES } from "../faces";
 import { BG } from "./theme";
 
-/** A photo, or the board's 5×5 mirrored pixel face seeded by the handle on the album's label colour. */
+/** A photo, then the picked face, then the board's 5×5 mirrored pixel face seeded by the handle on the album's label colour. */
 export function Avatar({ person, color, size }: { person: Person; color: string; size: number }) {
   if (person.avatar) return <Image source={{ uri: person.avatar }} style={{ width: size, height: size, borderRadius: size / 2 }} />;
+  const picked = person.avatar_preset && FACES[person.avatar_preset];
+  if (picked) return <SvgXml xml={picked} width={size} height={size} />;
   let h = 2166136261;
   for (let k = 0; k < person.username.length; k++) h = Math.imul(h ^ person.username.charCodeAt(k), 16777619) >>> 0;
   const cells = [];

@@ -119,6 +119,53 @@ export const useUser = () => {
   });
 };
 
+/** Pass "" to skip the check. */
+export const useUsernameAvailable = (username: string) => {
+  const client = useClient();
+  return useQuery({
+    queryKey: queryKeys.usernameAvailable(username),
+    queryFn: () => client.usernameAvailable(username),
+    enabled: !!username,
+    staleTime: 0,
+  });
+};
+
+/** The server shuffles on every request, so one fetch is kept for the session. */
+export const useOnboardingAlbums = () => {
+  const client = useClient();
+  return useQuery({
+    queryKey: queryKeys.onboardingAlbums(),
+    queryFn: () => client.onboardingAlbums(),
+    staleTime: Infinity,
+  });
+};
+
+/** One onboarding step's fields. Unlike useEditProfile, nothing shows until the server has accepted it. */
+export const useSaveProfile = () => {
+  const client = useClient();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["saveProfile"],
+    mutationFn: (input: EditProfileInput) => client.editProfile(input),
+    onSuccess: (user) => queryClient.setQueryData<User>(queryKeys.user(), user),
+  });
+};
+
+export const useSetFavoriteAlbums = () => {
+  const client = useClient();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["setFavoriteAlbums"],
+    mutationFn: (discogsIds: string[]) => client.setFavoriteAlbums(discogsIds),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.user() }),
+  });
+};
+
+export const useDeleteMe = () => {
+  const client = useClient();
+  return useMutation({ mutationKey: ["deleteMe"], mutationFn: () => client.deleteMe() });
+};
+
 export const useUserProfile = (username: string) => {
   const client = useClient();
   return useQuery({

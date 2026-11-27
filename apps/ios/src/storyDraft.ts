@@ -1,4 +1,4 @@
-import type { Album, Review } from "@halfnote/data";
+import type { Album, AvatarPreset, Review } from "@halfnote/data";
 
 /** Characters of body text that fit on a story under the headline. */
 export const SNIPPET_LIMIT = 340;
@@ -189,10 +189,12 @@ export interface StoryContent {
   label: string;
   /** 5×5 mirrored identicon for the handle, row-major. */
   pixels: boolean[];
+  /** Drawn instead of the identicon. */
+  face: AvatarPreset | null;
 }
 
 /** `viewer` signs album shares, which have no reviewer. */
-export function storyContent(s: Source, d: Draft, viewer: string): StoryContent {
+export function storyContent(s: Source, d: Draft, viewer: string, viewerFace: AvatarPreset | null = null): StoryContent {
   const { head, paras } = textOf(s);
   const score = ratingOf(s) ?? 0;
   const handle = "review" in s ? s.review.username : viewer;
@@ -210,6 +212,7 @@ export function storyContent(s: Source, d: Draft, viewer: string): StoryContent 
     show: resolveShow(s, d),
     mode: modeOf(s, d),
     label: labelColor(s.album.discogs_id),
+    face: "review" in s ? s.review.user_avatar_preset : viewerFace,
     pixels: Array.from({ length: 25 }, (_, i) => {
       const r = Math.floor(i / 5);
       const c = i % 5;

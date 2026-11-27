@@ -67,7 +67,7 @@ export default function Album() {
                     person
                     lead={
                       <Pressable onPress={() => router.push(`/user/${r.username}`)} accessibilityLabel={`Open ${r.username}'s profile`} hitSlop={8}>
-                        <Avatar person={{ username: r.username, name: "", avatar: r.user_avatar }} color={labelColor(discogsId)} size={34} />
+                        <Avatar person={{ username: r.username, name: "", avatar: r.user_avatar, avatar_preset: r.user_avatar_preset }} color={labelColor(discogsId)} size={34} />
                       </Pressable>
                     }
                     title={r.username}

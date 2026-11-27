@@ -1,6 +1,7 @@
 import { use, type Ref } from "react";
 import { View } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Path, SvgXml } from "react-native-svg";
+import { FACES } from "../faces";
 import type { GenreKey, StoryContent } from "../storyDraft";
 import { ArtSettled, F, Ink, T, font } from "./kit";
 import { STYLES } from "./styles";
@@ -103,11 +104,15 @@ function Footer({ c, ink }: { c: StoryContent; ink: string }) {
             overflow: "hidden",
           }}
         >
-          <View style={{ width: 15, flexDirection: "row", flexWrap: "wrap" }}>
-            {c.pixels.map((on, k) => (
-              <View key={k} style={{ width: 3, height: 3, backgroundColor: on ? "#EEEEEE" : "transparent" }} />
-            ))}
-          </View>
+          {c.face ? (
+            <SvgXml xml={FACES[c.face]} width={30} height={30} />
+          ) : (
+            <View style={{ width: 15, flexDirection: "row", flexWrap: "wrap" }}>
+              {c.pixels.map((on, k) => (
+                <View key={k} style={{ width: 3, height: 3, backgroundColor: on ? "#EEEEEE" : "transparent" }} />
+              ))}
+            </View>
+          )}
         </View>
         <T style={font(F.sans500, 14)}>@{c.handle}</T>
       </View>

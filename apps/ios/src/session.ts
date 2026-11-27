@@ -4,8 +4,8 @@ import {
   ApiError,
   createHalfnoteClient,
   refreshTokens,
-  requestTokens,
-  type Credentials,
+  signIn as requestSignIn,
+  type SignInMethod,
   type Tokens,
 } from "@halfnote/data";
 
@@ -14,7 +14,11 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://halfnote-back
 const KEY = "halfnote.session";
 const REFRESH_WINDOW_MS = 60_000;
 
-type Session = Tokens & { username: string };
+type Session = Tokens & {
+  username: string;
+  /** Absent in sessions saved before onboarding existed, whose accounts all count as finished. */
+  needsOnboarding?: boolean;
+};
 
 // undefined until SecureStore has been read once.
 let session: Session | null | undefined;
@@ -35,6 +39,16 @@ async function save(next: Session | null) {
 export async function loadSession() {
   const raw = await SecureStore.getItemAsync(KEY);
   publish(raw ? (JSON.parse(raw) as Session) : null);
+  if (session) void checkOnboarding(session);
+}
+
+// The stored flag opens the app without waiting on the network; the server has the final say.
+async function checkOnboarding(stored: Session) {
+  const before = !!stored.needsOnboarding;
+  const user = await client.profile().catch(() => null);
+  if (!user || !session || session.username !== stored.username || !!session.needsOnboarding !== before) return;
+  const needsOnboarding = !!user.needs_onboarding;
+  if (needsOnboarding !== before) await save({ ...session, needsOnboarding });
 }
 
 export function useSession(): Session | null | undefined {
@@ -44,9 +58,21 @@ export function useSession(): Session | null | undefined {
   );
 }
 
-export async function login(c: Credentials) {
-  const tokens = await requestTokens(API_URL, c);
-  await save({ ...tokens, username: c.username });
+export async function signIn(method: SignInMethod) {
+  await save(await requestSignIn(API_URL, method));
+}
+
+export async function setUsername(username: string) {
+  if (session) await save({ ...session, username });
+}
+
+/** Stored at once, but the onboarding screens stay up until `leaveOnboarding`, so "You're in" can show. */
+export async function storeOnboarded() {
+  if (session) await SecureStore.setItemAsync(KEY, JSON.stringify({ ...session, needsOnboarding: false }));
+}
+
+export async function leaveOnboarding() {
+  if (session) await save({ ...session, needsOnboarding: false });
 }
 
 /** The root layout clears the query cache when the session becomes null. */
@@ -63,9 +89,9 @@ function expiresAtMs(jwt: string): number {
 async function refresh(current: Session): Promise<string | null> {
   try {
     const tokens = await refreshTokens(API_URL, current.refresh);
-    // A logout while the refresh was in flight wins.
-    if (session !== current) return session?.access ?? null;
-    await save({ ...current, ...tokens });
+    // A logout, or signing in again, while the refresh was in flight wins.
+    if (session?.refresh !== current.refresh) return session?.access ?? null;
+    await save({ ...session, ...tokens });
     return tokens.access;
   } catch (err) {
     if (err instanceof ApiError && (err.status === 400 || err.status === 401)) {

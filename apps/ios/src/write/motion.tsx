@@ -19,6 +19,16 @@ export function Rise({ delay, style, children }: { delay: number; style?: object
   return <Animated.View style={[style, { opacity: t, transform: [{ translateY: lift }] }]}>{children}</Animated.View>;
 }
 
+/** Grows its child in on mount, `delay` ms late. */
+export function Pop({ delay = 0, style, children }: { delay?: number; style?: object; children: ReactNode }) {
+  const t = useAnimatedValue(0);
+  useEffect(() => {
+    Animated.timing(t, { toValue: 1, duration: ms(240), delay: ms(delay), easing: EASE_OUT, useNativeDriver: true }).start();
+  }, [t, delay]);
+  const scale = t.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] });
+  return <Animated.View style={[style, { opacity: t, transform: [{ scale }] }]}>{children}</Animated.View>;
+}
+
 /** The rating stamp's arrival: pops past full size and settles. Remount (a new key) to replay. */
 export function Pulse({ children }: { children: ReactNode }) {
   const t = useAnimatedValue(0);

@@ -5,7 +5,7 @@ import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import { PermanentMarker_400Regular } from "@expo-google-fonts/permanent-marker";
 import { PirataOne_400Regular } from "@expo-google-fonts/pirata-one";
 import { Yellowtail_400Regular } from "@expo-google-fonts/yellowtail";
-import { useAlbumDetails } from "@halfnote/data/react";
+import { useAlbumDetails, useUser } from "@halfnote/data/react";
 import { useFonts } from "expo-font";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
@@ -72,6 +72,7 @@ function Fallback({ message }: { message?: string }) {
 
 function ShareFlow({ source }: { source: Source }) {
   const viewer = useSession()?.username ?? "";
+  const viewerFace = useUser().data?.avatar_preset;
   const [draft, setDraft] = useState(initialDraft);
   const insets = useSafeAreaInsets();
   const [toast, setToast] = useState("");
@@ -83,7 +84,7 @@ function ShareFlow({ source }: { source: Source }) {
   }, []);
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
-  const c = storyContent(source, draft, viewer);
+  const c = storyContent(source, draft, viewer, viewerFace);
   const { genre, variant } = activeStyle(source, draft);
   const { index, step, last } = currentStep(source, draft);
   const all = steps(source, draft);

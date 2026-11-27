@@ -1,6 +1,7 @@
 export * from "./theme";
 export * from "./format";
 export * from "./icons";
+export * from "./AlbumBanner";
 export * from "./Avatar";
 export * from "./Stamp";
 export * from "./TrackRow";
