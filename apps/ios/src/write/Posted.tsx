@@ -22,6 +22,7 @@ export function Posted({ review }: { review: Review }) {
       style={{ backgroundColor: labelColor(review.album_discogs_id) }}
       contentContainerStyle={[s.posted, { paddingTop: 34 + insets.top, paddingBottom: 28 + insets.bottom }]}
       aria-label="Review posted"
+      scrollEnabled={false}
     >
       <View style={s.postedHead}>
         <Text style={s.postedTitle}>Posted</Text>

@@ -9,7 +9,7 @@ import { Heart } from "./icons";
 import { ItemRow } from "./ItemRow";
 import { INK, SUB } from "./theme";
 
-export const TOP_REVIEW_WIDTH = 306;
+export const TOP_REVIEW_WIDTH = 300;
 
 interface TopReviewCardProps {
   card: Omit<FeedCard, "latest_activity">;

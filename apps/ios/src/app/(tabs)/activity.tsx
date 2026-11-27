@@ -155,7 +155,7 @@ function Switcher({ view, pick }: { view: View_; pick: (v: View_) => void }) {
 
   return (
     <View style={{ height: 52, paddingHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-      <View {...drag.panHandlers} style={{ flexDirection: "row", padding: 3, gap: 2, borderRadius: 999, backgroundColor: BG }}>
+      <View {...drag.panHandlers} style={{ flexDirection: "row", padding: 3, gap: 2, borderRadius: 999, backgroundColor: '#E1E1E1' }}>
         <Animated.View
           style={{ position: "absolute", left: 3, top: 3, bottom: 3, width: KNOB, borderRadius: 999, backgroundColor: "#1d1d1d", transform: [{ translateX: x.interpolate({ inputRange: [0, LAST], outputRange: [0, SLOT * LAST] }) }] }}
         />
