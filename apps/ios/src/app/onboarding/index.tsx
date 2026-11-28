@@ -1,4 +1,4 @@
-import { ApiError } from "@halfnote/data";
+import { ApiError, type UsernameAvailability } from "@halfnote/data";
 import { useDebounce, useSaveProfile, useUsernameAvailable } from "@halfnote/data/react";
 import { router } from "expo-router";
 import { use, useState } from "react";
@@ -12,6 +12,19 @@ import { F } from "../../features/story/kit";
 
 const TAKEN = { text: "Taken", color: ERROR };
 
+function handleNote(handle: string, valid: boolean, lost: string, checked?: UsernameAvailability) {
+  if (handle && !valid) return { text: "2–24 letters, numbers, . or _", color: ERROR };
+  if (handle && handle === lost) return TAKEN;
+  if (checked?.available) return { text: "Available", color: OK };
+  if (checked) return checked.error === "taken" ? TAKEN : { text: "Not available", color: ERROR };
+  return undefined;
+}
+
+function saveError(e: unknown) {
+  if (e instanceof ApiError) return e.fields.username ? undefined : e.message;
+  return e ? OFFLINE : undefined;
+}
+
 export default function You() {
   const { answers, update } = use(OnboardingContext);
   const { name, handle, handleTouched } = answers;
@@ -24,17 +37,9 @@ export default function You() {
   const check = useUsernameAvailable(valid && settled === handle ? handle : "").data;
   const checked = valid && settled === handle ? check : undefined;
 
-  let note;
-  if (handle && !valid) note = { text: "2–24 letters, numbers, . or _", color: ERROR };
-  else if (handle && handle === lost) note = TAKEN;
-  else if (checked?.available) note = { text: "Available", color: OK };
-  else if (checked) note = checked.error === "taken" ? TAKEN : { text: "Not available", color: ERROR };
-
+  const note = handleNote(handle, valid, lost, checked);
   const ready = !!name.trim() && valid && handle !== lost && checked?.available !== false;
-
-  let error: string | undefined;
-  if (save.error instanceof ApiError) error = save.error.fields.username ? undefined : save.error.message;
-  else if (save.isError) error = OFFLINE;
+  const error = saveError(save.error);
 
   const submit = () => {
     if (!ready || save.isPending) return;
@@ -43,7 +48,7 @@ export default function You() {
       {
         onSuccess: async (user) => {
           await setUsername(user.username);
-          router.push("/onboarding/favAlbumSelection");
+          router.push("/onboarding/selectFavAlbum");
         },
         onError: (e) => {
           if (e instanceof ApiError && e.fields.username) setLost(handle);

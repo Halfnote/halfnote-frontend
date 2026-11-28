@@ -25,13 +25,12 @@ export default function Face() {
       {
         onSuccess: async () => {
           await storeOnboarded();
-          router.replace("/onboarding/done");
+          router.replace("/onboarding/finishOnboarding");
         },
       },
     );
 
-  let error: string | undefined;
-  if (save.isError) error = save.error instanceof ApiError ? save.error.message : OFFLINE;
+  const error = !save.isError ? undefined : save.error instanceof ApiError ? save.error.message : OFFLINE;
 
   return (
     <Frame

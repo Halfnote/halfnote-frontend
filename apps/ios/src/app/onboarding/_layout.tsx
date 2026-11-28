@@ -47,7 +47,7 @@ function Flow({ user }: { user: User }) {
       <Stack screenOptions={{ headerShown: false }}>
         {/* Declared screens come first, and the stack opens on the first one. */}
         <Stack.Screen name="index" />
-        <Stack.Screen name="done" options={{ gestureEnabled: false, animation: "fade" }} />
+        <Stack.Screen name="finishOnboarding" options={{ gestureEnabled: false, animation: "fade" }} />
       </Stack>
     </OnboardingContext>
   );

@@ -23,13 +23,13 @@ export default function Albums() {
   };
 
   const next = () => {
-    if (samePicks(picks, savedPicks)) return router.push("/onboarding/face");
+    if (samePicks(picks, savedPicks)) return router.push("/onboarding/selectAvatar");
     save.mutate(
       picks.map((p) => p.discogsId),
       {
         onSuccess: () => {
           update({ savedPicks: picks });
-          router.push("/onboarding/face");
+          router.push("/onboarding/selectAvatar");
         },
       },
     );
