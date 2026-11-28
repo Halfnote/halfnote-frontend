@@ -313,16 +313,6 @@ export const useSearchUsers = (query: string) => {
   });
 };
 
-export const useSearchArtists = (query: string) => {
-  const client = useClient();
-  return useQuery({
-    queryKey: queryKeys.searchArtists(query),
-    queryFn: () => client.searchArtists(query),
-    enabled: !!query && query.length > 0,
-    staleTime: CACHE_TIMES.USER_SEARCH,
-  });
-};
-
 export const useAlbumDetails = (discogsID: string) => {
   const client = useClient();
   return useQuery<AlbumDetailData, Error>({

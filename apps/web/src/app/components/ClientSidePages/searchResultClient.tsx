@@ -1,5 +1,5 @@
 "use client";
-import { useSearchAlbums, useSearchArtists, useSearchUsers } from "@halfnote/data/react";
+import { useSearchAlbums, useSearchUsers } from "@halfnote/data/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { SearchResult, UserResult } from "@halfnote/data";
@@ -22,10 +22,7 @@ export const SearchResultPage = () => {
     isError: userError,
   } = useSearchUsers(query || "");
 
-  const { data: artistList } = useSearchArtists(query || "");
-
   console.log(albumList);
-  console.log(artistList);
   console.log(userList);
 
   const isLoading = albumLoading || userLoading;
