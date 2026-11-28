@@ -15,6 +15,8 @@ export const queryKeys = {
   artistDetails: (artistName: string) => ["artistDetails", artistName] as const,
   // User authentication & profile
   user: () => ["user"] as const,
+  usernameAvailable: (username: string) => ["usernameAvailable", username] as const,
+  onboardingAlbums: () => ["onboardingAlbums"] as const,
   profile: (userId: string | number) => ["profile", userId] as const,
 
   // User reviews

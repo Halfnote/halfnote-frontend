@@ -1,6 +1,6 @@
 import { test, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { ApiError, createHalfnoteClient, refreshTokens, requestTokens } from "./index";
+import { ApiError, createHalfnoteClient, refreshTokens, requestTokens, signIn } from "./index";
 
 type Call = { url: string; init: RequestInit & { headers: Record<string, string> } };
 const realFetch = globalThis.fetch;
@@ -121,4 +121,25 @@ test("refreshTokens posts the refresh token and returns the rotated pair", async
 
   stubFetch(200, { access: "a2" });
   await assert.rejects(refreshTokens("https://api.test/api", "r1"), /Invalid token data/);
+});
+
+test("a rejected field reaches ApiError.fields", async () => {
+  stubFetch(400, { error: "taken", fields: { email: "taken" } });
+  await assert.rejects(signIn("https://api.test/api", { kind: "register", email: "a@b.co", password: "x" }), (err: unknown) => {
+    assert.ok(err instanceof ApiError);
+    assert.deepEqual(err.fields, { email: "taken" });
+    return true;
+  });
+});
+
+test("signIn posts each method's own path and body", async () => {
+  const ok = { access_token: "a", refresh_token: "r", needs_onboarding: true, user: { username: "user01" } };
+  const sent = async (m: Parameters<typeof signIn>[1]) => {
+    stubFetch(200, ok);
+    assert.deepEqual(await signIn("", m), { access: "a", refresh: "r", username: "user01", needsOnboarding: true });
+    return [calls[0].url, JSON.parse(calls[0].init.body as string)];
+  };
+  assert.deepEqual(await sent({ kind: "login", login: "dee", password: "p" }), ["/accounts/login/", { login: "dee", password: "p" }]);
+  assert.deepEqual(await sent({ kind: "register", email: "d@e.co", password: "p" }), ["/accounts/register/", { email: "d@e.co", password: "p" }]);
+  assert.deepEqual(await sent({ kind: "google", idToken: "t" }), ["/accounts/auth/google/", { id_token: "t" }]);
 });

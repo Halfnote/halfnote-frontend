@@ -4,9 +4,9 @@ import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { use, useState } from "react";
 import { View } from "react-native";
 import { BG } from "../../components";
-import { Composer } from "../../write/Composer";
-import { WriteContext } from "../../write/context";
-import { Posted } from "../../write/Posted";
+import { Composer } from "../../features/write/Composer";
+import { WriteContext } from "../../features/write/context";
+import { Posted } from "../../features/write/Posted";
 
 export default function Compose() {
   const { discogsId = "" } = useLocalSearchParams<{ discogsId?: string }>();

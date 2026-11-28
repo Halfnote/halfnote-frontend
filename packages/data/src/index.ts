@@ -2,8 +2,8 @@
 // endpoints and send() stay private.
 export { createHalfnoteClient, ApiError } from "./client";
 export type { ClientConfig, HalfnoteClient } from "./client";
-export { requestTokens, refreshTokens, registerAccount } from "./tokens";
-export type { Tokens } from "./tokens";
+export { requestTokens, refreshTokens, registerAccount, signIn } from "./tokens";
+export type { SignedIn, SignInMethod, Tokens } from "./tokens";
 export type {
   Upload,
   Credentials,

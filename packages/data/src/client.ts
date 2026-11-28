@@ -21,6 +21,8 @@ export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    /** One message per rejected field. */
+    readonly fields: Record<string, string> = {},
   ) {
     super(message);
     this.name = "ApiError";
@@ -40,6 +42,11 @@ function errorMessage(body: unknown): string | undefined {
   const { message, detail, error } = body as Record<string, unknown>;
   const m = message ?? detail ?? error;
   return typeof m === "string" ? m : undefined;
+}
+
+function errorFields(body: unknown): Record<string, string> | undefined {
+  const fields = typeof body === "object" && body !== null ? (body as Record<string, unknown>).fields : undefined;
+  return typeof fields === "object" && fields !== null ? (fields as Record<string, string>) : undefined;
 }
 
 export async function send<T>(config: ClientConfig, ep: Endpoint<T>): Promise<T> {
@@ -75,8 +82,9 @@ export async function send<T>(config: ClientConfig, ep: Endpoint<T>): Promise<T>
 
   if (!res.ok) {
     if (res.status === 401) config.onUnauthorized?.();
-    const message = errorMessage(parseJson(text)) ?? (res.statusText || `Request failed (${res.status})`);
-    throw new ApiError(res.status, message);
+    const error = parseJson(text);
+    const message = errorMessage(error) ?? (res.statusText || `Request failed (${res.status})`);
+    throw new ApiError(res.status, message, errorFields(error));
   }
   if (!text) return undefined as T;
   const raw = parseJson(text);

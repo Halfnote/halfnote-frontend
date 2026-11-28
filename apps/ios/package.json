@@ -8,7 +8,7 @@
     "ios": "expo run:ios",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "test": "node --import tsx --experimental-test-module-mocks --test src/*.test.ts"
+    "test": "node --import tsx --experimental-test-module-mocks --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@expo-google-fonts/alfa-slab-one": "^0.4.1",
@@ -22,6 +22,7 @@
     "@expo-google-fonts/yellowtail": "^0.4.1",
     "@halfnote/data": "*",
     "@halfnote/ui": "*",
+    "@react-native-google-signin/google-signin": "^17.0.0",
     "@tanstack/react-query": "^5.80.7",
     "expo": "~57.0.25",
     "expo-constants": "~57.0.19",

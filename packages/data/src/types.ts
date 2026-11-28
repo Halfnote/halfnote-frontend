@@ -1,3 +1,7 @@
+/** The faces a user can pick instead of a photo, in the design's order. */
+export const AVATAR_PRESETS = ["cat", "frog", "ghost", "bunny", "bear", "mushroom", "record", "robot"] as const;
+export type AvatarPreset = (typeof AVATAR_PRESETS)[number];
+
 export interface User {
   id: number;
   username: string;
@@ -7,6 +11,9 @@ export interface User {
   bio?: string;
   location?: string;
   avatar?: string;
+  avatar_preset: AvatarPreset | null;
+  /** Own profile only. */
+  needs_onboarding?: boolean;
   banner?: string; // Profile banner image URL
   favorite_genres?: Genre[];
   most_reviewed_genres?: Genre[]; // Includes count field
@@ -71,6 +78,7 @@ export interface Review {
   id: number;
   username: string;
   user_avatar: string | null;
+  user_avatar_preset: AvatarPreset | null;
   user_is_staff: boolean;
   rating: number | null;
   headline: string;
@@ -375,6 +383,26 @@ export interface FavoriteAlbumsResponse {
   albums: Album[];
 }
 
+// ============= Onboarding (runbooks/onboarding-contract.md) =============
+
+export interface UsernameAvailability {
+  available: boolean;
+  /** null when available, "taken", or the rule that was broken. */
+  error: string | null;
+}
+
+export interface OnboardingAlbum {
+  discogs_id: string;
+  title: string;
+  artist: string;
+  year: number | null;
+  cover_url: string | null;
+}
+
+export interface OnboardingAlbumsResponse {
+  albums: OnboardingAlbum[];
+}
+
 // ============= Pagination Helper =============
 
 export interface PaginatedResponse<T> {
@@ -399,6 +427,7 @@ export interface Person {
   /** May be "": fall back to username. */
   name: string;
   avatar: string | null;
+  avatar_preset: AvatarPreset | null;
 }
 
 export interface Song {

@@ -1,8 +1,8 @@
 import type { FeedCard } from "@halfnote/data";
 import { Pressable, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { Art, F } from "../story/kit";
-import { labelColor } from "../storyDraft";
+import { Art, F } from "../features/story/kit";
+import { labelColor } from "../features/story/draft";
 import { Avatar } from "./Avatar";
 import { ago } from "./format";
 import { Heart } from "./icons";

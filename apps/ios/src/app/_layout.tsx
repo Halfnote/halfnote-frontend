@@ -15,9 +15,9 @@ import {
 } from "@expo-google-fonts/instrument-sans";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { AppState } from "react-native";
-import { client, loadSession, useSession } from "../session";
+import { client, loadSession, useSession } from "../lib/session";
 
 // Deep links (album, user, review) still get the tabs underneath, so Back works.
 export const unstable_settings = { anchor: "(tabs)" };
@@ -39,7 +39,8 @@ function Routes() {
   }, [flushLikes]);
 
   // Covers every logout path: the button, a 401, and a rejected refresh.
-  useEffect(() => {
+  // Before paint, because clearing after Welcome starts loading its covers would cancel them.
+  useLayoutEffect(() => {
     if (session === null) clearSession();
   }, [session, clearSession]);
 
@@ -51,7 +52,7 @@ function Routes() {
         headerBackButtonDisplayMode: "minimal",
       }}
     >
-      <Stack.Protected guard={!!session}>
+      <Stack.Protected guard={!!session && !session.needsOnboarding}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="album/[discogsId]" options={{ headerShown: false }} />
         <Stack.Screen name="user/[username]" options={{ headerShown: false }} />
@@ -60,8 +61,11 @@ function Routes() {
         <Stack.Screen name="share" options={{ presentation: "fullScreenModal", headerShown: false }} />
         <Stack.Screen name="write" options={{ presentation: "fullScreenModal", headerShown: false }} />
       </Stack.Protected>
+      <Stack.Protected guard={!!session?.needsOnboarding}>
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      </Stack.Protected>
       <Stack.Protected guard={!session}>
-        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

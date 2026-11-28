@@ -56,6 +56,12 @@
             "../../node_modules/@expo-google-fonts/yellowtail/400Regular/Yellowtail_400Regular.ttf"
           ]
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.158854524352-kjhfnal5rlcj13uun9kmupgr1ri5ee00"
+        }
       ]
     ]
   }

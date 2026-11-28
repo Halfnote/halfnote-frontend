@@ -1,7 +1,7 @@
 import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { use } from "react";
-import { WriteContext } from "../../write/context";
-import { Picker } from "../../write/Picker";
+import { WriteContext } from "../../features/write/context";
+import { Picker } from "../../features/write/Picker";
 
 export default function Pick() {
   const { discogsId } = useLocalSearchParams<{ discogsId?: string }>();

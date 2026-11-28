@@ -5,19 +5,19 @@ import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import { PermanentMarker_400Regular } from "@expo-google-fonts/permanent-marker";
 import { PirataOne_400Regular } from "@expo-google-fonts/pirata-one";
 import { Yellowtail_400Regular } from "@expo-google-fonts/yellowtail";
-import { useAlbumDetails } from "@halfnote/data/react";
+import { useAlbumDetails, useUser } from "@halfnote/data/react";
 import { useFonts } from "expo-font";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
-import { useSession } from "../session";
-import { usePlus } from "../usePlus";
-import { useShareToStory } from "../useShareToStory";
-import { F, font } from "../story/kit";
-import { STORY_H, STORY_W, Story } from "../story/Story";
-import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, Star, StyleStep } from "../story/steps";
+import { useSession } from "../lib/session";
+import { usePlus } from "../lib/usePlus";
+import { useShareToStory } from "../features/story/useShareToStory";
+import { F, font } from "../features/story/kit";
+import { STORY_H, STORY_W, Story } from "../features/story/Story";
+import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, Star, StyleStep } from "../features/story/steps";
 import {
   activeStyle,
   currentStep,
@@ -29,7 +29,7 @@ import {
   storyContent,
   type Source,
   type Step,
-} from "../storyDraft";
+} from "../features/story/draft";
 
 const STEP_NAMES: Record<Step, string> = { elements: "Elements", snippet: "Snippet", style: "Style" };
 
@@ -72,6 +72,7 @@ function Fallback({ message }: { message?: string }) {
 
 function ShareFlow({ source }: { source: Source }) {
   const viewer = useSession()?.username ?? "";
+  const viewerFace = useUser().data?.avatar_preset;
   const [draft, setDraft] = useState(initialDraft);
   const insets = useSafeAreaInsets();
   const [toast, setToast] = useState("");
@@ -83,7 +84,7 @@ function ShareFlow({ source }: { source: Source }) {
   }, []);
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
-  const c = storyContent(source, draft, viewer);
+  const c = storyContent(source, draft, viewer, viewerFace);
   const { genre, variant } = activeStyle(source, draft);
   const { index, step, last } = currentStep(source, draft);
   const all = steps(source, draft);
