@@ -16,13 +16,17 @@ function handleNote(handle: string, valid: boolean, lost: string, checked?: User
   if (handle && !valid) return { text: "2–24 letters, numbers, . or _", color: ERROR };
   if (handle && handle === lost) return TAKEN;
   if (checked?.available) return { text: "Available", color: OK };
-  if (checked) return checked.error === "taken" ? TAKEN : { text: "Not available", color: ERROR };
+  if (checked?.error === "taken") return TAKEN;
+  if (checked) return { text: "Not available", color: ERROR };
   return undefined;
 }
 
 function saveError(e: unknown) {
-  if (e instanceof ApiError) return e.fields.username ? undefined : e.message;
-  return e ? OFFLINE : undefined;
+  if (!e) return undefined;
+  // A username error is shown as "Taken" under the field, not here.
+  if (e instanceof ApiError && e.fields.username) return undefined;
+  if (e instanceof ApiError) return e.message;
+  return OFFLINE;
 }
 
 export default function You() {
@@ -34,8 +38,8 @@ export default function You() {
 
   const valid = validHandle(handle);
   const settled = useDebounce(handle, 400);
-  const check = useUsernameAvailable(valid && settled === handle ? handle : "").data;
-  const checked = valid && settled === handle ? check : undefined;
+  const live = valid && settled === handle;
+  const checked = useUsernameAvailable(live ? handle : "").data;
 
   const note = handleNote(handle, valid, lost, checked);
   const ready = !!name.trim() && valid && handle !== lost && checked?.available !== false;

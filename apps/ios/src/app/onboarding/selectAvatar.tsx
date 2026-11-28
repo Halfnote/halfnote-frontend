@@ -14,6 +14,12 @@ import { Pulse } from "../../features/write/motion";
 
 const nameOf = (face: AvatarPreset) => face[0].toUpperCase() + face.slice(1);
 
+function saveError(e: unknown) {
+  if (!e) return undefined;
+  if (e instanceof ApiError) return e.message;
+  return OFFLINE;
+}
+
 export default function Face() {
   const { answers, update } = use(OnboardingContext);
   const { face } = answers;
@@ -30,7 +36,7 @@ export default function Face() {
       },
     );
 
-  const error = !save.isError ? undefined : save.error instanceof ApiError ? save.error.message : OFFLINE;
+  const error = saveError(save.error);
 
   return (
     <Frame

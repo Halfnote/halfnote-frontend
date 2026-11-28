@@ -12,9 +12,34 @@ import { F } from "../../features/story/kit";
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 const COPY = {
-  create: { title: "Create your account", action: "Create account", swap: "Already have an account? Sign in" },
-  login: { title: "Welcome back", action: "Sign in", swap: "New here? Create an account" },
-};
+  create: {
+    title: "Create your account",
+    action: "Create account",
+    swap: "Already have an account? Sign in",
+    other: "login",
+    loginLabel: "Email",
+    loginContent: "emailAddress",
+    passwordContent: "newPassword",
+    passwordRules: "minlength: 8; required: lower; required: upper; required: digit; required: [-!@#$%^&*()_+=[{}|;:,.<>?];",
+    rules: "At least 8 characters, with an uppercase letter, a lowercase letter, a number and a symbol.",
+  },
+  login: {
+    title: "Welcome back",
+    action: "Sign in",
+    swap: "New here? Create an account",
+    other: "create",
+    loginLabel: "Email or username",
+    loginContent: "username",
+    passwordContent: "password",
+    passwordRules: undefined,
+    rules: undefined,
+  },
+} as const;
+
+function canSubmit(creating: boolean, login: string, password: string) {
+  if (creating) return EMAIL.test(login.trim()) && password.length >= 8;
+  return !!login.trim() && !!password;
+}
 
 interface Errors {
   login?: string;
@@ -40,7 +65,8 @@ export default function SignIn() {
   const [errors, setErrors] = useState<Errors>({});
   const [pending, setPending] = useState<SignInMethod["kind"] | null>(null);
   const creating = mode === "create";
-  const ready = creating ? EMAIL.test(login.trim()) && password.length >= 8 : !!login.trim() && !!password;
+  const ready = canSubmit(creating, login, password);
+  const copy = COPY[mode];
 
   // The root layout's protected routes move on once the session exists.
   async function run(kind: SignInMethod["kind"], method: () => Promise<SignInMethod | null>) {
@@ -60,7 +86,8 @@ export default function SignIn() {
   const submit = () => {
     if (!ready) return;
     const name = login.trim();
-    void run(creating ? "register" : "login", async () => (creating ? { kind: "register", email: name, password } : { kind: "login", login: name, password }));
+    if (creating) void run("register", async () => ({ kind: "register", email: name, password }));
+    else void run("login", async () => ({ kind: "login", login: name, password }));
   };
 
   const google = () =>
@@ -70,12 +97,12 @@ export default function SignIn() {
     });
 
   return (
-    <Frame footer={<PrimaryButton label={COPY[mode].action} onPress={submit} disabled={!ready} pending={pending === "login" || pending === "register"} />}>
+    <Frame footer={<PrimaryButton label={copy.action} onPress={submit} disabled={!ready} pending={pending === "login" || pending === "register"} />}>
       <View style={s.heading}>
-        <Heading>{COPY[mode].title}</Heading>
+        <Heading>{copy.title}</Heading>
       </View>
       <Field
-        label={creating ? "Email" : "Email or username"}
+        label={copy.loginLabel}
         placeholder="you@example.com"
         value={login}
         onChangeText={setLogin}
@@ -83,7 +110,7 @@ export default function SignIn() {
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
-        textContentType={creating ? "emailAddress" : "username"}
+        textContentType={copy.loginContent}
         testID="login"
       />
       <Field
@@ -93,24 +120,24 @@ export default function SignIn() {
         onChangeText={setPassword}
         error={errors.password}
         secureTextEntry
-        textContentType={creating ? "newPassword" : "password"}
-        passwordRules={creating ? "minlength: 8; required: lower; required: upper; required: digit; required: [-!@#$%^&*()_+=[{}|;:,.<>?];" : undefined}
+        textContentType={copy.passwordContent}
+        passwordRules={copy.passwordRules}
         returnKeyType="go"
         onSubmitEditing={submit}
         testID="password"
       />
-      {creating ? <Text style={s.rules}>At least 8 characters, with an uppercase letter, a lowercase letter, a number and a symbol.</Text> : null}
+      {copy.rules && <Text style={s.rules}>{copy.rules}</Text>}
       <FieldError text={errors.form} />
       <Pressable
         role="button"
         hitSlop={8}
         style={s.swap}
         onPress={() => {
-          setMode(creating ? "login" : "create");
+          setMode(copy.other);
           setErrors({});
         }}
       >
-        <Text style={s.swapText}>{COPY[mode].swap}</Text>
+        <Text style={s.swapText}>{copy.swap}</Text>
       </Pressable>
       <View aria-hidden style={s.or}>
         <View style={s.line} />
