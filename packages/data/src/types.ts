@@ -338,12 +338,6 @@ export interface ListLikesResponse {
 
 // ============= Search & Discovery Responses =============
 
-export interface ArtistSearchResult {
-  name: string;
-  discogs_id: number;
-  artist_photo_url: string;
-}
-
 export interface RecentlyViewedResponse {
   results: (SearchResult & { viewed_at: string })[];
 }
@@ -351,12 +345,6 @@ export interface RecentlyViewedResponse {
 export interface SearchAlbumsResponse {
   results: SearchResult[];
   cached: boolean;
-}
-
-export interface SearchArtistsResponse {
-  results: ArtistSearchResult[];
-  cached: boolean;
-  rate_limited?: boolean;
 }
 
 export interface SearchUsersResponse {

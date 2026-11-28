@@ -14,7 +14,6 @@ import type {
   Review,
   ReviewLikeResponse,
   SearchAlbumsResponse,
-  SearchArtistsResponse,
   SearchUsersResponse,
   User,
   UsernameAvailability,
@@ -156,12 +155,6 @@ export const endpoints = {
   searchAlbums: (q: string): Endpoint<SearchAlbumsResponse> => ({
     method: "GET",
     path: "/music/search/",
-    query: { q },
-    parse: cast,
-  }),
-  searchArtists: (q: string): Endpoint<SearchArtistsResponse> => ({
-    method: "GET",
-    path: "/music/search/artists/",
     query: { q },
     parse: cast,
   }),
