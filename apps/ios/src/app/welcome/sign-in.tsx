@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { INK, SUB } from "../../components";
-import { googleIdToken } from "../../google";
-import { Field, FieldError, Frame, Heading, OFFLINE, PrimaryButton } from "../../onboarding/bits";
-import { signIn } from "../../session";
-import { F } from "../../story/kit";
+import { googleIdToken } from "../../lib/google";
+import { Field, FieldError, Frame, Heading, OFFLINE, PrimaryButton } from "../../features/onboarding/bits";
+import { signIn } from "../../lib/session";
+import { F } from "../../features/story/kit";
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 

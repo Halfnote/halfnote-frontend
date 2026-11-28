@@ -1,8 +1,8 @@
 import { ApiError } from "@halfnote/data";
 import { useDeleteMe } from "@halfnote/data/react";
 import { Alert, Pressable, Text } from "react-native";
-import { TabPlaceholder } from "../../Navbar";
-import { logout } from "../../session";
+import { TabPlaceholder } from "../../components/Navbar";
+import { logout } from "../../lib/session";
 
 export default function Profile() {
   const deleteMe = useDeleteMe();

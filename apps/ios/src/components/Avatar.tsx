@@ -1,7 +1,7 @@
 import type { Person } from "@halfnote/data";
 import { Image, View } from "react-native";
 import Svg, { Rect, SvgXml } from "react-native-svg";
-import { FACES } from "../faces";
+import { FACES } from "../svg/faces";
 import { BG } from "./theme";
 
 /** A photo, then the picked face, then the board's 5×5 mirrored pixel face seeded by the handle on the album's label colour. */

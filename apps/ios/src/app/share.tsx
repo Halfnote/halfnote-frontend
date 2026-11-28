@@ -12,12 +12,12 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
-import { useSession } from "../session";
-import { usePlus } from "../usePlus";
-import { useShareToStory } from "../useShareToStory";
-import { F, font } from "../story/kit";
-import { STORY_H, STORY_W, Story } from "../story/Story";
-import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, Star, StyleStep } from "../story/steps";
+import { useSession } from "../lib/session";
+import { usePlus } from "../lib/usePlus";
+import { useShareToStory } from "../features/story/useShareToStory";
+import { F, font } from "../features/story/kit";
+import { STORY_H, STORY_W, Story } from "../features/story/Story";
+import { ElementsStep, FILL, INK, PrimaryButton, SnippetStep, Star, StyleStep } from "../features/story/steps";
 import {
   activeStyle,
   currentStep,
@@ -29,7 +29,7 @@ import {
   storyContent,
   type Source,
   type Step,
-} from "../storyDraft";
+} from "../features/story/draft";
 
 const STEP_NAMES: Record<Step, string> = { elements: "Elements", snippet: "Snippet", style: "Style" };
 

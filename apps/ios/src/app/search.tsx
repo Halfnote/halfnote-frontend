@@ -1,10 +1,10 @@
-import { useDebounce, useSearchAlbums } from "@halfnote/data/react";
 import { router, useNavigation, type NativeStackNavigationProp } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BG, ItemRow, PixelBack, SearchBar } from "../components";
-import { Art, F } from "../story/kit";
+import { Art, F } from "../features/story/kit";
+import { useAlbumSearch } from "../lib/useAlbumSearch";
 
 export default function Search() {
   const insets = useSafeAreaInsets();
@@ -14,9 +14,7 @@ export default function Search() {
 
   // autoFocus raises the keyboard mid-push and the two animations stutter; focus once the page has landed.
   useEffect(() => navigation.addListener("transitionEnd", (e) => !e.data.closing && input.current?.focus()), [navigation]);
-  const debounced = useDebounce(q.trim().toLowerCase(), 300);
-  const query = debounced.length >= 2 ? debounced : "";
-  const search = useSearchAlbums(query);
+  const { query, search } = useAlbumSearch(q, 300);
   const results = q.trim() ? (search.data?.results ?? []) : [];
 
   let label = "";

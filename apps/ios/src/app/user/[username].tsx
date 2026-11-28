@@ -2,8 +2,8 @@ import { useUserProfile, useUserReviews } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Art, F, font } from "../../story/kit";
-import { labelColor } from "../../storyDraft";
+import { Art, F, font } from "../../features/story/kit";
+import { labelColor } from "../../features/story/draft";
 import { AlbumBanner, Avatar, BG, INK, PageHeader, ReviewRow, SectionHeader, SUB } from "../../components";
 
 export default function Profile() {

@@ -5,12 +5,12 @@ import { use } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { BG, INK } from "../../components";
-import { FACES } from "../../faces";
-import { FieldError, Frame, Heading, OFFLINE, PrimaryButton } from "../../onboarding/bits";
-import { OnboardingContext } from "../../onboarding/context";
-import { storeOnboarded } from "../../session";
-import { F } from "../../story/kit";
-import { Pulse } from "../../write/motion";
+import { FACES } from "../../svg/faces";
+import { FieldError, Frame, Heading, OFFLINE, PrimaryButton } from "../../features/onboarding/bits";
+import { OnboardingContext } from "../../features/onboarding/context";
+import { storeOnboarded } from "../../lib/session";
+import { F } from "../../features/story/kit";
+import { Pulse } from "../../features/write/motion";
 
 const nameOf = (face: AvatarPreset) => face[0].toUpperCase() + face.slice(1);
 

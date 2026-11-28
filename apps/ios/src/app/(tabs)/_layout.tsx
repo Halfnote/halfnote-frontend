@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router/js-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ActivityIcon, DiscoverIcon, Navbar, ProfileIcon, WholenoteIcon } from "../../Navbar";
+import { ActivityIcon, DiscoverIcon, Navbar, ProfileIcon, WholenoteIcon } from "../../components/Navbar";
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();

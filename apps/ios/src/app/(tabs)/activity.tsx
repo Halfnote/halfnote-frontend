@@ -4,12 +4,12 @@ import * as SecureStore from "expo-secure-store";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, PanResponder, Pressable, RefreshControl, Text, View } from "react-native";
-import { useLiveValue } from "../../activity/parts";
+import { useLiveValue } from "../../features/activity/parts";
 import { BG, INK } from "../../components";
-import { CoverFlow, FeedList, GridList } from "../../activity/views";
-import { NAVBAR_CLEARANCE } from "../../Navbar";
-import { useSession } from "../../session";
-import { F } from "../../story/kit";
+import { CoverFlow, FeedList, GridList } from "../../features/activity/views";
+import { NAVBAR_CLEARANCE } from "../../components/Navbar";
+import { useSession } from "../../lib/session";
+import { F } from "../../features/story/kit";
 
 type View_ = "feed" | "flow" | "grid";
 const VIEWS: [View_, string][] = [

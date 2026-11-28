@@ -4,12 +4,12 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgXml } from "react-native-svg";
 import { AlbumBanner, BG, INK, SUB } from "../../components";
-import { FACES } from "../../faces";
-import { PrimaryButton, TextButton } from "../../onboarding/bits";
-import { OnboardingContext } from "../../onboarding/context";
-import { leaveOnboarding } from "../../session";
-import { F, font } from "../../story/kit";
-import { Pop, Rise } from "../../write/motion";
+import { FACES } from "../../svg/faces";
+import { PrimaryButton, TextButton } from "../../features/onboarding/bits";
+import { OnboardingContext } from "../../features/onboarding/context";
+import { leaveOnboarding } from "../../lib/session";
+import { F, font } from "../../features/story/kit";
+import { Pop, Rise } from "../../features/write/motion";
 
 async function leave(write: boolean) {
   await leaveOnboarding();
