@@ -2,8 +2,8 @@ import { useReview } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Art, F, font } from "../../story/kit";
-import { firstName, isFullReview, label, yearOf } from "../../activity/parts";
+import { Art, F, font } from "../../features/story/kit";
+import { firstName, isFullReview, label, yearOf } from "../../features/activity/parts";
 import { Avatar, INK, PageHeader, Stamp, SUB, TrackRow } from "../../components";
 
 const PAPER = "#FAFAF8";

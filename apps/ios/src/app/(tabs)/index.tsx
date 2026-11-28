@@ -4,8 +4,8 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { BG, INK, SearchBar, SectionHeader, TOP_REVIEW_WIDTH, TopReviewCard, dotWindow } from "../../components";
-import { NAVBAR_CLEARANCE } from "../../Navbar";
-import { F, font } from "../../story/kit";
+import { NAVBAR_CLEARANCE } from "../../components/Navbar";
+import { F, font } from "../../features/story/kit";
 
 const GAP = 12;
 const openAlbum = (discogsId: string | number) => router.push(`/album/${discogsId}`);

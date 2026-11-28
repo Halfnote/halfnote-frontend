@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Art } from "../story/kit";
+import { Art } from "../features/story/kit";
 
 /** A profile's four favourite albums; empty spots stay grey. */
 export function AlbumBanner({ covers }: { covers: (string | null | undefined)[] }) {

@@ -4,9 +4,9 @@ import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgXml } from "react-native-svg";
 import { BG, INK } from "../../components";
-import { LOGO } from "../../logo";
-import { PrimaryButton, TextButton } from "../../onboarding/bits";
-import { Art, F, font } from "../../story/kit";
+import { LOGO } from "../../svg/logo";
+import { PrimaryButton, TextButton } from "../../features/onboarding/bits";
+import { Art, F, font } from "../../features/story/kit";
 
 /** The design's wall on a 390-point-wide screen: left, top, size, tilt. */
 const WALL = [

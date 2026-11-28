@@ -2,13 +2,14 @@ import { useOnboardingAlbums, useSetFavoriteAlbums } from "@halfnote/data/react"
 import { router } from "expo-router";
 import { use, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import { BG } from "../../components";
-import { FieldError, Frame, Heading, PrimaryButton, TextButton } from "../../onboarding/bits";
-import { OnboardingContext } from "../../onboarding/context";
-import { MAX_PICKS, fromGrid, fromSearch, samePicks, spotOf, togglePick, type AlbumPick } from "../../onboarding/model";
-import { Art, F } from "../../story/kit";
-import { Pop } from "../../write/motion";
-import { AlbumRow, SEARCH_FAILED, SearchBox, noMatches, useAlbumSearch } from "../../write/search";
+import { BG, SearchBar } from "../../components";
+import { FieldError, Frame, Heading, PrimaryButton, TextButton } from "../../features/onboarding/bits";
+import { OnboardingContext } from "../../features/onboarding/context";
+import { MAX_PICKS, fromGrid, fromSearch, samePicks, spotOf, togglePick, type AlbumPick } from "../../features/onboarding/model";
+import { Art, F } from "../../features/story/kit";
+import { Pop } from "../../features/write/motion";
+import { AlbumRow } from "../../features/write/bits";
+import { SEARCH_FAILED, noMatches, useAlbumSearch } from "../../lib/useAlbumSearch";
 
 export default function Albums() {
   const { answers, update } = use(OnboardingContext);
@@ -68,7 +69,7 @@ export default function Albums() {
           );
         })}
       </View>
-      <SearchBox value={text} onChangeText={setText} />
+      <SearchBar variant="picker" value={text} onChangeText={setText} />
       {query ? (
         <View style={[s.results, search.isPlaceholderData && s.stale]}>
           {search.isLoading ? <ActivityIndicator style={s.spinner} /> : null}

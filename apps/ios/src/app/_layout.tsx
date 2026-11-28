@@ -17,7 +17,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect, useLayoutEffect } from "react";
 import { AppState } from "react-native";
-import { client, loadSession, useSession } from "../session";
+import { client, loadSession, useSession } from "../lib/session";
 
 // Deep links (album, user, review) still get the tabs underneath, so Back works.
 export const unstable_settings = { anchor: "(tabs)" };

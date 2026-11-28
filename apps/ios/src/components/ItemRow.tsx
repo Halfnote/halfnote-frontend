@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
-import { F, font } from "../story/kit";
+import { F, font } from "../features/story/kit";
 import { Stamp } from "./Stamp";
 import { INK, SUB } from "./theme";
 

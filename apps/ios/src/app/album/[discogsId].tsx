@@ -2,8 +2,8 @@ import { useAlbumDetails } from "@halfnote/data/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Art, F, font } from "../../story/kit";
-import { labelColor } from "../../storyDraft";
+import { Art, F, font } from "../../features/story/kit";
+import { labelColor } from "../../features/story/draft";
 import { Avatar, BG, INK, PageHeader, ReviewRow, SectionHeader, Stamp, SUB, TrackRow } from "../../components";
 
 const minutes = (sec: number | null) => (sec == null ? "" : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);

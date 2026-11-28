@@ -4,11 +4,11 @@ import { router } from "expo-router";
 import { use, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SUB } from "../../components";
-import { ERROR, Field, FieldError, Frame, Heading, OFFLINE, OK, PrimaryButton } from "../../onboarding/bits";
-import { OnboardingContext } from "../../onboarding/context";
-import { cleanHandle, suggestHandle, validHandle } from "../../onboarding/model";
-import { logout, setUsername } from "../../session";
-import { F } from "../../story/kit";
+import { ERROR, Field, FieldError, Frame, Heading, OFFLINE, OK, PrimaryButton } from "../../features/onboarding/bits";
+import { OnboardingContext } from "../../features/onboarding/context";
+import { cleanHandle, suggestHandle, validHandle } from "../../features/onboarding/model";
+import { logout, setUsername } from "../../lib/session";
+import { F } from "../../features/story/kit";
 
 const TAKEN = { text: "Taken", color: ERROR };
 

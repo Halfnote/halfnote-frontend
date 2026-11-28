@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { F, font } from "../story/kit";
+import { F, font } from "../features/story/kit";
 import { PixelBack } from "./icons";
 import { BG, INK } from "./theme";
 

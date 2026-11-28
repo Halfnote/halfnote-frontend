@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { F } from "../story/kit";
+import { F } from "../features/story/kit";
 import { BG, INK } from "./theme";
 
 /** A tracklist row as the board draws it; the favourite is inverted. */

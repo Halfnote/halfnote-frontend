@@ -4,11 +4,11 @@ import { Stack } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { BG, INK } from "../../components";
-import { OFFLINE, TextButton } from "../../onboarding/bits";
-import { OnboardingContext, type Answers } from "../../onboarding/context";
-import { fromGrid, isPlaceholder, suggestHandle } from "../../onboarding/model";
-import { logout } from "../../session";
-import { F } from "../../story/kit";
+import { OFFLINE, TextButton } from "../../features/onboarding/bits";
+import { OnboardingContext, type Answers } from "../../features/onboarding/context";
+import { fromGrid, isPlaceholder, suggestHandle } from "../../features/onboarding/model";
+import { logout } from "../../lib/session";
+import { F } from "../../features/story/kit";
 
 export default function OnboardingLayout() {
   const user = useUser();
