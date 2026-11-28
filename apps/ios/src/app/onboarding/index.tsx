@@ -43,7 +43,7 @@ export default function You() {
       {
         onSuccess: async (user) => {
           await setUsername(user.username);
-          router.push("/onboarding/albums");
+          router.push("/onboarding/favAlbumSelection");
         },
         onError: (e) => {
           if (e instanceof ApiError && e.fields.username) setLost(handle);
